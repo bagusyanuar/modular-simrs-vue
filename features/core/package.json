@@ -1,0 +1,16 @@
+{
+  "name": "@genrs/core",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.30"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.0",
+    "typescript": "~5.9.3"
+  }
+}

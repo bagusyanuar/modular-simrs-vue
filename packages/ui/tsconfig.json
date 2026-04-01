@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    "outDir": "./dist",
+    "rootDir": "./",
+    "declaration": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false,
+    "baseUrl": ".",
+    "paths": {
+      "@genrs/ui/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "env.d.ts",
+    "vite.config.ts",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx"
+  ]
+}
