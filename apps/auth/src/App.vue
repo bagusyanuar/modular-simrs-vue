@@ -5,7 +5,7 @@ import { GTextfield } from '@genrs/ui/components/textfield';
 
 <template>
   <div>
-    <GButton text="Button" />
+    <GButton text="Button" class="bg-purple-400" />
     <GTextfield />
     <input type="text" placeholder="username" />
   </div>
