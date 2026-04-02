@@ -10,7 +10,8 @@
     "emitDeclarationOnly": false,
     "baseUrl": ".",
     "paths": {
-      "@genrs/ui/*": ["./src/*"]
+      "@genrs/ui/*": ["./src/*"],
+      "#shadcn/*": ["./src/shadcn/*"]
     }
   },
   "include": [

@@ -8,6 +8,9 @@
     ".": "./src/index.ts",
     "./*": "./src/components/*/index.ts"
   },
+  "imports": {
+    "#shadcn/*": "./src/shadcn/*"
+  },
   "typesVersions": {
     "*": {
       "*": [
