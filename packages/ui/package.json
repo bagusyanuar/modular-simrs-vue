@@ -6,7 +6,8 @@
   "license": "MIT",
   "exports": {
     ".": "./src/index.ts",
-    "./*": "./src/components/*/index.ts"
+    "./components/*": "./src/components/*/index.ts",
+    "./utils": "./src/shadcn/lib/utils.ts"
   },
   "imports": {
     "#shadcn/*": "./src/shadcn/*"
