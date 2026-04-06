@@ -7,10 +7,11 @@
   "exports": {
     ".": "./src/index.ts",
     "./components/*": "./src/components/*/index.ts",
-    "./utils": "./src/shadcn/lib/utils.ts"
+    "./utils": "./src/components/lib/utils.ts"
   },
   "imports": {
-    "#shadcn/*": "./src/shadcn/*"
+    "#components/*": "./src/components/*",
+    "#lib/*": "./src/components/lib/*"
   },
   "typesVersions": {
     "*": {

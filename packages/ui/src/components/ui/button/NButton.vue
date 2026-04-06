@@ -3,7 +3,7 @@ import type { PrimitiveProps } from 'reka-ui';
 import type { HTMLAttributes } from 'vue';
 import type { ButtonVariants } from '.';
 import { Primitive } from 'reka-ui';
-import { cn } from '#shadcn/lib/utils';
+import { cn } from '#components/lib/utils';
 import { buttonVariants } from '.';
 
 interface Props extends PrimitiveProps {
@@ -24,7 +24,9 @@ const props = withDefaults(defineProps<Props>(), {
     :data-size="size"
     :as="as"
     :as-child="asChild"
-    :class="cn(buttonVariants({ variant, size }), props.class)"
+    :class="
+      cn(buttonVariants({ variant, size }), 'cursor-pointer', props.class)
+    "
   >
     <slot />
   </Primitive>

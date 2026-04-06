@@ -10,13 +10,15 @@
     "emitDeclarationOnly": false,
     "baseUrl": ".",
     "paths": {
-      "@genrs/ui/*": ["./src/*"],
-      "#shadcn/*": ["./src/shadcn/*"]
+      "@/*": ["./src/*"],
+      "#components/*": ["./src/components/*"],
+      "#lib/*": ["./src/components/lib/*"]
     }
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
+    "src/**/*.vue",
     "env.d.ts",
     "vite.config.ts",
     ".storybook/**/*.ts",
