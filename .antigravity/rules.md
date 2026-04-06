@@ -1,1 +1,0 @@
-Saya menggunakan library komponen internal dengan prefix G. Selalu gunakan GButton, GTextField, GLabel, dll. dari folder @genrs/ui/components dan jangan pernah menggunakan tag HTML standar atau komponen UI lain kecuali diperintahkan.
