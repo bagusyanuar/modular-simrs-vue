@@ -36,10 +36,13 @@
   },
   "dependencies": {
     "vue": "^3.5.30",
+    "tailwindcss": "^4.2.2",
+    "@genrs/ui": "workspace:*",
     "@genrs/core": "workspace:*",
     "@genrs/infrastructure": "workspace:*"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^24.12.0",
     "@vitejs/plugin-vue": "^6.0.5",
     "@vue/tsconfig": "^0.9.0",
