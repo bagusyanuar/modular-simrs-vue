@@ -6,6 +6,43 @@
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
+  "sideEffects": false,
+  "exports": {
+    "./utils/*": [
+      "./src/utils/*/index.ts",
+      "./src/utils/*.ts",
+      "./src/utils/*"
+    ],
+    "./finance/*": [
+      "./src/finance/*/index.ts",
+      "./src/finance/*.ts",
+      "./src/finance/*"
+    ],
+    "./simrs/*": [
+      "./src/simrs/*/index.ts",
+      "./src/simrs/*.ts",
+      "./src/simrs/*"
+    ]
+  },
+  "typesVersions": {
+    "*": {
+      "utils/*": [
+        "./src/utils/*/index.ts",
+        "./src/utils/*.ts",
+        "./src/utils/*"
+      ],
+      "finance/*": [
+        "./src/finance/*/index.ts",
+        "./src/finance/*.ts",
+        "./src/finance/*"
+      ],
+      "simrs/*": [
+        "./src/simrs/*/index.ts",
+        "./src/simrs/*.ts",
+        "./src/simrs/*"
+      ]
+    }
+  },
   "peerDependencies": {
     "vue": "^3.5.30"
   },

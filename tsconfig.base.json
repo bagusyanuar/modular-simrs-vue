@@ -12,7 +12,15 @@
     "noUncheckedIndexedAccess": true,
     "noImplicitReturns": true,
     "paths": {
-      "@genmedical/ui/*": ["./packages/ui/src/components/*/index.ts"]
+      "@genrs/core/simrs/*": ["./features/core/src/simrs/*"],
+      "@genrs/core/utils/*": ["./features/core/src/utils/*"],
+      "@genrs/core/finance/*": ["./features/core/src/finance/*"],
+      "@genrs/core/*": ["./features/core/src/*"],
+      "@genrs/infrastructure/simrs/*": ["./features/infrastructure/src/simrs/*"],
+      "@genrs/infrastructure/finance/*": ["./features/infrastructure/src/finance/*"],
+      "@genrs/infrastructure/*": ["./features/infrastructure/src/*"],
+      "@genrs/presentation": ["./features/presentation/src/index.ts"],
+      "@genrs/presentation/*": ["./features/presentation/src/*"]
     }
   }
 }
