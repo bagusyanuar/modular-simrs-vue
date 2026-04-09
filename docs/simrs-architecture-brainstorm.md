@@ -268,9 +268,40 @@ features/
 
 ## ✅ TODO Implementasi
 
-- [ ] Buat `vite-plugin-tenant.ts` di `features/presentation/`
-- [ ] Buat folder `_tenants/` di `features/presentation/src/simrs/`
-- [ ] Update `apps/simrs/vite.config.ts` — pasang plugin + baca `VITE_TENANT`
-- [ ] Update router pakai `@page/` alias bukan hardcoded path
-- [ ] Buat `.env.base` dan `.env.{tenantCode}` di `apps/simrs/`
-- [ ] Isi composables di `presentation/simrs/base/composables/` — jembatan use case ↔ Vue
+- [x] Buat `vite-plugin-tenant.ts` di `features/presentation/`
+- [x] Buat folder `_tenants/` di `features/presentation/src/simrs/`
+- [x] Update `apps/simrs/vite.config.ts` — pasang plugin + baca `VITE_TENANT`
+- [x] Update router pakai `@page/` alias bukan hardcoded path
+- [x] Buat `.env.base` dan `.env.{tenantCode}` di `apps/simrs/`
+- [/] Isi composables di `presentation/simrs/base/composables/` — jembatan use case ↔ Vue
+- [x] Implementasi Centralized HTTP Client (`@genrs/http`) dengan Refresh Token logic
+- [x] Standardisasi Folder Structure Core & Infra (SIMRS-style: Inputs/Models/Schemas/Mappers/Providers)
+- [x] Otomasi Scaffolding Tenant (`scripts/create-tenant-core.mjs` & `create-tenant-infra.mjs`)
+
+---
+
+## 🌙 Summary Sesi Malam (2026-04-09)
+
+### 1. Standardisasi Arsitektur Feature (Module: Auth)
+Disepakati bahwa semua modul (termasuk Auth) akan mengikuti pattern **SIMRS** untuk konsistensi cross-layer:
+- **Core (Business Logic)**: Memisahkan `inputs/` (request params/form) dan `models/` (domain entities).
+- **Infrastructure (Data Access)**: Menggunakan `schemas/` (BE contract), `mappers/` (data translator), dan `providers/` (DI wiring).
+- **Export Policy**: Menghapus **Root Barrel Export** (index.ts di root `base/`) untuk memaksa pemanggilan file yang lebih eksplisit, meningkatkan performa tree-shaking, dan menghindari circular dependency.
+
+### 2. Infrastructure Tooling (`@genrs/http`)
+Penyediaan HTTP Client terpusat berbasis Axios dengan fitur:
+- Otomatis inject Bearer Token dari `SessionManager`.
+- Interceptor Refresh Token dengan concurrency handling (request queueing).
+- Factory pattern untuk multiple API instances (v1, v2, v3).
+
+### 3. Otomasi Scaffolding
+Pembuatan script automation untuk mempercepat onboarding tenant di level logic:
+- `create-tenant-core.mjs`: Mirroring folder structure `base` ke `_tenants` di layer Core.
+- `create-tenant-infra.mjs`: Mirroring folder structure `base` ke `_tenants` di layer Infrastructure.
+- *Aturan*: Jika di `base` ada `index.ts`, script akan membuat `index.ts` dengan `export {}` di tenant sebagai placeholder resolver.
+
+### 4. Manifest & Menu Toggling
+Diputuskan tetap menggunakan **Build-time Static Manifest** (`manifest.ts` per tenant) daripada dynamic API menu. Alasannya:
+- **Security**: Kode modul yang tidak disubscribe tidak bocor ke client bundle.
+- **Performance**: Bundle size jauh lebih kecil dan teroptimasi per RS.
+- **Maintenance**: Maintenance dikelola lewat CI/CD & Scaffolding Scripts.
