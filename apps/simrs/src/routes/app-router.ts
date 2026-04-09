@@ -1,6 +1,25 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
 import AppLayout from '../layouts/AppLayout.vue';
-import { unitRoutes } from './modules/unit.routes';
+import { activeModules } from '@page/manifest';
+import { moduleLibrary } from 'virtual:page-registry';
+
+function resolveRoutes(): RouteRecordRaw[] {
+  const aggregatedRoutes: RouteRecordRaw[] = [];
+
+  activeModules.forEach((moduleName) => {
+    const moduleExports = moduleLibrary[moduleName];
+    if (moduleExports) {
+      moduleExports.forEach((exp: Record<string, unknown>) => {
+        const routes = Object.values(exp)[0] as RouteRecordRaw[];
+        if (Array.isArray(routes)) {
+          aggregatedRoutes.push(...routes);
+        }
+      });
+    }
+  });
+
+  return aggregatedRoutes;
+}
 
 const appRouter = createRouter({
   history: createWebHistory(),
@@ -8,7 +27,7 @@ const appRouter = createRouter({
     {
       component: AppLayout,
       path: '/',
-      children: [...unitRoutes],
+      children: resolveRoutes(),
     },
   ],
 });

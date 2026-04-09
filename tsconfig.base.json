@@ -20,7 +20,10 @@
       "@genrs/infrastructure/finance/*": ["./features/infrastructure/src/finance/*"],
       "@genrs/infrastructure/*": ["./features/infrastructure/src/*"],
       "@genrs/presentation": ["./features/presentation/src/index.ts"],
-      "@genrs/presentation/*": ["./features/presentation/src/*"]
+      "@genrs/presentation/*": ["./features/presentation/src/*"],
+      "@page/*": [
+        "./features/presentation/src/simrs/base/*"
+      ]
     }
   }
 }

@@ -2,6 +2,6 @@
 
 <template>
   <div>
-    <h1>Ini Halaman Staff</h1>
+    <h1>Halaman Unit Custom RS PKU</h1>
   </div>
 </template>

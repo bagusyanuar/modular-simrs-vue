@@ -6,8 +6,7 @@ export const unitRoutes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
-        component: () =>
-          import('@genrs/presentation/simrs/base/pages/unit/Unit.vue'),
+        component: () => import('@page/pages/unit/Unit.vue'),
       },
     ],
   },
