@@ -1,8 +1,8 @@
-import { defineConfig, loadEnv } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import tailwindcss from '@tailwindcss/vite'
-import { tenantResolver } from '../../features/presentation/vite-plugin-tenant'
-import path from 'path'
+import { defineConfig, loadEnv } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import tailwindcss from '@tailwindcss/vite';
+import { tenantResolver } from '../../features/presentation/vite-plugin-tenant';
+import path from 'path';
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -12,19 +12,20 @@ export default defineConfig(({ mode }) => {
    * 2. Load dari Folder App (Tenant Specific)
    * 3. Merge ke process.env agar tersedia di import.meta.env
    */
-  const globalEnv = loadEnv(mode, path.resolve(__dirname, '../../'), 'VITE_')
-  const appEnv = loadEnv(mode, process.cwd(), 'VITE_')
+  const globalEnv = loadEnv(mode, path.resolve(__dirname, '../../'), 'VITE_');
+  const appEnv = loadEnv(mode, process.cwd(), 'VITE_');
 
   // Merge (Lokal menimpa Global jika ada konflik)
-  Object.assign(process.env, globalEnv, appEnv)
+  Object.assign(process.env, globalEnv, appEnv);
 
-  const tenant = process.env.VITE_TENANT || 'base'
+  const tenant = process.env.VITE_TENANT || 'base';
 
   return {
-    plugins: [
-      vue(),
-      tailwindcss(),
-      tenantResolver(tenant),
-    ],
-  }
-})
+    plugins: [vue(), tailwindcss(), tenantResolver(tenant)],
+    server: {
+      host: 'simrs.neurovi-simulation.test',
+      port: 3001,
+      strictPort: true,
+    },
+  };
+});

@@ -103,6 +103,9 @@ importers:
 
   apps/simrs:
     dependencies:
+      '@genrs/auth':
+        specifier: workspace:*
+        version: link:../../packages/auth
       '@genrs/core':
         specifier: workspace:*
         version: link:../../features/core
@@ -215,6 +218,15 @@ importers:
       vue-tsc:
         specifier: ^3.2.5
         version: 3.2.6(typescript@5.9.3)
+
+  packages/auth:
+    devDependencies:
+      '@types/node':
+        specifier: ^24.12.0
+        version: 24.12.0
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/ui:
     dependencies:

@@ -5,6 +5,10 @@ const appRouter = createRouter({
   routes: [
     {
       path: '/',
+      redirect: (to) => ({ path: '/authorize', query: to.query }),
+    },
+    {
+      path: '/authorize',
       component: () =>
         import('@genrs/presentation/auth/base/pages/login/LoginPage.vue'),
     },

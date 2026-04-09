@@ -12,6 +12,7 @@
     "@genrs/core": "workspace:*",
     "@genrs/infrastructure": "workspace:*",
     "@genrs/presentation": "workspace:*",
+    "@genrs/auth": "workspace:*",
     "tailwindcss": "^4.2.2",
     "vue": "^3.5.30",
     "vue-router": "^5.0.4"

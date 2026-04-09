@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import AppLayout from '../layouts/AppLayout.vue';
 import { activeModules } from '@page/manifest';
 import { moduleLibrary } from 'virtual:page-registry';
+import { createSSOGuard } from '@genrs/auth';
 
 function resolveRoutes(): RouteRecordRaw[] {
   const aggregatedRoutes: RouteRecordRaw[] = [];
@@ -29,7 +30,14 @@ const appRouter = createRouter({
       path: '/',
       children: resolveRoutes(),
     },
+    {
+      path: '/callback',
+      component: () => import('../App.vue'),
+    },
   ],
 });
+
+// 🔐 Inject Centralized SSO Guard
+createSSOGuard(appRouter);
 
 export default appRouter;

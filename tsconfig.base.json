@@ -21,6 +21,8 @@
       "@genrs/infrastructure/*": ["./features/infrastructure/src/*"],
       "@genrs/presentation": ["./features/presentation/src/index.ts"],
       "@genrs/presentation/*": ["./features/presentation/src/*"],
+      "@genrs/auth": ["./packages/auth/src/index.ts"],
+      "@genrs/auth/*": ["./packages/auth/src/*"],
       "@page/*": [
         "./features/presentation/src/simrs/base/*"
       ]

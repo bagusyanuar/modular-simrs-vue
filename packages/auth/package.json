@@ -1,0 +1,17 @@
+{
+  "name": "@genrs/auth",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Auth utilities for Gen SIMRS System",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/node": "^24.12.0"
+  }
+}
