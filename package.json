@@ -8,6 +8,7 @@
   "scripts": {
     "dev:auth": "turbo run dev --filter=@genrs/auth-app",
     "dev:simrs": "turbo run dev --filter=@genrs/simrs-app",
+    "create:tenant": "node scripts/create-tenant.mjs",
     "storybook": "pnpm run --filter=@genrs/ui storybook",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
