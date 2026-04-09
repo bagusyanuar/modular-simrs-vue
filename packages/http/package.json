@@ -1,0 +1,21 @@
+{
+  "name": "@genrs/http",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "HTTP Client for Gen SIMRS System",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@genrs/auth": "workspace:*",
+    "axios": "^1.15.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "typescript": "^5.4.0"
+  }
+}
