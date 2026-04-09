@@ -2,7 +2,8 @@
 import { SessionManager } from '@genrs/auth';
 import { useAuthFlow } from '../../composables/useAuthFlow';
 
-const { email, password, loading, error, isAuthenticated, handleLogin } = useAuthFlow();
+const { email, password, loading, error, isAuthenticated, handleLogin } =
+  useAuthFlow();
 
 const logout = () => {
   SessionManager.logout();
@@ -11,7 +12,9 @@ const logout = () => {
 </script>
 
 <template>
-  <div class="w-full h-dvh bg-stone-100/50 flex items-center justify-center p-4">
+  <div
+    class="w-full h-dvh bg-stone-100/50 flex items-center justify-center p-4"
+  >
     <div
       class="w-full max-w-4xl h-full max-h-[600px] bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2 border border-stone-200/50"
     >
@@ -68,7 +71,7 @@ const logout = () => {
           </div>
           <div class="flex flex-col gap-3">
             <a
-              href="http://simrs.neurovi-simulation.test:3001"
+              href="http://neurovi-simulation.test:3000/simrs/"
               class="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors"
             >
               Ke Dashboard SIMRS

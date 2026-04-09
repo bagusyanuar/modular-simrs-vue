@@ -21,9 +21,10 @@ export default defineConfig(({ mode }) => {
   const tenant = process.env.VITE_TENANT || 'base';
 
   return {
-    plugins: [vue(), tailwindcss(), tenantResolver(tenant)],
+    base: '/simrs/',
+    plugins: [vue(), tailwindcss(), tenantResolver('simrs', tenant)],
     server: {
-      host: 'simrs.neurovi-simulation.test',
+      host: 'neurovi-simulation.test',
       port: 3001,
       strictPort: true,
     },

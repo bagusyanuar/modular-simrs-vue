@@ -22,9 +22,14 @@ export function useAuthFlow() {
       hasRedirectUri: !!route.query.redirect_uri 
     });
 
-    if (isAuthenticated.value && route.query.redirect_uri) {
-      console.log('🔄 User already authenticated. Performing auto-redirect...');
-      performSSORedirect();
+    if (isAuthenticated.value) {
+      if (route.query.redirect_uri) {
+        console.log('🔄 User already authenticated. Performing auto-redirect...');
+        performSSORedirect();
+      } else {
+         console.log('ℹ️ User already authenticated but no redirect_uri found.');
+         // Kita biarkan UI yang nanganin (nampilin tombol dashboard)
+      }
     }
   });
 
@@ -73,7 +78,8 @@ export function useAuthFlow() {
       if (route.query.redirect_uri) {
         performSSORedirect();
       } else {
-        alert('Login Success! (Auth Portal Dashboard)');
+        // Redirect otomatis ke aplikasi utama jika tidak ada instruksi khusus
+        window.location.href = '/simrs/';
       }
     } catch (e) {
       error.value = 'Login failed. Please try again.';

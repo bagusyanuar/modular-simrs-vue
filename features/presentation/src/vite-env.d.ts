@@ -11,8 +11,3 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
-
-declare module 'virtual:page-registry' {
-  import type { RouteRecordRaw } from 'vue-router';
-  export const moduleLibrary: Record<string, Array<Record<string, RouteRecordRaw[]>>>;
-}

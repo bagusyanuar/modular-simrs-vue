@@ -12,8 +12,8 @@ const RESOLVED_VIRTUAL_ID = `\0${VIRTUAL_MODULE_ID}`
  * 1. Resolves @page/* to either _tenants/{tenantCode}/* or base/*
  * 2. Generates virtual:page-registry for optimal tree-shaking
  */
-export function tenantResolver(tenantCode: string) {
-  const presentationBase = path.resolve(__dirname, 'src/simrs')
+export function tenantResolver(moduleDir: string, tenantCode: string) {
+  const presentationBase = path.resolve(__dirname, 'src', moduleDir)
 
   // Helper: resolve path ke tenant atau fallback ke base
   function resolvePath(subPath: string): string | null {

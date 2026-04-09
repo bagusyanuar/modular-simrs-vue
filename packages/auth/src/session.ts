@@ -32,7 +32,7 @@ export const SessionManager = {
     expires: 7,
     clientId: '',
     redirectUri: '',
-    authServerUrl: 'http://auth.neurovi-simulation.test:3000',
+    authServerUrl: 'http://neurovi-simulation.test:3000',
   } as SessionConfig,
 
   /**
