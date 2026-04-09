@@ -9,10 +9,16 @@ Dokumen ini menjelaskan bagaimana arsitektur `modular-simrs-vue` mendukung migra
 
 Arsitektur kita saat ini memiliki 4 pilar utama yang mendukung strategi migrasi bertahap:
 
-### 1. Unified Session Management (Cookie-based)
-Paket `@genrs/auth` menggunakan **Cookie Storage** untuk menyimpan token. 
-- **Mekanisme**: Jika V1 dan V2 berjalan di domain/subdomain yang sama, V2 bisa langsung membaca session dari V1 tanpa perlu login ulang.
-- **Keuntungan**: User experience tetap mulus saat berpindah antar versi aplikasi.
+### 1. Unified Session Management (Shared Storage)
+Arsitektur kita menggunakan **Cookie** sebagai media penyimpanan session utama.
+
+#### Kenapa Cookie, Bukan LocalStorage?
+| Fitur | Cookie ✅ | LocalStorage ❌ |
+|---|---|---|
+| **Cross-Subdomain** | Bisa dishare antar `app1.rs.com` dan `app2.rs.com`. | **Terisolasi** total per origin. |
+| **Pindah Versi (Seamless)** | Browser otomatis nenteng datanya pas redirect. | Perlu logic khusus buat hand-over data. |
+| **Security (CSRF vs XSS)** | Bisa diproteksi `SameSite` & `HttpOnly`. | Sangat rentan disedot via **XSS**. |
+| **Interoperabilitas** | Aplikasi legacy (V1) sangat umum pakai Cookie. | Kadang beda format/struktur data. |
 
 ### 2. Relocatable Routing (`BASE_URL`)
 Penggunaan `createWebHistory(import.meta.env.BASE_URL)` di `apps/simrs/src/routes/app-router.ts` memungkinkan V2 dihost di subpath tertentu.
@@ -77,3 +83,29 @@ const appRouter = createRouter({
 
 > [!TIP]
 > Prioritaskan modul yang paling jarang berubah (*cold modules*) untuk testing awal, atau modul yang paling sering bermasalah di V1 sebagai *quick win* migrasi.
+
+---
+
+## 🛠️ Implementation Guide for V1 (Legacy)
+
+Agar V2 bisa mengenali session dari V1, tambahkan logic berikut pada bagian sukses login di aplikasi V1:
+
+```javascript
+// Contoh di Aplikasi V1 (Legacy)
+function onLoginSuccess(token) {
+  // Set cookie agar bisa dibaca oleh V2 (Monorepo)
+  // Pastikan nama cookie sama dengan yang diatur di SessionManager V2
+  const cookieName = 'access_token';
+  const expiry = new Date();
+  expiry.setDate(expiry.getDate() + 7); // 7 hari
+
+  document.cookie = `${cookieName}=${token}; expires=${expiry.toUTCString()}; path=/; domain=.rs-pusat.com; SameSite=Lax`;
+  
+  console.log('✅ Token shared with V2 ecosystem');
+}
+```
+
+**Penting:**
+- **Domain**: Gunakan dot prefix (misal `.rs.com`) jika V1 dan V2 beda subdomain.
+- **Path**: Harus `/` agar bisa dibaca di semua path aplikasi.
+- **Secure**: Set `Secure` jika aplikasi berjalan di HTTPS.
