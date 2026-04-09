@@ -5,19 +5,18 @@
   "type": "module",
   "sideEffects": false,
   "exports": {
-    "./simrs/*": [
-      "./src/simrs/*/index.ts",
-      "./src/simrs/*.ts",
-      "./src/simrs/*"
-    ],
-    "./finance/*": [
-      "./src/finance/*/index.ts",
-      "./src/finance/*.ts",
-      "./src/finance/*"
-    ]
+    "./utils/*": "./src/utils/*",
+    "./simrs/*": "./src/simrs/*",
+    "./finance/*": "./src/finance/*",
+    "./auth/*": "./src/auth/*"
   },
   "typesVersions": {
     "*": {
+      "utils/*": [
+        "./src/utils/*/index.ts",
+        "./src/utils/*.ts",
+        "./src/utils/*"
+      ],
       "simrs/*": [
         "./src/simrs/*/index.ts",
         "./src/simrs/*.ts",
@@ -27,6 +26,11 @@
         "./src/finance/*/index.ts",
         "./src/finance/*.ts",
         "./src/finance/*"
+      ],
+      "auth/*": [
+        "./src/auth/*/index.ts",
+        "./src/auth/*.ts",
+        "./src/auth/*"
       ]
     }
   },
@@ -37,7 +41,8 @@
     "vue": "^3.5.30"
   },
   "dependencies": {
-    "@genrs/core": "workspace:*"
+    "@genrs/core": "workspace:*",
+    "@genrs/http": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.12.0",
