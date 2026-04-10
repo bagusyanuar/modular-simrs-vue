@@ -15,6 +15,7 @@ const RESOLVED_VIRTUAL_ID = `\0${VIRTUAL_MODULE_ID}`;
  * 3. Injects Hybrid Versioning Metadata
  */
 export function tenantResolver(moduleDir: string, tenantCode: string) {
+  const REQUIRED_SCHEMA_VERSION = 1;
   const presentationBase = path.resolve(__dirname, 'src', moduleDir);
 
   // Helper: Ambil versi dari root package.json + git revision tenant
@@ -90,6 +91,45 @@ export function tenantResolver(moduleDir: string, tenantCode: string) {
       return [];
     }
   }
+
+  // Helper: Validasi kompatibilitas tenant manifest
+  function validateSchema() {
+    if (tenantCode === 'base') return;
+
+    const manifestPath = resolvePath('manifest');
+    if (!manifestPath || !existsSync(manifestPath)) return;
+
+    try {
+      const content = readFileSync(manifestPath, 'utf-8');
+      // Regex untuk menangkap export const schemaVersion = X
+      const match = content.match(/schemaVersion\s*=\s*(\d+)/);
+      const version = match ? parseInt(match[1], 10) : 0;
+
+      if (version < REQUIRED_SCHEMA_VERSION) {
+        throw new Error(
+          `\n[TenantResolver] ❌ Incompatible Schema Version for tenant "${tenantCode}"\n` +
+            `   Required: v${REQUIRED_SCHEMA_VERSION}\n` +
+            `   Found:    v${version}\n\n` +
+            `   Mohon update file manifest.ts di: _tenants/${tenantCode}/manifest.ts\n` +
+            `   Pastikan kode tenant sudah kompatibel dengan Base Engine terbaru.\n`
+        );
+      }
+    } catch (e) {
+      if (
+        e instanceof Error &&
+        e.message.includes('Incompatible Schema Version')
+      ) {
+        throw e;
+      }
+      console.warn(
+        `[TenantResolver] Could not validate schema for ${tenantCode}:`,
+        e
+      );
+    }
+  }
+
+  // Jalankan validasi diawal
+  validateSchema();
 
   // Generate kode virtual module secara statis untuk tree-shaking optimal
   function generateRegistry(): string {

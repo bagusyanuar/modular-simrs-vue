@@ -8,3 +8,5 @@ export const activeModules = [
   'billing',
   // RS PKU bisa nambah modul baru di sini jika ada
 ];
+
+export const schemaVersion = 1;

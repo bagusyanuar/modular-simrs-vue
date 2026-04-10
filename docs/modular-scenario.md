@@ -126,11 +126,15 @@ Didefinisikan di `package.json` root. Mengikuti aturan Semantic Versioning:
 Setiap tenant tidak memiliki SemVer mandiri, melainkan menggunakan **Revision Identifier** yang menempel pada versi base.
 - **Format**: `v[BaseVersion]+[TenantCode].rev-[Count]`
 - **Contoh**: `v2.4.1+rspku.rev-12`
-- **Kegunaan**: Melacak sudah berapa kali folder `_tenants/rspku` mengalami perubahan tanpa harus menaikkan versi produk utama.
+- **Mekanisme**: `Count` diambil otomatis dari jumlah Git Commit di folder tenant tersebut saat build.
+- **Injection**: Versi ini disuntikkan otomatis ke dalam aplikasi via konstanta global `__APP_VERSION__` oleh Vite Plugin.
 
 ### 3. Git Tagging Convention
 - **Produk**: `base-v2.1.0` (Titik stabil product roadmap).
-- **Deployment**: `deploy/[tenant-code]/[yyyy-mm-dd]` (Snapshot rilis ke server client).
+- **Deployment**: `deploy/[tenant-code]/[yyyy-mm-dd].[rev]` (Snapshot rilis ke server client).
 
-### 4. Manifest Schema Version
-Setiap file `manifest.ts` disarankan memiliki property `schemaVersion: number`. Ini berguna untuk mendeteksi apakah struktur manifest suatu tenant masih kompatibel dengan cara baca `tenant-resolver` (Vite Plugin) versi terbaru.
+### 4. Manifest Schema Version (The Safeguard)
+Setiap file `manifest.ts` wajib memiliki `export const schemaVersion: number`. 
+- **Fungsi**: Mencegah "Silent Crash" saat base product melakukan update arsitektur yang *breaking*.
+- **Mekanisme**: Vite Plugin akan memvalidasi apakah `schemaVersion` tenant >= `REQUIRED_SCHEMA_VERSION` di Engine. Jika tidak cocok, build akan dihentikan secara paksa dengan pesan error yang jelas.
+- **Contoh**: `export const schemaVersion = 1;`
