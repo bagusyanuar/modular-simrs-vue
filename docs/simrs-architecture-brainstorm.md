@@ -164,6 +164,29 @@ pnpm --filter simrs build --mode base
 
 ---
 
+## 🧩 Extension Points (Extra Routes)
+
+Selain mekanisme override standar, kita memiliki mekanisme **Extension Points** menggunakan suffix `.extra.ts` untuk menangani fitur non-generic.
+
+### Mengapa butuh `.extra.ts`?
+1. **Extend Base Module**: Menambahkan sub-rute baru ke dalam modul yang sudah ada di `base` (contoh: tambah halaman "Laporan Khusus" di modul Unit) tanpa menyentuh file rute orisinalnya.
+2. **Exclusive Modules (Non-Generic)**: Mendefinisikan rute untuk modul yang benar-benar baru dan hanya ada di tenant tertentu (contoh: modul Billing di RS PKU).
+
+### Logika Resolusi (Vite Plugin)
+`tenantResolver` secara otomatis mencoba me-resolve dua file untuk setiap modul yang terdaftar di `manifest.ts`:
+- **`{module}.routes.ts`**: Router utama (dicari di tenant dulu, fallback ke base).
+- **`{module}.extra.ts`**: Router tambahan (dicari di tenant dulu, fallback ke base).
+
+Jika modul tersebut **hanya** memiliki file `.extra.ts` di folder tenant dan tidak ada `*.routes.ts` di folder `base`, maka modul tersebut bersifat **Eksklusif/Non-Generic**.
+
+### Contoh Kasus: Modul Billing (RS PKU)
+- **Path**: `_tenants/rspku/routes/billing.extra.ts`
+- **Base**: `base/routes/billing.routes.ts` (❌ Tidak ada)
+- **Manifest**: `'billing'` (✅ Terdaftar)
+- **Hasil**: Fitur Billing hanya ter-bundle dan aktif untuk RS PKU. RS lain tidak akan memiliki rute `/billing` dan kodenya ter-tree-shake sempurna.
+
+---
+
 ## 🚀 Deploy Strategy
 
 ### Rekomendasi: Per-Tenant Build
