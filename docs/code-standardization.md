@@ -9,6 +9,7 @@ Dokumen ini mendefinisikan standar koding dan arsitektur untuk pengembangan SIMR
 Pemberian nama harus deskriptif dan konsisten mengikuti pola berikut:
 
 ### **Filenames & Folders**
+
 - **Vue Components**: `UpperCamelCase.vue` (contoh: `FormInput.vue`, `UnitList.vue`).
 - **Logic & Services**: `kebab-case.ts` (contoh: `auth-service.ts`, `api-client.ts`).
 - **Suffix-based Naming**: Menggunakan suffix untuk memperjelas identitas layer:
@@ -19,6 +20,7 @@ Pemberian nama harus deskriptif dan konsisten mengikuti pola berikut:
 - **Tenant Folders**: Selalu diawali dengan underscore: `_tenants/{tenant-code}/`.
 
 ### **Variable & Code Styling**
+
 - **Types/Interfaces**: `PascalCase` dengan deskripsi jelas (contoh: `UnitParams`, `AuthResponse`).
 - **Global Constants**: `SCREAMING_SNAKE_CASE` (khusus untuk yang di-inject Vite: `__APP_VERSION__`, `__TENANT_CODE__`).
 - **Boolean Variables**: Diawali dengan is/has/should (contoh: `isLoading`, `hasPermission`).
@@ -30,7 +32,7 @@ Pemberian nama harus deskriptif dan konsisten mengikuti pola berikut:
 Struktur folder mengikuti pola **Shared Base + Tenant Overrides** untuk skalabilitas maksimal.
 
 ```bash
-├── apps/                  # Shell Applications (Next.js/Vite)
+├── apps/                  # Shell Applications (Vue 3 + Vite)
 │   └── simrs/             # Client Shell Utama
 ├── features/              # Modular Features (Pola DDD)
 │   ├── core/              # Layer 1: Business Logic & Domain Models
@@ -48,11 +50,11 @@ Struktur folder mengikuti pola **Shared Base + Tenant Overrides** untuk skalabil
 
 Kita membagi tanggung jawab kode ke dalam 3 layer utama untuk memastikan kode mudah di-test dan tidak saling ketergantungan secara acak.
 
-| Layer | Lokasi | Tanggung Jawab | Aturan Ketat |
-| :--- | :--- | :--- | :--- |
-| **Core** | `features/core` | Domain model, Interfaces, & Business Use-cases. | **Zero Dependency**: Tidak boleh meng-import dari Infra atau Presentation. |
-| **Infrastructure** | `features/infrastructure` | Implementasi Repository, Axios calls, Web Storage, & Data Mappers. | Mengimplementasikan Interface yang didefinisikan di Core. |
-| **Presentation** | `features/presentation` | Vue Components, Composables, UI Logic, & Tenant Routes. | **Consumer**: Menggunakan Usecase dari Core untuk memproses data. |
+| Layer              | Lokasi                    | Tanggung Jawab                                                     | Aturan Ketat                                                               |
+| :----------------- | :------------------------ | :----------------------------------------------------------------- | :------------------------------------------------------------------------- |
+| **Core**           | `features/core`           | Domain model, Interfaces, & Business Use-cases.                    | **Zero Dependency**: Tidak boleh meng-import dari Infra atau Presentation. |
+| **Infrastructure** | `features/infrastructure` | Implementasi Repository, Axios calls, Web Storage, & Data Mappers. | Mengimplementasikan Interface yang didefinisikan di Core.                  |
+| **Presentation**   | `features/presentation`   | Vue Components, Composables, UI Logic, & Tenant Routes.            | **Consumer**: Menggunakan Usecase dari Core untuk memproses data.          |
 
 ---
 
@@ -61,13 +63,16 @@ Kita membagi tanggung jawab kode ke dalam 3 layer utama untuk memastikan kode mu
 Prinsip utama kita adalah **DRY (Don't Repeat Yourself)** di level Base, namun **Safe-Overriding** di level Tenant.
 
 ### **Base vs Extension**
+
 - **Sacret Base**: Folder `base/` berisi logika yang 80-90% sama di semua RS. Jika ada perubahan yang bersifat umum, perbaiki di sini.
 - **Extension Points (`.extra.ts`)**: Jangan memodifikasi routing produk hanya untuk menambah tombol khusus di satu RS. Gunakan `.extra.ts` di folder tenant untuk "menyuntikkan" fitur tambahan.
 
 ### **Tree-Shaking by Manifest**
+
 Efisiensi build ditentukan oleh `manifest.ts`. Gunakan manifest untuk memilih modul mana yang benar-benar aktif. Modul yang tidak terdaftar tidak akan di-bundle ke dalam aplikasi tenant tersebut.
 
 ### **Component Reusability**
+
 - Gunakan `@genrs/ui` (Shadcn-vue) untuk komponen UI dasar.
 - Buat folder `components/` di level feature hanya jika komponen tersebut bersifat domain-specific (contoh: `UnitSelector.vue`).
 
@@ -76,11 +81,13 @@ Efisiensi build ditentukan oleh `manifest.ts`. Gunakan manifest untuk memilih mo
 ## 5. Component Strategy
 
 ### Approach
+
 - **Custom-Built Components**: Mengutamakan pembuatan komponen secara manual/custom untuk mendapatkan kontrol penuh atas markup dan styling.
 - **AI-Powered Development**: Mengoptimalkan penggunaan AI (seperti Antigravity) untuk mempercepat scaffolding dan logika komponen tanpa harus bergantung pada library eksternal yang berat.
 
 ### Decision: Tidak menggunakan Shadcn/UI
-- **Alasan Overhead**: Library seperti Shadcn memerlukan proses *restyling* ulang yang masif agar sesuai dengan brand identity SIMRS, yang justru menambah beban kerja (overhead).
+
+- **Alasan Overhead**: Library seperti Shadcn memerlukan proses _restyling_ ulang yang masif agar sesuai dengan brand identity SIMRS, yang justru menambah beban kerja (overhead).
 - **Efisiensi Design System**: Lebih efisien membangun dari nol menggunakan Tailwind v4 yang disesuaikan langsung dengan token design system kita.
 - **Bundle Size**: Menjaga bundle size tetap minimal dengan hanya menyertakan kode yang benar-benar digunakan.
 
@@ -99,5 +106,5 @@ Efisiensi build ditentukan oleh `manifest.ts`. Gunakan manifest untuk memilih mo
 - **Consistency over Preference**: Kita lebih mengutamakan konsistensi pola di seluruh project daripada preferensi gaya koding pribadi.
 - **Centralized Logic**: Logika krusial seperti Schema Validation, Fetching mechanism, dan Global Config harus dipusatkan di satu tempat (`core` atau `packages`) untuk kemudahan maintenance.
 - **Separation of Concerns**: Pemisahan yang tegas antara **UI (Presentation)**, **Logic (Core)**, dan **Data (Infrastructure)**. Tidak boleh ada logika API di dalam file `.vue`.
-- **Scalable by Default**: Arsitektur didesain untuk menangani skalabilitas ekstrim tanpa terjebak dalam *over-engineering* yang melelahkan.
+- **Scalable by Default**: Arsitektur didesain untuk menangani skalabilitas ekstrim tanpa terjebak dalam _over-engineering_ yang melelahkan.
 - **Developer Experience (DX) Matters**: Struktur monorepo ini harus ramah untuk developer baru (fast onboarding) dan tetap menyenangkan untuk dimaintain dalam jangka panjang.
