@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { execSync } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -11,9 +12,39 @@ const RESOLVED_VIRTUAL_ID = `\0${VIRTUAL_MODULE_ID}`;
  * Vite Plugin for Multi-Tenant File Resolution
  * 1. Resolves @page/* to either _tenants/{tenantCode}/* or base/*
  * 2. Generates virtual:page-registry for optimal tree-shaking
+ * 3. Injects Hybrid Versioning Metadata
  */
 export function tenantResolver(moduleDir: string, tenantCode: string) {
   const presentationBase = path.resolve(__dirname, 'src', moduleDir);
+
+  // Helper: Ambil versi dari root package.json + git revision tenant
+  function getAppVersion() {
+    try {
+      const pkgPath = path.resolve(__dirname, '../../package.json');
+      const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+      const baseVersion = pkg.version || '0.0.0';
+
+      let revision = 'rev-0';
+      if (tenantCode !== 'base') {
+        try {
+          // Hitung jumlah commit di folder tenant sebagai revision
+          const tenantPath = path.join('src', moduleDir, '_tenants', tenantCode);
+          const count = execSync(`git rev-list --count HEAD -- ${tenantPath}`, {
+            encoding: 'utf-8',
+          }).trim();
+          revision = `rev-${count}`;
+        } catch (e) {
+          revision = 'rev-unknown';
+        }
+      }
+
+      return `${baseVersion}+${tenantCode}.${revision}`;
+    } catch (e) {
+      return '0.0.0-unknown';
+    }
+  }
+
+  const appVersion = getAppVersion();
 
   // Helper: resolve path ke tenant atau fallback ke base
   function resolvePath(subPath: string): string | null {
@@ -99,6 +130,15 @@ export function tenantResolver(moduleDir: string, tenantCode: string) {
 
   return {
     name: 'tenant-resolver',
+
+    config() {
+      return {
+        define: {
+          __APP_VERSION__: JSON.stringify(appVersion),
+          __TENANT_CODE__: JSON.stringify(tenantCode),
+        },
+      };
+    },
 
     resolveId(id: string) {
       if (id === VIRTUAL_MODULE_ID) return RESOLVED_VIRTUAL_ID;

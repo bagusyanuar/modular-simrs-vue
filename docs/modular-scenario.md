@@ -109,3 +109,28 @@ Modul **Billing** dan **ExtraPage** yang hanya ada di folder `_tenants/rspku/` b
 
 > [!TIP]
 > Dengan hasil ini, performa aplikasi tetap maksimal meskipun jumlah tenant bertambah ribuan, karena browser user hanya mengunduh kode yang bener-bener dia butuhkan sesuai manifest yang disewa.
+
+---
+
+## 🏷️ Strategi Versioning
+
+Mengingat arsitektur kita menggabungkan satu **Base Engine** dengan ratusan **Tenant Overrides**, kita menggunakan strategi **Hybrid Versioning**.
+
+### 1. Engine & Base Product (SemVer)
+Didefinisikan di `package.json` root. Mengikuti aturan Semantic Versioning:
+- **Major**: Perubahan arsitektur besar (misal: ganti build tool, upgrade framework mayor).
+- **Minor**: Penambahan fitur baru di level `base` yang tersedia untuk semua tenant.
+- **Patch**: Perbaikan bug pada logic generic di `base/`.
+
+### 2. Tenant Revision (The Suffix)
+Setiap tenant tidak memiliki SemVer mandiri, melainkan menggunakan **Revision Identifier** yang menempel pada versi base.
+- **Format**: `v[BaseVersion]+[TenantCode].rev-[Count]`
+- **Contoh**: `v2.4.1+rspku.rev-12`
+- **Kegunaan**: Melacak sudah berapa kali folder `_tenants/rspku` mengalami perubahan tanpa harus menaikkan versi produk utama.
+
+### 3. Git Tagging Convention
+- **Produk**: `base-v2.1.0` (Titik stabil product roadmap).
+- **Deployment**: `deploy/[tenant-code]/[yyyy-mm-dd]` (Snapshot rilis ke server client).
+
+### 4. Manifest Schema Version
+Setiap file `manifest.ts` disarankan memiliki property `schemaVersion: number`. Ini berguna untuk mendeteksi apakah struktur manifest suatu tenant masih kompatibel dengan cara baca `tenant-resolver` (Vite Plugin) versi terbaru.

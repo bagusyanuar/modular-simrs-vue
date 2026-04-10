@@ -16,3 +16,7 @@ declare module 'virtual:page-registry' {
   import type { RouteRecordRaw } from 'vue-router';
   export const moduleLibrary: Record<string, Array<Record<string, RouteRecordRaw[]>>>;
 }
+
+// Global Versioning Constants (Injected by vite-plugin-tenant)
+declare const __APP_VERSION__: string;
+declare const __TENANT_CODE__: string;
