@@ -73,7 +73,20 @@ Efisiensi build ditentukan oleh `manifest.ts`. Gunakan manifest untuk memilih mo
 
 ---
 
-## 5. Deployment & Versioning Standards
+## 5. Component Strategy
+
+### Approach
+- **Custom-Built Components**: Mengutamakan pembuatan komponen secara manual/custom untuk mendapatkan kontrol penuh atas markup dan styling.
+- **AI-Powered Development**: Mengoptimalkan penggunaan AI (seperti Antigravity) untuk mempercepat scaffolding dan logika komponen tanpa harus bergantung pada library eksternal yang berat.
+
+### Decision: Tidak menggunakan Shadcn/UI
+- **Alasan Overhead**: Library seperti Shadcn memerlukan proses *restyling* ulang yang masif agar sesuai dengan brand identity SIMRS, yang justru menambah beban kerja (overhead).
+- **Efisiensi Design System**: Lebih efisien membangun dari nol menggunakan Tailwind v4 yang disesuaikan langsung dengan token design system kita.
+- **Bundle Size**: Menjaga bundle size tetap minimal dengan hanya menyertakan kode yang benar-benar digunakan.
+
+---
+
+## 6. Deployment & Versioning Standards
 
 - **Hybrid Versioning**: Versi aplikasi adalah gabungan dari `Base Semver` + `Tenant Revision`.
   - Format: `v[Major.Minor.Patch]+[TenantCode].rev-[GitCount]`
