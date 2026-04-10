@@ -12,4 +12,11 @@ export class ApiUnitRepository implements UnitRepository {
   create(form: UnitForm): Promise<Unit> {
     throw new Error('Method not implemented.');
   }
+  update(id: string, form: UnitForm): Promise<Unit> {
+    throw new Error('Method not implemented.');
+    // axios
+  }
+  delete(id: string): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
 }
