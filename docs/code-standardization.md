@@ -91,3 +91,13 @@ Efisiensi build ditentukan oleh `manifest.ts`. Gunakan manifest untuk memilih mo
 - **Hybrid Versioning**: Versi aplikasi adalah gabungan dari `Base Semver` + `Tenant Revision`.
   - Format: `v[Major.Minor.Patch]+[TenantCode].rev-[GitCount]`
 - **Safeguard**: Setiap tenant wajib mencantumkan `schemaVersion` di manifest. Jika engine di-upgrade ke struktur baru, build tenant lama akan otomatis error untuk mencegah crash di produksi.
+
+---
+
+## 7. Key Principles
+
+- **Consistency over Preference**: Kita lebih mengutamakan konsistensi pola di seluruh project daripada preferensi gaya koding pribadi.
+- **Centralized Logic**: Logika krusial seperti Schema Validation, Fetching mechanism, dan Global Config harus dipusatkan di satu tempat (`core` atau `packages`) untuk kemudahan maintenance.
+- **Separation of Concerns**: Pemisahan yang tegas antara **UI (Presentation)**, **Logic (Core)**, dan **Data (Infrastructure)**. Tidak boleh ada logika API di dalam file `.vue`.
+- **Scalable by Default**: Arsitektur didesain untuk menangani skalabilitas ekstrim tanpa terjebak dalam *over-engineering* yang melelahkan.
+- **Developer Experience (DX) Matters**: Struktur monorepo ini harus ramah untuk developer baru (fast onboarding) dan tetap menyenangkan untuk dimaintain dalam jangka panjang.
