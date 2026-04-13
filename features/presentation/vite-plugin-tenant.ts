@@ -180,14 +180,8 @@ export function tenantResolver(moduleDir: string, tenantCode: string) {
       // Logic pencarian rute: fitur-flat (unit/unit.routes) atau legacy
       const mainPath = resolvePath(`${mod.name}/${mod.name}.routes`);
       const featureEntries: string[] = [];
-      
-      if (mainPath) {
-        const varName = `module_${i}`;
-        imports.push(`import * as ${varName} from '${mainPath}';`);
-        featureEntries.push(varName);
-      }
 
-      // Check for feature-specific extra routes in tenant folder
+      // 1. Extra: Resolve tenant-specific extra routes if they exist (PRIORITY)
       if (tenantCode !== 'base') {
         const featureExtraPath = path.join(presentationBase, '_tenants', tenantCode, mod.name, 'extra.routes.ts').replace(/\\/g, '/');
         if (existsSync(featureExtraPath)) {
@@ -195,6 +189,13 @@ export function tenantResolver(moduleDir: string, tenantCode: string) {
           imports.push(`import * as ${extraVarName} from '${featureExtraPath}';`);
           featureEntries.push(extraVarName);
         }
+      }
+
+      // 2. Primary: Resolve main feature routes (Base/Archive version)
+      if (mainPath) {
+        const varName = `module_${i}`;
+        imports.push(`import * as ${varName} from '${mainPath}';`);
+        featureEntries.push(varName);
       }
 
       if (featureEntries.length > 0) {

@@ -87,7 +87,24 @@ export const activeModules = [
 ];
 ```
 
+---
+
+## 6. Strategi Prioritas & Override (Rute)
+
+Sistem menggunakan **Solusi 2 (Override/Merging)** untuk menangani konflik rute antara `base` dan kustoman tenant.
+
+### Prinsip Kerja:
+Jika ada rute dengan **path yang sama** antara `base` dan `extra.routes.ts`, maka rute milik **tenant (Extra) yang akan menang**. Ini memungkinkan RS untuk memiliki tampilan kustom pada halaman tertentu tapi tetap menggunakan fitur standar pada halaman lainnya.
+
+### Urutan Prioritas (Top-to-Bottom):
+1.  🥇 **Global Extra Routes**: Rute di root tenant (`_tenants/rspku/extra.routes.ts`).
+2.  🥈 **Feature Extra Routes**: Rute kustom per fitur (`_tenants/rspku/unit/extra.routes.ts`).
+3.  🥉 **Base / Archive Routes**: Rute standar produk dari folder `base` atau versi arsip.
+
+---
+
 ## Prinsip Penting:
 1. **Vertical Slice**: Satu fitur, satu nafas di semua layer.
 2. **No Conflict**: Gunakan `_archives` untuk pemisahan data lama agar folder `base` tetap bersih.
 3. **Automated**: Gunakan script scaffolder agar struktur folder selalu konsisten dan sesuai standar arsitektur.
+4. **Override Strategy**: Rute di `extra.routes.ts` selalu diutamakan untuk mendukung kustomisasi tanpa breaking change.

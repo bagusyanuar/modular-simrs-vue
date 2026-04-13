@@ -7,7 +7,21 @@ import { createSSOGuard } from '@genrs/auth';
 function resolveRoutes(): RouteRecordRaw[] {
   const aggregatedRoutes: RouteRecordRaw[] = [];
 
-  // 1. Process Standard Active Modules from Manifest
+  // 1. Process Global Tenant Extra Routes (HIGHEST PRIORITY)
+  if (moduleLibrary['extra']) {
+    try {
+      moduleLibrary['extra'].forEach((exp: any) => {
+        const routes = Object.values(exp).find((v) => Array.isArray(v)) as RouteRecordRaw[];
+        if (routes) {
+          aggregatedRoutes.push(...routes);
+        }
+      });
+    } catch (e) {
+      console.error('[AppRouter] Failed to load global extra routes', e);
+    }
+  }
+
+  // 2. Process Standard Active Modules from Manifest
   activeModules.forEach((mod) => {
     try {
       const moduleExports = moduleLibrary[mod.name];
@@ -24,20 +38,6 @@ function resolveRoutes(): RouteRecordRaw[] {
       console.error(`[AppRouter] Failed to load routes for module: ${mod.name}`, e);
     }
   });
-
-  // 2. Process Global Tenant Extra Routes (Automatically detected by plugin)
-  if (moduleLibrary['extra']) {
-    try {
-      moduleLibrary['extra'].forEach((exp: any) => {
-        const routes = Object.values(exp).find((v) => Array.isArray(v)) as RouteRecordRaw[];
-        if (routes) {
-          aggregatedRoutes.push(...routes);
-        }
-      });
-    } catch (e) {
-      console.error('[AppRouter] Failed to load global extra routes', e);
-    }
-  }
 
   return aggregatedRoutes;
 }
