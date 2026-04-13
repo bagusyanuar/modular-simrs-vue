@@ -32,17 +32,8 @@ function scaffold() {
       console.log(`✅ Created tenant root: ${path.relative(rootDir, tenantDir)}`);
     }
 
-    // Special logic for Presentation: Create helper folders and Manifest
+    // Special logic for Presentation: Create Manifest from Base
     if (layer === 'presentation') {
-      const helperFolders = ['components', 'composables'];
-      helperFolders.forEach(sub => {
-        const subDir = path.join(tenantDir, sub);
-        if (!existsSync(subDir)) {
-          mkdirSync(subDir, { recursive: true });
-        }
-      });
-      console.log(`✅ Created local helper folders (Level 2).`);
-
       // CREATE MANIFEST (SMART CLONE FROM BASE)
       const baseManifestPath = path.join(layerBase, 'base/manifest.ts');
       const tenantManifestPath = path.join(tenantDir, 'manifest.ts');
