@@ -89,7 +89,22 @@ export const activeModules = [
 
 ---
 
-## 6. Strategi Prioritas & Override (Rute)
+## 6. Menghapus Arsip Versi (Cleanup)
+
+Jika semua tenant sudah dipastikan bermigrasi ke versi terbaru dan folder arsip sudah tidak dibutuhkan lagi, gunakan perintah cleanup:
+
+```bash
+pnpm create:cleanup [nama-modul] [nama-fitur] [versi]
+```
+
+*Contoh:* `pnpm create:cleanup simrs staff v1.1.0`
+
+### Fitur Keamanan (Safety Check):
+Script ini memiliki fitur validasi otomatis. Jika masih ada satu saja tenant yang menggunakan versi tersebut di `manifest.ts` mereka, proses penghapusan akan **dibatalkan secara otomatis** untuk mencegah terjadinya error build pada tenant tersebut.
+
+---
+
+## 7. Strategi Prioritas & Override (Rute)
 
 Sistem menggunakan **Solusi 2 (Override/Merging)** untuk menangani konflik rute antara `base` dan kustoman tenant.
 
@@ -108,3 +123,4 @@ Jika ada rute dengan **path yang sama** antara `base` dan `extra.routes.ts`, mak
 2. **No Conflict**: Gunakan `_archives` untuk pemisahan data lama agar folder `base` tetap bersih.
 3. **Automated**: Gunakan script scaffolder agar struktur folder selalu konsisten dan sesuai standar arsitektur.
 4. **Override Strategy**: Rute di `extra.routes.ts` selalu diutamakan untuk mendukung kustomisasi tanpa breaking change.
+5. **Safety First**: Gunakan `create:cleanup` untuk menghapus archive dengan validasi penggunaan otomatis.

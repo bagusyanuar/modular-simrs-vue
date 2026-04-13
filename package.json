@@ -13,6 +13,7 @@
     "create:feature": "node scripts/scaffold-feature.mjs",
     "create:custom": "node scripts/scaffold-tenant-custom.mjs",
     "create:archive": "node scripts/quarantine-feature.mjs",
+    "create:cleanup": "node scripts/cleanup-archive.mjs",
     "storybook": "pnpm run --filter=@genrs/ui storybook",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
