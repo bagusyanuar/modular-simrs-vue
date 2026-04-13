@@ -20,3 +20,4 @@ declare module 'virtual:page-registry' {
 // Global Versioning Constants (Injected by vite-plugin-tenant)
 declare const __APP_VERSION__: string;
 declare const __TENANT_CODE__: string;
+declare const __MANIFEST__: any;

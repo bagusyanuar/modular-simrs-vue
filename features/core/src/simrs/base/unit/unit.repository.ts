@@ -1,0 +1,10 @@
+import type { Unit } from './unit.model';
+import type { UnitForm, UnitParams } from './unit.input';
+
+export interface UnitRepository {
+  find(params: UnitParams): Promise<Unit[]>;
+  findById(id: string): Promise<Unit>;
+  create(form: UnitForm): Promise<Unit>;
+  update(id: string, form: UnitForm): Promise<Unit>;
+  delete(id: string): Promise<void>;
+}

@@ -17,15 +17,13 @@ if (!featureName) {
 const layers = {
   presentation: {
     base: `features/presentation/src/${moduleName}/base`,
-    subfolders: ['pages', 'routes', 'components'],
+    subfolders: ['components', 'composables'],
   },
   core: {
     base: `features/core/src/${moduleName}/base`,
-    subfolders: ['domains', 'usecases', 'repositories'],
   },
   infrastructure: {
     base: `features/infrastructure/src/${moduleName}/base`,
-    subfolders: ['repositories', 'mappers', 'providers', 'schemas', 'keys'],
   },
 };
 
@@ -42,31 +40,26 @@ function scaffold() {
       console.log(`✅ Created feature root: ${path.relative(rootDir, featureBaseDir)}`);
     }
 
-    config.subfolders.forEach(sub => {
-      const subDir = path.join(featureBaseDir, sub);
-      if (!existsSync(subDir)) {
-        mkdirSync(subDir, { recursive: true });
-        console.log(`✅ Created directory: ${path.relative(rootDir, subDir)}`);
-      }
-
-      // Create index.ts for barrel export
-      const indexPath = path.join(subDir, 'index.ts');
-      if (!existsSync(indexPath)) {
-        writeFileSync(indexPath, '// export * from \'./...\';\n');
-        console.log(`✅ Created barrel: ${path.relative(rootDir, indexPath)}`);
-      }
-    });
+    // Create subfolders if they exist (Level 2 for Presentation)
+    if (config.subfolders) {
+      config.subfolders.forEach(sub => {
+        const subDir = path.join(featureBaseDir, sub);
+        if (!existsSync(subDir)) {
+          mkdirSync(subDir, { recursive: true });
+          console.log(`✅ Created local helper: ${path.relative(rootDir, subDir)}`);
+        }
+      });
+    }
 
     // Create root index.ts for the feature
     const rootIndexPath = path.join(featureBaseDir, 'index.ts');
     if (!existsSync(rootIndexPath)) {
-        const exports = config.subfolders.map(sub => `export * from './${sub}';`).join('\n');
-        writeFileSync(rootIndexPath, `${exports}\n`);
-        console.log(`✅ Created root feature barrel: ${path.relative(rootDir, rootIndexPath)}`);
+        writeFileSync(rootIndexPath, `// export * from './${featureName}.model';\n`);
+        console.log(`✅ Created feature barrel: ${path.relative(rootDir, rootIndexPath)}`);
     }
   });
 
-  console.log('\n✨ Scaffolding Berhasil! Sekarang pindahkan file Bosku ke folder baru tersebut.');
+  console.log('\n✨ Scaffolding Berhasil! Sekarang buat file Bosku di folder baru tersebut.');
 }
 
 scaffold();

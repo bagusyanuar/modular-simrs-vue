@@ -4,159 +4,186 @@ import { fileURLToPath } from 'url';
 import { execSync } from 'child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(__dirname, '../..');
 
 const VIRTUAL_MODULE_ID = 'virtual:page-registry';
 const RESOLVED_VIRTUAL_ID = `\0${VIRTUAL_MODULE_ID}`;
 
+interface ModuleConfig {
+  name: string;
+  version: string;
+}
+
 /**
- * Vite Plugin for Multi-Tenant File Resolution
- * 1. Resolves @page/* to either _tenants/{tenantCode}/* or base/*
- * 2. Generates virtual:page-registry for optimal tree-shaking
- * 3. Injects Hybrid Versioning Metadata
+ * Vite Plugin for Multi-Tenant File Resolution (Versioned Edition)
+ * 1. Resolves @page/* based on manifest.ts versioning
+ * 2. Priorities: Tenant Extension > Legacy Folder > Base Latest
+ * 3. Generates virtual:page-registry for optimal tree-shaking
  */
 export function tenantResolver(moduleDir: string, tenantCode: string) {
   const REQUIRED_SCHEMA_VERSION = 1;
   const presentationBase = path.resolve(__dirname, 'src', moduleDir);
 
-  // Helper: Ambil versi dari root package.json + git revision tenant
+  // Cache manifest data
+  let _cachedModules: ModuleConfig[] | null = null;
+
   function getAppVersion() {
     try {
-      const pkgPath = path.resolve(__dirname, '../../package.json');
+      const pkgPath = path.resolve(rootDir, 'package.json');
       const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
       const baseVersion = pkg.version || '0.0.0';
 
       let revision = 'rev-0';
       if (tenantCode !== 'base') {
         try {
-          // Hitung jumlah commit di folder tenant sebagai revision
-          const tenantPath = path.join('src', moduleDir, '_tenants', tenantCode);
-          const count = execSync(`git rev-list --count HEAD -- ${tenantPath}`, {
-            encoding: 'utf-8',
-          }).trim();
-          revision = `rev-${count}`;
+          const tenantPath = path.join(presentationBase, '_tenants', tenantCode);
+          if (existsSync(tenantPath)) {
+            const count = execSync(`git rev-list --count HEAD -- "${tenantPath}"`, {
+              encoding: 'utf-8',
+            }).trim();
+            revision = `rev-${count}`;
+          }
         } catch (e) {
           revision = 'rev-unknown';
         }
       }
 
-      return `${baseVersion}+${tenantCode}.${revision}`;
+      // Detect if any module is an archive version
+      const activeModules = getActiveModules();
+      const hasArchives = activeModules.some(m => m.version !== 'latest');
+      const suffix = hasArchives ? '.m' : '';
+
+      return `${baseVersion}+${tenantCode}.${revision}${suffix}`;
     } catch (e) {
       return '0.0.0-unknown';
     }
   }
 
-  const appVersion = getAppVersion();
+  // Helper: Ambil list modul aktif (Format Baru: Object Array)
+  function getActiveModules(): ModuleConfig[] {
+    if (_cachedModules) return _cachedModules;
 
-  // Helper: resolve path ke tenant atau fallback ke base
-  function resolvePath(subPath: string): string | null {
-    const extensions = ['.vue', '.ts'];
-    const findIn = (dir: string) => {
-      for (const ext of extensions) {
-        const file = path
-          .join(
-            presentationBase,
-            dir,
-            subPath.endsWith(ext) ? subPath : `${subPath}${ext}`
-          )
-          .replace(/\\/g, '/');
-        if (existsSync(file)) return file;
-      }
-      return null;
-    };
-
-    if (tenantCode !== 'base') {
-      const tenantFile = findIn(`_tenants/${tenantCode}`);
-      if (tenantFile) return tenantFile;
+    const manifestRelativePath = tenantCode !== 'base' 
+        ? `_tenants/${tenantCode}/manifest` 
+        : `base/manifest`;
+    
+    let manifestPath = path.join(presentationBase, `${manifestRelativePath}.ts`).replace(/\\/g, '/');
+    
+    if (!existsSync(manifestPath)) {
+        // Fallback to base manifest if tenant manifest missing
+        manifestPath = path.join(presentationBase, 'base/manifest.ts').replace(/\\/g, '/');
     }
-    return findIn('base');
-  }
-
-  // Helper: Ambil list modul aktif dari manifest.ts tenant/base lewat FS
-  function getActiveModules(): string[] {
-    const manifestPath = resolvePath('manifest');
-    if (!manifestPath || !existsSync(manifestPath)) return [];
 
     try {
       const content = readFileSync(manifestPath, 'utf-8');
-      // Regex untuk menangkap isi array activeModules = [ ... ]
-      const match = content.match(/activeModules\s*=\s*\[([\s\S]*?)\]/);
-      if (!match) return [];
+      const modules: ModuleConfig[] = [];
+      
+      // Regex Robust untuk menangkap { name: '...', version: '...' }
+      const regex = /\{\s*name:\s*['"](.*?)['"]\s*,\s*version:\s*['"](.*?)['"]\s*\}/g;
+      let match;
+      while ((match = regex.exec(content)) !== null) {
+        modules.push({ name: match[1], version: match[2] });
+      }
 
-      return match[1]
-        .split(',')
-        .map((m) => m.trim().replace(/['",]/g, ''))
-        .filter(Boolean);
+      _cachedModules = modules;
+      return modules;
     } catch (e) {
       console.error('[TenantResolver] Failed to parse manifest:', e);
       return [];
     }
   }
 
-  // Helper: Validasi kompatibilitas tenant manifest
+  // CORE: Resolusi path dengan kesadaran Versi
+  function resolvePath(subPath: string): string | null {
+    const extensions = ['.vue', '.ts'];
+    
+    // Tentukan Nama Fitur (Biasanya segmen pertama path)
+    const parts = subPath.split('/');
+    let featureName = parts[0];
+    
+    // Handle mapping khusus untuk routes (jika masih pakai pola lama routes/unit.routes)
+    if (featureName === 'routes' || featureName === 'components') {
+        featureName = parts[1]?.split('.')[0] || '';
+    }
+
+    const configs = getActiveModules();
+    const config = configs.find(m => m.name === featureName);
+    const version = config?.version || 'latest';
+
+    const findInDir = (dir: string, customSubPath?: string) => {
+      const targetPath = customSubPath || subPath;
+      for (const ext of extensions) {
+        const file = path
+          .join(presentationBase, dir, targetPath.endsWith(ext) ? targetPath : `${targetPath}${ext}`)
+          .replace(/\\/g, '/');
+        if (existsSync(file)) return file;
+      }
+      return null;
+    };
+
+    // Hirarki Resolusi:
+    // 1. Tenant Override (Highest Priority)
+    if (tenantCode !== 'base') {
+      const tenantFile = findInDir(`_tenants/${tenantCode}`);
+      if (tenantFile) return tenantFile;
+    }
+
+    // 2. Legacy Archive (Jika versi spesifik diminta dan bukan 'latest')
+    if (version !== 'latest') {
+      // Archive structure is usually flat inside version folder, 
+      // so we strip the feature name prefix (e.g., '@page/unit/Unit.vue' -> 'Unit.vue')
+      const archiveSubPath = subPath.startsWith(`${featureName}/`) 
+        ? subPath.replace(`${featureName}/`, '') 
+        : subPath;
+
+      const archiveFile = findInDir(`_archives/${featureName}/v${version}`, archiveSubPath);
+      if (archiveFile) return archiveFile;
+    }
+
+    // 3. Base Latest (Default/Fallback)
+    const baseFile = findInDir('base');
+    
+    // Log info if we are falling back from a specific version that wasn't found
+    if (version !== 'latest' && baseFile) {
+        console.warn(`[TenantResolver] ⚠️ Version "${version}" for module "${featureName}" not found in archives. Falling back to [latest].`);
+    }
+
+    return baseFile;
+  }
+
   function validateSchema() {
     if (tenantCode === 'base') return;
-
-    const manifestPath = resolvePath('manifest');
-    if (!manifestPath || !existsSync(manifestPath)) return;
+    const manifestPath = path.join(presentationBase, `_tenants/${tenantCode}/manifest.ts`).replace(/\\/g, '/');
+    if (!existsSync(manifestPath)) return;
 
     try {
       const content = readFileSync(manifestPath, 'utf-8');
-      // Regex untuk menangkap export const schemaVersion = X
       const match = content.match(/schemaVersion\s*=\s*(\d+)/);
       const version = match ? parseInt(match[1], 10) : 0;
 
       if (version < REQUIRED_SCHEMA_VERSION) {
-        throw new Error(
-          `\n[TenantResolver] ❌ Incompatible Schema Version for tenant "${tenantCode}"\n` +
-            `   Required: v${REQUIRED_SCHEMA_VERSION}\n` +
-            `   Found:    v${version}\n\n` +
-            `   Mohon update file manifest.ts di: _tenants/${tenantCode}/manifest.ts\n` +
-            `   Pastikan kode tenant sudah kompatibel dengan Base Engine terbaru.\n`
-        );
+        throw new Error(`[TenantResolver] ❌ Incompatible Schema Version for tenant "${tenantCode}"`);
       }
     } catch (e) {
-      if (
-        e instanceof Error &&
-        e.message.includes('Incompatible Schema Version')
-      ) {
-        throw e;
-      }
-      console.warn(
-        `[TenantResolver] Could not validate schema for ${tenantCode}:`,
-        e
-      );
+        // Silently fail or rethrow if schema mismatch
     }
   }
 
-  // Jalankan validasi diawal
   validateSchema();
 
-  // Generate kode virtual module secara statis untuk tree-shaking optimal
   function generateRegistry(): string {
-    const activeModules = getActiveModules();
+    const modules = getActiveModules();
     const imports: string[] = [];
     const entries: string[] = [];
 
-    activeModules.forEach((moduleName, i) => {
-      const mainPath = resolvePath(`routes/${moduleName}.routes`);
-      const extraPath = resolvePath(`routes/${moduleName}.extra`);
-
-      const mainVar = `main_${i}`;
-      const extraVar = `extra_${i}`;
-      const parts: string[] = [];
-
+    modules.forEach((mod, i) => {
+      // Logic pencarian rute: fitur-flat (unit/unit.routes) atau legacy
+      const mainPath = resolvePath(`${mod.name}/${mod.name}.routes`);
+      
       if (mainPath) {
-        imports.push(`import * as ${mainVar} from '${mainPath}';`);
-        parts.push(mainVar);
-      }
-
-      if (extraPath) {
-        imports.push(`import * as ${extraVar} from '${extraPath}';`);
-        parts.push(extraVar);
-      }
-
-      if (parts.length > 0) {
-        entries.push(`  "${moduleName}": [${parts.join(', ')}]`);
+        const varName = `module_${i}`;
+        imports.push(`import * as ${varName} from '${mainPath}';`);
+        entries.push(`  "${mod.name}": [${varName}]`);
       }
     });
 
@@ -170,28 +197,26 @@ export function tenantResolver(moduleDir: string, tenantCode: string) {
 
   return {
     name: 'tenant-resolver',
-
     config() {
+      const activeModules = getActiveModules();
+      const versionStr = getAppVersion();
+      
       return {
         define: {
-          __APP_VERSION__: JSON.stringify(appVersion),
+          __APP_VERSION__: JSON.stringify(versionStr),
           __TENANT_CODE__: JSON.stringify(tenantCode),
+          __MANIFEST__: JSON.stringify(activeModules),
         },
       };
     },
-
     resolveId(id: string) {
       if (id === VIRTUAL_MODULE_ID) return RESOLVED_VIRTUAL_ID;
       if (id.startsWith('@page/')) {
-        const page = id.replace('@page/', '');
-        return resolvePath(page);
+        return resolvePath(id.replace('@page/', ''));
       }
     },
-
     load(id: string) {
-      if (id === RESOLVED_VIRTUAL_ID) {
-        return generateRegistry();
-      }
+      if (id === RESOLVED_VIRTUAL_ID) return generateRegistry();
     },
   };
 }

@@ -9,8 +9,8 @@
     "dev:auth": "turbo run dev --filter=@genrs/auth-app",
     "dev:simrs": "turbo run dev --filter=@genrs/simrs-app --filter=@genrs/auth-app --",
     "create:tenant": "node scripts/create-tenant.mjs",
-    "create:tenant:core": "node scripts/create-tenant-core.mjs",
-    "create:tenant:infra": "node scripts/create-tenant-infra.mjs",
+    "create:feature": "node scripts/scaffold-feature.mjs",
+    "create:archive": "node scripts/quarantine-feature.mjs",
     "storybook": "pnpm run --filter=@genrs/ui storybook",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

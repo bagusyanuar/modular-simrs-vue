@@ -8,6 +8,9 @@
     "declaration": false,
     "declarationMap": false,
     "sourceMap": false,
+    "paths": {
+      "@page/*": ["../../features/presentation/src/simrs/base/*"]
+    },
 
     /* Linting */
     "strict": true,

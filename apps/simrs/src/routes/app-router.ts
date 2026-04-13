@@ -7,10 +7,10 @@ import { createSSOGuard } from '@genrs/auth';
 function resolveRoutes(): RouteRecordRaw[] {
   const aggregatedRoutes: RouteRecordRaw[] = [];
 
-  activeModules.forEach((moduleName) => {
-    const moduleExports = moduleLibrary[moduleName];
+  activeModules.forEach((mod) => {
+    const moduleExports = moduleLibrary[mod.name];
     if (moduleExports) {
-      moduleExports.forEach((exp: Record<string, unknown>) => {
+      moduleExports.forEach((exp: any) => {
         const routes = Object.values(exp)[0] as RouteRecordRaw[];
         if (Array.isArray(routes)) {
           aggregatedRoutes.push(...routes);

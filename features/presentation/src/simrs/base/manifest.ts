@@ -3,7 +3,9 @@
  * Mendaftarkan modul-modul yang aktif secara default di SIMRS.
  */
 export const activeModules = [
-  'dashboard',
-  'unit',
-  'staff',
+  { name: 'dashboard', version: 'latest' },
+  { name: 'unit', version: 'latest' },
+  { name: 'staff', version: 'latest' },
 ];
+
+export const schemaVersion = 1;
