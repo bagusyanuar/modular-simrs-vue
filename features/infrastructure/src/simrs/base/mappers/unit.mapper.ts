@@ -1,4 +1,4 @@
-import { UnitForm, UnitParams } from '@genrs/core/simrs/base/domains/inputs';
+import { UnitForm, UnitParams } from '@genrs/core/simrs/base/unit';
 import { UnitQuery, UnitRequest } from '../schemas';
 
 export const mapUnitParamsToQuery = (params: UnitParams): UnitQuery => {

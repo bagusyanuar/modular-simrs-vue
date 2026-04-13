@@ -1,6 +1,4 @@
-import { UnitForm, UnitParams } from '@genrs/core/simrs/base/domains/inputs';
-import { Unit } from '@genrs/core/simrs/base/domains/models';
-import { UnitRepository } from '@genrs/core/simrs/base/repositories';
+import { UnitForm, UnitParams, Unit, UnitRepository } from '@genrs/core/simrs/base/unit';
 
 export class ApiUnitRepository implements UnitRepository {
   find(params: UnitParams): Promise<Unit[]> {

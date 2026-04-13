@@ -1,4 +1,4 @@
-import { UnitParams } from '@genrs/core/simrs/base/domains/inputs';
+import { UnitParams } from '@genrs/core/simrs/base/unit';
 
 export const unitKeys = {
   all: (params?: UnitParams) => {

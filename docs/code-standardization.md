@@ -58,7 +58,36 @@ Kita membagi tanggung jawab kode ke dalam 3 layer utama untuk memastikan kode mu
 
 ---
 
-## 4. Reusability Principles
+---
+
+## 4. Development Flow
+
+### Form & Validation
+- **vee-validate**: Digunakan untuk form state management dan binding UI.
+- **zod**: Sebagai single source of truth untuk schema validation.
+
+**Pattern:**
+- **Schema-driven form**: Definisi validasi dipusatkan dalam satu schema zod.
+- **Centralized validation**: Menghindari penulisan rules yang tersebar di template, sehingga logic validasi mudah di-reuse dan di-test.
+
+---
+
+### Data Fetching
+- **@tanstack/query**
+  - Menangani caching, request deduplication, dan server-state management.
+  - Memastikan data sinkron di seluruh komponen tanpa perlu prop-drilling yang dalam.
+
+- **axios**
+  - Sebagai transport layer (HTTP client).
+  - Centralized config: Interceptor untuk token auth, logging, dan global error handling berada di sini.
+
+**Separation of Concerns:**
+- **Axios**: Bertanggung jawab atas "bagaimana data dikirim" (transport layer).
+- **Tanstack Query**: Bertanggung jawab atas "bagaimana data dikelola di UI" (orchestration & state layer).
+
+---
+
+## 5. Reusability Principles
 
 Prinsip utama kita adalah **DRY (Don't Repeat Yourself)** di level Base, namun **Safe-Overriding** di level Tenant.
 
@@ -78,7 +107,7 @@ Efisiensi build ditentukan oleh `manifest.ts`. Gunakan manifest untuk memilih mo
 
 ---
 
-## 5. Component Strategy
+## 6. Component Strategy
 
 ### Approach
 
@@ -93,7 +122,7 @@ Efisiensi build ditentukan oleh `manifest.ts`. Gunakan manifest untuk memilih mo
 
 ---
 
-## 6. Deployment & Versioning Standards
+## 7. Deployment & Versioning Standards
 
 - **Hybrid Versioning**: Versi aplikasi adalah gabungan dari `Base Semver` + `Tenant Revision`.
   - Format: `v[Major.Minor.Patch]+[TenantCode].rev-[GitCount]`
@@ -101,7 +130,7 @@ Efisiensi build ditentukan oleh `manifest.ts`. Gunakan manifest untuk memilih mo
 
 ---
 
-## 7. Key Principles
+## 8. Key Principles
 
 - **Consistency over Preference**: Kita lebih mengutamakan konsistensi pola di seluruh project daripada preferensi gaya koding pribadi.
 - **Centralized Logic**: Logika krusial seperti Schema Validation, Fetching mechanism, dan Global Config harus dipusatkan di satu tempat (`core` atau `packages`) untuk kemudahan maintenance.
