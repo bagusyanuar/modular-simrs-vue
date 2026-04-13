@@ -8,6 +8,7 @@
   "scripts": {
     "dev:auth": "turbo run dev --filter=@genrs/auth-app",
     "dev:simrs": "turbo run dev --filter=@genrs/simrs-app --filter=@genrs/auth-app --",
+    "build:simrs": "turbo run build --filter=@genrs/simrs-app --filter=@genrs/auth-app --",
     "create:tenant": "node scripts/create-tenant.mjs",
     "create:feature": "node scripts/scaffold-feature.mjs",
     "create:custom": "node scripts/scaffold-tenant-custom.mjs",

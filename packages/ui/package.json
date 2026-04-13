@@ -24,9 +24,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build:dist": "tsc",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm build",
+    "prepublishOnly": "pnpm build:dist",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
