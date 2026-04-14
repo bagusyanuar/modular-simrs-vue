@@ -1,17 +1,27 @@
 import { cva } from 'class-variance-authority';
 
 export const buttonVariants = cva(
-  'flex items-center justify-center gap-2 rounded-lg font-medium cursor-pointer transition-all duration-300 ease-in-out disabled:cursor-not-allowed',
+  'inline-flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 active:scale-95',
   {
     variants: {
       variant: {
         primary:
-          'bg-orange-500 border border-orange-500 text-white hover:bg-orange-600 hover:border-orange-600',
+          'bg-brand border border-brand text-brand-foreground hover:bg-brand-hover hover:border-brand-hover',
         outline:
-          'bg-transparent border border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white',
+          'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-100 hover:border-gray-400',
         ghost:
-          'bg-transparent border-none text-gray-500 hover:bg-gray-500 hover:text-white',
+          'bg-transparent border-none text-gray-600 hover:bg-gray-100',
       },
+      size: {
+        sm: 'h-8 px-3 text-xs',
+        md: 'h-10 px-4 py-2',
+        lg: 'h-12 px-6 text-base',
+        icon: 'h-10 w-10',
+      },
+    },
+    defaultVariants: {
+      variant: 'primary',
+      size: 'md',
     },
   }
 );
