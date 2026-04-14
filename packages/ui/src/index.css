@@ -124,3 +124,19 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Custom NCheckbox Fix */
+[data-reka-checkbox] {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+[data-reka-checkbox][data-state="checked"],
+[data-reka-checkbox][data-state="indeterminate"] {
+  background-color: var(--brand) !important;
+  border-color: var(--brand) !important;
+  color: var(--brand-foreground) !important;
+}

@@ -47,8 +47,6 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: any): void;
-  (e: 'update:searchTerm', value: string): void;
   (e: 'load-more'): void;
 }>();
 
