@@ -126,7 +126,7 @@ defineOptions({
         :class="inputClass"
         :display-value="props.displayValue"
       />
-      
+
       <div class="flex items-center gap-2">
         <!-- Clear Button -->
         <button
@@ -135,26 +135,22 @@ defineOptions({
           class="flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors"
           @click="handleClear"
         >
-          <Icon 
-            icon="lucide:circle-x" 
-            :style="{ fontSize: iconSize }"
-          />
+          <Icon icon="lucide:circle-x" :style="{ fontSize: iconSize }" />
         </button>
 
         <!-- Loading Spinner -->
-        <Icon 
-          v-if="props.loading" 
-          icon="lucide:loader-2" 
+        <Icon
+          v-if="props.loading"
+          icon="lucide:loader-2"
           class="animate-spin text-gray-400"
           :style="{ fontSize: iconSize }"
         />
-        
+
         <!-- Trigger/Chevron -->
-        <ComboboxTrigger class="flex items-center justify-center text-gray-400 hover:text-foreground transition-colors">
-          <Icon 
-            icon="lucide:chevron-down" 
-            :style="{ fontSize: iconSize }"
-          />
+        <ComboboxTrigger
+          class="flex items-center justify-center text-gray-400 hover:text-foreground transition-colors"
+        >
+          <Icon icon="lucide:chevron-down" :style="{ fontSize: iconSize }" />
         </ComboboxTrigger>
       </div>
     </ComboboxAnchor>
@@ -165,9 +161,12 @@ defineOptions({
         position="popper"
         :side-offset="6"
         align="start"
-        class="w-[var(--reka-combobox-trigger-width)] min-w-[var(--reka-combobox-trigger-width)] outline-none bg-background shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] overflow-hidden"
+        class="w-(--reka-combobox-trigger-width) min-w-(--reka-combobox-trigger-width) outline-none bg-background shadow-[0_10px_40px_-10px_rgba(0,0,0,0.15)] overflow-hidden"
       >
-        <ComboboxViewport ref="viewportRef" class="max-h-60 overflow-y-auto p-1">
+        <ComboboxViewport
+          ref="viewportRef"
+          class="max-h-60 overflow-y-auto p-1"
+        >
           <ComboboxEmpty class="py-6 text-center text-sm text-gray-400">
             No results found.
           </ComboboxEmpty>
@@ -183,8 +182,8 @@ defineOptions({
             <slot name="item" :option="opt">
               <span>{{ opt.label }}</span>
             </slot>
-            
-            <ComboboxItemIndicator 
+
+            <ComboboxItemIndicator
               v-if="props.showIndicator"
               class="ml-auto inline-flex items-center justify-center"
             >
@@ -193,8 +192,8 @@ defineOptions({
           </ComboboxItem>
 
           <!-- Loading More Spinner -->
-          <div 
-            v-if="props.loadingMore" 
+          <div
+            v-if="props.loadingMore"
             class="flex items-center justify-center py-2 text-gray-400"
           >
             <Icon icon="lucide:loader-2" class="animate-spin" />

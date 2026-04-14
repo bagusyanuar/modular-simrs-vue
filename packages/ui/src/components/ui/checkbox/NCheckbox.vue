@@ -17,7 +17,6 @@ const props = withDefaults(defineProps<Props>(), {
   size: 'md',
 });
 
-
 const model = defineModel<boolean | 'indeterminate'>({ default: false });
 const generatedId = useId();
 const activeId = computed(() => props.id || generatedId);
@@ -52,26 +51,28 @@ defineOptions({
       :class="checkboxClass"
       data-reka-checkbox
     >
-      <CheckboxIndicator class="flex h-full w-full items-center justify-center text-white">
-        <Icon 
-          v-if="model === 'indeterminate'" 
-          icon="lucide:minus" 
-          :style="{ fontSize: iconSize }" 
+      <CheckboxIndicator
+        class="flex h-full w-full items-center justify-center text-white"
+      >
+        <Icon
+          v-if="model === 'indeterminate'"
+          icon="lucide:minus"
+          :style="{ fontSize: iconSize }"
           stroke-width="4"
         />
-        <Icon 
-          v-else 
-          icon="lucide:check" 
-          :style="{ fontSize: iconSize }" 
+        <Icon
+          v-else
+          icon="lucide:check"
+          :style="{ fontSize: iconSize }"
           stroke-width="4"
         />
       </CheckboxIndicator>
     </CheckboxRoot>
-    
+
     <label
       v-if="props.label || $slots.default"
       :for="activeId"
-      class="text-sm font-medium leading-none select-none cursor-pointer group-data-[disabled]:cursor-not-allowed group-data-[disabled]:opacity-70"
+      class="text-sm font-medium leading-none select-none cursor-pointer group-data-disabled:cursor-not-allowed group-data-disabled:opacity-70"
       :class="{
         'text-xs': props.size === 'sm',
         'text-sm': props.size === 'md',
