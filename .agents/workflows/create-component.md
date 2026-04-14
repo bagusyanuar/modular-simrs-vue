@@ -22,7 +22,7 @@ Menghasilkan komponen dengan struktur 4-file standar: `.vue`, `.variants.ts`, `i
 #### 2. Struktur File (Wajib 4 File)
 1. **Component Vue**: `<script setup lang="ts">`. Implementasikan `$attrs` dan slots.
 2. **Variants TS**: Gunakan `class-variance-authority` (cva). Standar size: `sm`, `md`, `lg`.
-3. **Index TS**: Barrel export komponen dan variants.
+3. **Index TS**: Barrel export komponen dan variants (Hanya di folder komponen).
 4. **Stories TS**: Definisi Storybook untuk preview mandiri.
 
 #### 3. Standard & Styling
