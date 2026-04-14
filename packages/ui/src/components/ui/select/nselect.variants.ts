@@ -69,3 +69,19 @@ export const selectItemVariants = cva(
     },
   }
 );
+
+export const selectBadgeVariants = cva(
+  'inline-flex items-center rounded bg-brand/10 text-brand gap-1 px-1.5 py-0.5 leading-none transition-all hover:bg-brand/20',
+  {
+    variants: {
+      size: {
+        sm: 'text-[10px] h-5',
+        md: 'text-xs h-6',
+        lg: 'text-sm h-7',
+      },
+    },
+    defaultVariants: {
+      size: 'md',
+    },
+  }
+);
