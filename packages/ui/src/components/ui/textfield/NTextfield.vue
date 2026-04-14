@@ -12,15 +12,12 @@ interface Props {
   id?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Omit<Props, 'modelValue'>>(), {
   type: 'text',
-  modelValue: '',
   size: 'md',
 });
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void;
-}>();
+const model = defineModel<string | number>({ default: '' });
 
 const slots = useSlots();
 
@@ -52,11 +49,6 @@ const iconSizeStyle = computed(() => ({
   fontSize: iconSizeMap[props.size || 'md'],
 }));
 
-const onInput = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  emit('update:modelValue', target.value);
-};
-
 defineOptions({
   inheritAttrs: false,
 });
@@ -78,11 +70,10 @@ defineOptions({
       v-bind="$attrs"
       :id="props.id"
       :type="props.type"
-      :value="props.modelValue"
+      v-model="model"
       :placeholder="props.placeholder"
       :disabled="props.disabled"
       :class="inputClass"
-      @input="onInput"
     />
 
     <!-- Suffix Icon Slot -->
