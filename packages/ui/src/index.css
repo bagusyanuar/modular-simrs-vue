@@ -5,6 +5,8 @@
 @import "tw-animate-css";
 @import "vue-sonner/style.css";
 
+@source "./**/*.{vue,ts}";
+
 @custom-variant dark (&:is(.dark *));
 
 body {
