@@ -14,6 +14,9 @@ const meta: Meta<typeof NButton> = {
       control: { type: 'select' },
       options: ['sm', 'md', 'lg', 'icon'],
     },
+    loading: {
+      control: { type: 'boolean' },
+    },
   },
 };
 
@@ -70,6 +73,20 @@ export const Disabled: Story = {
       return { args };
     },
     template: '<NButton v-bind="args">Disabled Button</NButton>',
+  }),
+};
+
+export const Loading: Story = {
+  args: {
+    variant: 'primary',
+    loading: true,
+  },
+  render: (args) => ({
+    components: { NButton },
+    setup() {
+      return { args };
+    },
+    template: '<NButton v-bind="args">Processing...</NButton>',
   }),
 };
 
