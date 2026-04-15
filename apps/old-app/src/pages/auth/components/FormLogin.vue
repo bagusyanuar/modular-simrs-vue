@@ -13,7 +13,6 @@ const {
   password,
   passwordAttrs,
   errors,
-  handleSubmit,
   isSubmitting,
   onSubmit,
 } = useLogin();

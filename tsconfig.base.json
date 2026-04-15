@@ -24,6 +24,8 @@
       "@genrs/presentation/*": ["./features/presentation/src/*"],
       "@genrs/auth": ["./packages/auth/src/index.ts"],
       "@genrs/auth/*": ["./packages/auth/src/*"],
+      "@genrs/ui": ["./packages/ui/src/index.ts"],
+      "@genrs/ui/*": ["./packages/ui/src/*"],
       "@page/*": [
         "./features/presentation/src/simrs/base/*"
       ]

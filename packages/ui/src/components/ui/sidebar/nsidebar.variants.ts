@@ -1,7 +1,7 @@
 import { cva } from 'class-variance-authority';
 
 export const sidebarVariants = cva(
-  'relative shrink-0 h-full transition-all duration-300 ease-in-out flex flex-col pt-5 pb-5 pl-4 pr-0',
+  'fixed shrink-0 h-dvh transition-all duration-300 ease-in-out flex flex-col py-4 pl-4 pr-0',
   {
     variants: {
       collapsed: {

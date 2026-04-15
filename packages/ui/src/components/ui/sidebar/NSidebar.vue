@@ -26,7 +26,7 @@ const shellClass = computed(() =>
 <template>
   <aside :class="shellClass">
     <div
-      class="h-full w-full bg-white rounded-r-none rounded-[32px] shadow-2xl shadow-gray-200/50 flex flex-col border border-gray-50"
+      class="h-full w-full bg-white rounded-lg shadow-2xl shadow-gray-200/50 flex flex-col border border-gray-50"
     >
       <slot />
     </div>
