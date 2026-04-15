@@ -28,7 +28,7 @@ const { isActive } = useActiveMenu();
       <NSidebarGroup label="Menu">
         <NSidebarItem
           icon="lucide:layout-dashboard"
-          to="/dashboard"
+          :href="'/dashboard'"
           :active="isActive('/dashboard')"
         >
           Dashboard
