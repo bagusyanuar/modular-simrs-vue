@@ -1,4 +1,8 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router';
+import {
+  createRouter,
+  createWebHistory,
+  type RouteRecordRaw,
+} from 'vue-router';
 import AppLayout from '../layouts/AppLayout.vue';
 import { activeModules } from '@page/manifest';
 import { moduleLibrary } from 'virtual:page-registry';
@@ -11,7 +15,9 @@ function resolveRoutes(): RouteRecordRaw[] {
   if (moduleLibrary['extra']) {
     try {
       moduleLibrary['extra'].forEach((exp: any) => {
-        const routes = Object.values(exp).find((v) => Array.isArray(v)) as RouteRecordRaw[];
+        const routes = Object.values(exp).find((v) =>
+          Array.isArray(v)
+        ) as RouteRecordRaw[];
         if (routes) {
           aggregatedRoutes.push(...routes);
         }
@@ -28,14 +34,19 @@ function resolveRoutes(): RouteRecordRaw[] {
       if (moduleExports) {
         moduleExports.forEach((exp: any) => {
           // Find the exported array (this is our routes)
-          const routes = Object.values(exp).find((v) => Array.isArray(v)) as RouteRecordRaw[];
+          const routes = Object.values(exp).find((v) =>
+            Array.isArray(v)
+          ) as RouteRecordRaw[];
           if (routes) {
             aggregatedRoutes.push(...routes);
           }
         });
       }
     } catch (e) {
-      console.error(`[AppRouter] Failed to load routes for module: ${mod.name}`, e);
+      console.error(
+        `[AppRouter] Failed to load routes for module: ${mod.name}`,
+        e
+      );
     }
   });
 

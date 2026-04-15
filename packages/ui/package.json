@@ -8,6 +8,7 @@
     ".": "./src/index.ts",
     "./components/*": "./src/components/*/index.ts",
     "./layouts": "./src/layouts/index.ts",
+    "./composables": "./src/composables/index.ts",
     "./utils": "./src/components/lib/utils.ts",
     "./icons": "./src/components/icons/index.ts"
   },
@@ -21,7 +22,8 @@
       "components/*": ["./src/components/*/index.ts"],
       "layouts": ["./src/layouts/index.ts"],
       "utils": ["./src/components/lib/utils.ts"],
-      "icons": ["./src/components/icons/index.ts"]
+      "icons": ["./src/components/icons/index.ts"],
+      "composables": ["./src/composables/index.ts"]
     }
   },
   "files": [

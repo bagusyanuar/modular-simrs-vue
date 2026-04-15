@@ -7,7 +7,7 @@ import {
   NSidebarMenuSubContent,
   NSidebarMenuSubTrigger,
 } from '@genrs/ui/components/ui/sidebar';
-import brandLogo from '../assets/logo-rs.png';
+import brandLogo from '../../assets/logo-rs.png';
 import { useActiveMenu } from '@genrs/ui/composables';
 
 const { isActive } = useActiveMenu();
@@ -19,9 +19,9 @@ const { isActive } = useActiveMenu();
       <div class="w-full flex items-center px-4 py-3 gap-3">
         <img :src="brandLogo" class="w-12 h-12" alt="Brand Logo" />
         <div class="flex flex-col">
-          <span class="text-neutral-700 text-base font-bold">Neurovi V2</span>
+          <span class="text-neutral-700 text-base font-bold">Neurovi V1</span>
           <span class="text-xs text-neutral-500 font-light leading-none">
-            New Version App
+            Old Version App
           </span>
         </div>
       </div>

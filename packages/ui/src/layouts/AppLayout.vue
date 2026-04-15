@@ -29,8 +29,12 @@ import brandLogo from '../assets/brand-logo.png';
             >Master Data</NSidebarMenuSubTrigger
           >
           <NSidebarMenuSubContent>
-            <NSidebarItem icon="lucide:hospital">Unit</NSidebarItem>
-            <NSidebarItem icon="lucide:user-cog">Staff</NSidebarItem>
+            <NSidebarItem icon="lucide:hospital" href="/v2/unit"
+              >Unit</NSidebarItem
+            >
+            <NSidebarItem icon="lucide:user-cog" to="/staff"
+              >Staff</NSidebarItem
+            >
           </NSidebarMenuSubContent>
         </NSidebarMenuSub>
       </NSidebarGroup>

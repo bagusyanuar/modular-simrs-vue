@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import { inject, computed, onMounted, watch } from 'vue';
+import {
+  inject,
+  computed,
+  onMounted,
+  watch,
+  getCurrentInstance,
+  onUnmounted,
+} from 'vue';
+
 import { Icon } from '@iconify/vue';
 import { sidebarItemVariants } from './nsidebar.variants';
 
@@ -18,14 +26,21 @@ const sidebar = inject<any>('n-sidebar', {
 
 const sub = inject<any>('n-sidebar-sub', null);
 
+const instance = getCurrentInstance();
+const itemId = computed(() => `item-${instance?.uid}`);
+
 onMounted(() => {
-  if (props.active && sub) sub.reportActive();
+  if (sub) sub.reportActive(itemId.value, props.active || false);
+});
+
+onUnmounted(() => {
+  if (sub) sub.reportActive(itemId.value, false);
 });
 
 watch(
   () => props.active,
   (isActive) => {
-    if (isActive && sub) sub.reportActive();
+    if (sub) sub.reportActive(itemId.value, isActive || false);
   }
 );
 
@@ -50,8 +65,8 @@ const itemClass = computed(() =>
     <Icon
       v-if="icon"
       :icon="icon"
-      class="flex-shrink-0"
-      :style="{ fontSize: '1.2rem' }"
+      class="shrink-0"
+      :style="{ fontSize: '1rem' }"
     />
     <span
       v-if="!isCollapsed"

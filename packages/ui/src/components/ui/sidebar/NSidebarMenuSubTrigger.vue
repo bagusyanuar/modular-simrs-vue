@@ -22,15 +22,10 @@ const isCollapsed = computed(() => sidebar.collapsed.value);
     <div
       :class="[
         sidebarItemVariants({ collapsed: isCollapsed }),
-        'group/trigger transition-colors'
+        'group/trigger transition-colors',
       ]"
     >
-      <Icon
-        v-if="icon"
-        :icon="icon"
-        class="flex-shrink-0"
-        style="font-size: 1.2rem;"
-      />
+      <Icon v-if="icon" :icon="icon" class="shrink-0" style="font-size: 1rem" />
       <span
         v-if="!isCollapsed"
         class="flex-1 font-normal text-sm tracking-tight truncate animate-in fade-in duration-300"
@@ -40,7 +35,7 @@ const isCollapsed = computed(() => sidebar.collapsed.value);
       <Icon
         v-if="!isCollapsed"
         icon="lucide:chevron-right"
-        class="ml-auto text-gray-400 text-[10px] transition-transform duration-200 group-data-[state=open]/trigger:rotate-90"
+        class="ml-auto text-gray-400 text-xs transition-transform duration-200 group-data-[state=open]/trigger:rotate-90"
       />
     </div>
   </CollapsibleTrigger>

@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => {
         '/v2': {
           target: 'http://localhost:3001',
           changeOrigin: true,
+          rewrite: (path) => (path === '/v2' ? '/v2/' : path),
         },
       },
     },

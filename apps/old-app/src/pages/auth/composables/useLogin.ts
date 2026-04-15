@@ -2,6 +2,7 @@ import { useForm } from 'vee-validate';
 import type { LoginForm } from '@/core/domains/inputs';
 import { loginValidatorSchema } from '@/infrastructure/validators';
 import { toTypedSchema } from '@vee-validate/zod';
+import { CookieStorage, STORAGE_KEYS } from '@/infrastructure/sources/storage';
 // import { loginUseCase } from '@/infrastructure/providers/auth.provider';
 export function useLogin() {
   const { handleSubmit, errors, defineField, isSubmitting } =
@@ -13,8 +14,19 @@ export function useLogin() {
       },
     });
 
-  const onSubmit = handleSubmit((values) => {
-    console.log(values);
+  const onSubmit = handleSubmit(async (values) => {
+    try {
+      // Dummy Login Simulation
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      CookieStorage.set(STORAGE_KEYS.ACCESS_TOKEN, 'dummy-access-token-v1');
+      console.log('Login success:', values);
+
+      // Redirect ke home
+      window.location.href = '/dashboard';
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
   });
 
   type FieldOptions = Parameters<typeof defineField>[1];

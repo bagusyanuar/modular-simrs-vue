@@ -1,5 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router';
-import { AppLayout } from '@genrs/ui/layouts';
+import AppLayout from '@/components/layouts/AppLayout.vue';
 
 export const dashboardRoutes: RouteRecordRaw[] = [
   {
