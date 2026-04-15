@@ -24,7 +24,10 @@ Berhasil mengimplementasikan sistem Sidebar modular dengan spesifikasi premium:
 
 ### 2. Main Layout Assembly (`GenLayout`)
 
-- Bagaimana kita merakit Sidebar, Navbar, dan Main Content.
+**Decision: Move Assembly to Shell App (`apps/*`).**
+
+- **`packages/ui`**: Focus pada "Layout Primitives" (NSidebar, NNavbar, NPageWrapper). Harus *Content Agnostic* (tanpa menu labels, logo spesifik, atau `RouterView`).
+- **`apps/old-app`**: Tempat melakukan *Assembling*. Merakit komponen UI, mendefinisikan menu RBAC, dan mengelola assets brand.
 - **Responsive Handling**:
   - Desktop: Sidebar `relative/sticky`.
   - Mobile: Sidebar `fixed/overlay` dengan hamburger menu.

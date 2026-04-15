@@ -24,6 +24,12 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       strictPort: true,
       open: true,
+      proxy: {
+        '/v2': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+        },
+      },
     },
   };
 });

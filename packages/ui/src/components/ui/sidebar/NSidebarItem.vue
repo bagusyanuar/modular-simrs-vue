@@ -6,6 +6,8 @@ import { sidebarItemVariants } from './nsidebar.variants';
 interface Props {
   icon?: string;
   active?: boolean;
+  to?: string | object;
+  href?: string;
 }
 
 const props = defineProps<Props>();
@@ -29,6 +31,12 @@ watch(
 
 const isCollapsed = computed(() => sidebar.collapsed.value);
 
+const tag = computed(() => {
+  if (props.to) return 'RouterLink';
+  if (props.href) return 'a';
+  return 'div';
+});
+
 const itemClass = computed(() =>
   sidebarItemVariants({
     active: props.active,
@@ -38,7 +46,7 @@ const itemClass = computed(() =>
 </script>
 
 <template>
-  <div :class="itemClass" v-bind="$attrs">
+  <component :is="tag" :to="to" :href="href" :class="itemClass" v-bind="$attrs">
     <Icon
       v-if="icon"
       :icon="icon"
@@ -51,5 +59,5 @@ const itemClass = computed(() =>
     >
       <slot />
     </span>
-  </div>
+  </component>
 </template>
