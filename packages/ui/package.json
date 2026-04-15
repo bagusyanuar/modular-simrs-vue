@@ -7,11 +7,13 @@
   "exports": {
     ".": "./src/index.ts",
     "./components/*": "./src/components/*/index.ts",
-    "./utils": "./src/components/lib/utils.ts"
+    "./utils": "./src/components/lib/utils.ts",
+    "./icons": "./src/components/icons/index.ts"
   },
   "imports": {
     "#components/*": "./src/components/*",
-    "#lib/*": "./src/components/lib/*"
+    "#lib/*": "./src/components/lib/*",
+    "#icons/*": "./src/components/icons/*"
   },
   "typesVersions": {
     "*": {
