@@ -51,7 +51,20 @@ export class ApiInstallationRepository implements InstallationRepository {
         try {
             const request: InstallationRequest = mapInstallationFormToRequest(form);
             const res = await api.put<APIResponse<InstallationResponse>>(`${this.path}/${id}`, request);
-            if (!res.data.data) throw new Error('Failed to update installation');
+            
+            // 🛠️ Fix: Jangan throw error kalau data null tapi status 200 (Axios success)
+            // BE mungkin hanya mengembalikan success message tanpa body data
+            if (!res.data.data) {
+                console.warn('[ApiInstallationRepository] Update success but no data returned from server');
+                return {
+                    id,
+                    ...form,
+                    createdAt: '', // Fallback empty
+                    updatedAt: new Date().toISOString(),
+                    deletedAt: null
+                } as InstallationModel;
+            }
+            
             return mapResponseToModel(res.data.data);
         } catch (error) {
             console.error('[ApiInstallationRepository] update error:', error);

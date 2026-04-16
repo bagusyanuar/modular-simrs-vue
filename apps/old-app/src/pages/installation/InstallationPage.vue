@@ -7,26 +7,17 @@ import { NSwitch } from '@genrs/ui/components/ui/switch';
 import { NIcon as Icon } from '@genrs/ui/components/icons';
 import { createColumnHelper, type ColumnDef } from '@tanstack/vue-table';
 import { useInstallation } from './composables/useInstallation';
+import FormInstallation from './components/FormInstallation.vue';
 import type { InstallationModel } from '@/core/domains/models';
 import type { InstallationParams } from '@/core/domains/inputs';
 
-// 1. Search Query with Debounce
-const searchQuery = ref('');
+// 1. Params Configuration (Reactive)
 const params = ref<InstallationParams>({
     search: '',
     page: 1,
     limit: 10,
     sortBy: 'name',
     sortOrder: 'asc',
-});
-
-let debounceTimeout: ReturnType<typeof setTimeout>;
-watch(searchQuery, (newVal) => {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(() => {
-        params.value.search = newVal;
-        params.value.page = 1; // Reset to page 1 on search
-    }, 500);
 });
 
 // 2. Data Fetching via Vue Query
@@ -37,7 +28,24 @@ const {
     refetch
 } = useInstallation(params);
 
-// 3. Table Configuration
+// 3. Form State
+const isFormOpen = ref(false);
+const isEdit = ref(false);
+const selectedData = ref<InstallationModel | undefined>();
+
+const handleAdd = () => {
+    isEdit.value = false;
+    selectedData.value = undefined;
+    isFormOpen.value = true;
+};
+
+const handleEdit = (data: InstallationModel) => {
+    isEdit.value = true;
+    selectedData.value = { ...data };
+    isFormOpen.value = true;
+};
+
+// 4. Table Configuration
 const columnHelper = createColumnHelper<InstallationModel>();
 
 const columns: ColumnDef<InstallationModel, any>[] = [
@@ -61,9 +69,16 @@ const columns: ColumnDef<InstallationModel, any>[] = [
     }),
 ];
 
-const handleAdd = () => {
-    console.log('Tambah Instalasi Baru');
-};
+// Debounce search
+const searchQuery = ref('');
+let debounceTimeout: ReturnType<typeof setTimeout>;
+watch(searchQuery, (newVal) => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+        params.value.search = newVal;
+        params.value.page = 1;
+    }, 500);
+});
 </script>
 
 <template>
@@ -122,9 +137,9 @@ const handleAdd = () => {
                 </template>
 
                 <!-- Slot: Actions -->
-                <template #cell-actions>
+                <template #cell-actions="{ row }">
                     <div class="flex gap-2 items-center">
-                        <NButton size="sm" variant="ghost" class="h-8 w-8 p-0 hover:bg-blue-50">
+                        <NButton size="sm" variant="ghost" class="h-8 w-8 p-0 hover:bg-blue-50" @click="handleEdit(row.original)">
                             <Icon icon="lucide:pencil" class="w-4 h-4 text-blue-600" />
                         </NButton>
                         <NButton size="sm" variant="ghost" class="h-8 w-8 p-0 hover:bg-rose-50">
@@ -134,9 +149,16 @@ const handleAdd = () => {
                 </template>
             </NDataTable>
         </div>
+
+        <!-- Form Modal -->
+        <FormInstallation 
+            v-model:open="isFormOpen" 
+            :is-edit="isEdit" 
+            :initial-data="selectedData" 
+            @success="refetch"
+        />
     </div>
 </template>
 
 <style scoped>
-/* Custom style if needed */
 </style>

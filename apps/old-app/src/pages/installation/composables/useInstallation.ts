@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/vue-query';
 import { getInstallationsUseCase } from '@/infrastructure/providers';
+import { installationKeys } from '@/infrastructure/keys';
 import type { InstallationParams } from '@/core/domains/inputs';
-import type { Ref } from 'vue';
+import { type Ref, computed } from 'vue';
 
 export const useInstallation = (params: Ref<InstallationParams>) => {
     const {
@@ -11,12 +12,12 @@ export const useInstallation = (params: Ref<InstallationParams>) => {
         error,
         refetch
     } = useQuery({
-        queryKey: ['installations', params],
+        // Gunakan computed agar queryKey tetap reaktif saat params berubah
+        queryKey: computed(() => installationKeys.all(params.value)),
         queryFn: () => getInstallationsUseCase.execute(params.value),
-        // Data dummy atau mock aslinya nanti diganti balikan API di repository
         placeholderData: (previousData) => previousData,
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
     });
 
     return {
