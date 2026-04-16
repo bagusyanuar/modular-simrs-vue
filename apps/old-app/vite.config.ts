@@ -12,7 +12,7 @@ export default defineConfig(({ mode }) => {
   Object.assign(process.env, globalEnv, appEnv);
 
   return {
-    base: '/',
+    base: process.env.VITE_PATH_V1 || '/',
     plugins: [vue(), tailwindcss()],
     resolve: {
       alias: {
@@ -25,10 +25,14 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       open: true,
       proxy: {
-        '/v2': {
+        [process.env.VITE_PATH_SSO || '/sso']: {
+          target: 'http://localhost:3002',
+          changeOrigin: true,
+        },
+        [process.env.VITE_PATH_V2 || '/v2']: {
           target: 'http://localhost:3001',
           changeOrigin: true,
-          rewrite: (path) => (path === '/v2' ? '/v2/' : path),
+          rewrite: (path) => (path === process.env.VITE_PATH_V2 ? process.env.VITE_PATH_V2 + '/' : path),
         },
       },
     },

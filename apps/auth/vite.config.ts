@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
   Object.assign(process.env, globalEnv, appEnv);
 
   return {
+    base: process.env.VITE_PATH_SSO + '/',
     plugins: [vue(), tailwindcss(), tenantResolver('auth', 'base')],
     resolve: {
       alias: {
@@ -28,11 +29,11 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: 'neurovi-simulation.test',
-      port: 3000,
+      port: 3002,
       strictPort: true,
       open: true,
       proxy: {
-        '/simrs': {
+        [process.env.VITE_PATH_V2 || '/v2']: {
           target: 'http://localhost:3001',
           changeOrigin: true,
           secure: false,

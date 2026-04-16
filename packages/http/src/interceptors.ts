@@ -68,8 +68,8 @@ export function setupResponseInterceptor(instance: AxiosInstance) {
 
           // Trigger Refresh Call (Request directly to auth server endpoint)
           const { authServerUrl } = SessionManager.config;
-          const { data } = await axios.post(`${authServerUrl}/auth/refresh`, {
-            refresh_token: session.refreshToken,
+          const { data } = await axios.post(`${authServerUrl}/auth/refresh`, {}, {
+            withCredentials: true,
           });
 
           // Save new tokens
@@ -90,7 +90,9 @@ export function setupResponseInterceptor(instance: AxiosInstance) {
           
           // Optional: Redirect to login or trigger global event
           if (typeof window !== 'undefined') {
-            window.location.href = '/login';
+            const ssoPath = import.meta.env.VITE_PATH_SSO || '/sso';
+            const returnUrl = encodeURIComponent(window.location.href);
+            window.location.href = `${ssoPath}/login?return_url=${returnUrl}`;
           }
           
           return Promise.reject(refreshError);

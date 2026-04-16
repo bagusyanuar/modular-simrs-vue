@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
   const tenant = process.env.VITE_TENANT || 'base';
 
   return {
-    base: '/v2/',
+    base: process.env.VITE_PATH_V2 + '/',
     plugins: [vue(), tailwindcss(), tenantResolver('simrs', tenant)],
     server: {
       host: 'neurovi-simulation.test',
