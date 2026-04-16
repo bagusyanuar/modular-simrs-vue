@@ -1,31 +1,41 @@
-import { useBrowserLocation } from '@vueuse/core';
+import { useRoute } from 'vue-router';
 
 export function useActiveMenu() {
-  const location = useBrowserLocation();
+  const route = useRoute();
 
   /**
    * Menentukan apakah menu aktif berdasarkan path.
-   * Mendukung pengecekan internal route (V1) dan external path (V2 via proxy).
+   * Fungsi ini otomatis reaktif karena menggunakan 'route' dari vue-router.
    */
   const isActive = (path?: string) => {
     if (!path) return false;
 
-    const currentPath = location.value.pathname || '/';
+    // Ambil path dari router (Internal SPA)
+    const routerPath = route?.path || '/';
+    // Ambil path dari browser (External/Proxy)
+    const browserPath = typeof window !== 'undefined' ? window.location.pathname : '/';
 
-    // 1. Exact match
-    if (currentPath === path) return true;
+    // 1. Exact match (Internal atau External)
+    if (routerPath === path || browserPath === path) return true;
 
-    // 2. Prefix match untuk sub-menu atau routing V2
-    if (path !== '/' && currentPath.startsWith(path)) {
-      const nextChar = currentPath.slice(path.length, path.length + 1);
-      return !nextChar || nextChar === '/';
-    }
+    // 2. Special Case: Dashboard root (/) often matches /dashboard
+    if (path === '/dashboard' && (routerPath === '/' || browserPath === '/')) return true;
+    if (path === '/' && (routerPath === '/dashboard' || browserPath === '/dashboard')) return true;
 
-    return false;
+    // 3. Prefix match untuk sub-menu
+    const checkPrefix = (current: string, target: string) => {
+      if (!target || target === '/') return false;
+      if (current.startsWith(target)) {
+        const nextChar = current.slice(target.length, target.length + 1);
+        return !nextChar || nextChar === '/';
+      }
+      return false;
+    };
+
+    return checkPrefix(routerPath, path) || checkPrefix(browserPath, path);
   };
 
   return {
     isActive,
-    location,
   };
 }

@@ -61,7 +61,15 @@ const itemClass = computed(() =>
 </script>
 
 <template>
-  <component :is="tag" :to="to" :href="href" :class="itemClass" v-bind="$attrs">
+  <component
+    :is="tag"
+    :to="to"
+    :href="href"
+    :class="itemClass"
+    active-class=""
+    exact-active-class=""
+    v-bind="$attrs"
+  >
     <Icon
       v-if="icon"
       :icon="icon"

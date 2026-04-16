@@ -3,7 +3,7 @@ import { dashboardRoutes } from './dashboard.route';
 
 const router = createRouter({
   history: createWebHistory(),
-  routes: [{ path: '/', redirect: '/dashboard' }, ...dashboardRoutes],
+  routes: [...dashboardRoutes],
 });
 
 export default router;

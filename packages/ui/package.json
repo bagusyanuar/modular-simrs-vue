@@ -66,5 +66,9 @@
     "tailwindcss": "^4.2.2",
     "vue": "^3.5.30",
     "vue-sonner": "^2.0.9"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.30",
+    "vue-router": "^4.5.1"
   }
 }
