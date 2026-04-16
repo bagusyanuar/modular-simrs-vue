@@ -27,12 +27,12 @@ export interface SessionConfig {
 export const SessionManager = {
   // Default values
   config: {
-    domain: '.neurovi-simulation.test',
+    domain: import.meta.env.VITE_AUTH_SSO_DOMAIN || '.neurovi-simulation.test',
     secure: false,
     expires: 7,
     clientId: '',
     redirectUri: '',
-    authServerUrl: 'http://neurovi-simulation.test:3000',
+    authServerUrl: import.meta.env.VITE_AUTH_SERVER_URL || 'http://neurovi-simulation.test:3000',
   } as SessionConfig,
 
   /**

@@ -52,38 +52,7 @@ export const CookieStorage = {
         .map((cookie) => decodeURIComponent(cookie.substring(nameLenPlus)))[0] ?? null
     );
   },
-
   remove(name: string, options: CookieOptions = {}) {
     this.set(name, '', { ...options, expires: -1 });
-  },
-};
-
-/**
- * Session Storage Helper for PKCE Artifacts
- */
-export const PKCEStorage = {
-  setVerifier(verifier: string) {
-    if (typeof sessionStorage === 'undefined') return;
-    sessionStorage.setItem('pkce_verifier', verifier);
-  },
-  getVerifier(): string | null {
-    if (typeof sessionStorage === 'undefined') return null;
-    return sessionStorage.getItem('pkce_verifier');
-  },
-  clearVerifier() {
-    if (typeof sessionStorage === 'undefined') return;
-    sessionStorage.removeItem('pkce_verifier');
-  },
-  setState(state: string) {
-    if (typeof sessionStorage === 'undefined') return;
-    sessionStorage.setItem('pkce_state', state);
-  },
-  getState(): string | null {
-    if (typeof sessionStorage === 'undefined') return null;
-    return sessionStorage.getItem('pkce_state');
-  },
-  clearState() {
-    if (typeof sessionStorage === 'undefined') return;
-    sessionStorage.removeItem('pkce_state');
   },
 };
