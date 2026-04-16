@@ -7,6 +7,7 @@ import { createHttpClient } from '@genrs/http';
 export const httpClient = createHttpClient({
   baseURL: import.meta.env.VITE_GLOBAL_API_BASE_URL || 'http://neurovi-simulation.test:8000/api',
   timeout: 15000,
+  withCredentials: true,
 });
 
 export default httpClient;

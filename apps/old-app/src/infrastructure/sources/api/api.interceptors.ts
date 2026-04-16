@@ -37,40 +37,40 @@ export const mainInterceptors: AxiosInterceptors = {
       try {
         console.log('[Interceptors] 401 detected. Attempting token refresh...');
         const session = SessionManager.get();
-
-        // 🔄 Hit Auth Server for Refresh
-        // Menggunakan instance axios baru tanpa interceptors global
-        // Pastikan withCredentials true agar cookie HttpOnly terkirim jika ada
+        
+        /**
+         * 🔄 Hit Auth Server for Refresh
+         * Jika refresh_token tidak terbaca (HttpOnly), kita tetap kirim request 
+         * karena { withCredentials: true } akan otomatis mengirim cookie tersebut.
+         */
         const { data } = await axios.post(
-          `${import.meta.env.VITE_GLOBAL_API_BASE_URL}/auth/refresh`,
-          { refresh_token: session?.refreshToken }, // Tetap kirim body jika ada
+          `${import.meta.env.VITE_AUTH_SERVER_URL || import.meta.env.VITE_GLOBAL_API_BASE_URL}/auth/refresh`,
+          { refresh_token: session?.refreshToken }, 
           { withCredentials: true }
         );
 
         console.log('[Interceptors] Refresh successful.');
 
-        // 💾 Simpan session baru ke Shared Cookie
+        // 💾 Simpan session baru ke Shared Cookie (Access Token baru)
         SessionManager.save({
-          accessToken: data.access_token,
-          refreshToken: data.refresh_token || session?.refreshToken,
+          accessToken: data.access_token || data.data?.access_token,
+          refreshToken: data.refresh_token || data.data?.refresh_token || session?.refreshToken,
         });
 
         // Update Authorization header for original request
         if (originalRequest.headers) {
-          originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
+          const newToken = data.access_token || data.data?.access_token;
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
         }
 
         // Re-run failed request
         return axios(originalRequest);
       } catch (refreshError: any) {
-        // 🚨 Refresh gagal (misal: refresh token expired)
         console.error('[Interceptors] Refresh token failed:', refreshError.response?.data || refreshError.message);
-
-        // Bersihkan session local
+        
         SessionManager.logout();
-
-        // Buang error agar SSOGuard di router bisa mendeteksi session hilang
-        // dan melakukan redirect ke SSO Login.
+        
+        // Redirect logic handled by router guard or error propagation
         return Promise.reject(refreshError);
       }
     }

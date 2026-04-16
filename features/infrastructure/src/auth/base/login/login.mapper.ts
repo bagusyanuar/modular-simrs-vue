@@ -30,6 +30,7 @@ export const mapMeFromResponse = (response: MeResponse): AuthUser => {
 export const mapAuthResultFromResponse = (response: LoginResponse): AuthResult => {
   return {
     accessToken: response.data.access_token,
+    refreshToken: response.data.refresh_token,
   };
 };
 

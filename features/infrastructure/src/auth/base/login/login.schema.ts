@@ -24,6 +24,7 @@ export interface LoginResponse {
   message: string;
   data: {
     access_token: string;
+    refresh_token?: string;
   };
 }
 

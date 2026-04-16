@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => {
     plugins: [vue(), tailwindcss(), tenantResolver('simrs', tenant)],
     server: {
       host: 'neurovi-simulation.test',
+      allowedHosts: ['.neurovi-simulation.test'],
       port: 3001,
       strictPort: true,
     },

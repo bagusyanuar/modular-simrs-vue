@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       host: 'neurovi-simulation.test',
+      allowedHosts: ['.neurovi-simulation.test'],
       port: 3000,
       strictPort: true,
       proxy: {
