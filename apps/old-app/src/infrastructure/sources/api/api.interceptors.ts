@@ -37,12 +37,12 @@ export const mainInterceptors: AxiosInterceptors = {
       try {
         console.log('[Interceptors] 401 detected. Attempting token refresh...');
         const session = SessionManager.get();
-        
+
         // 🔄 Hit Auth Server for Refresh
         // Menggunakan instance axios baru tanpa interceptors global
         // Pastikan withCredentials true agar cookie HttpOnly terkirim jika ada
         const { data } = await axios.post(
-          `${import.meta.env.VITE_API_URL}/auth/refresh`,
+          `${import.meta.env.VITE_GLOBAL_API_BASE_URL}/auth/refresh`,
           { refresh_token: session?.refreshToken }, // Tetap kirim body jika ada
           { withCredentials: true }
         );
@@ -65,10 +65,10 @@ export const mainInterceptors: AxiosInterceptors = {
       } catch (refreshError: any) {
         // 🚨 Refresh gagal (misal: refresh token expired)
         console.error('[Interceptors] Refresh token failed:', refreshError.response?.data || refreshError.message);
-        
+
         // Bersihkan session local
         SessionManager.logout();
-        
+
         // Buang error agar SSOGuard di router bisa mendeteksi session hilang
         // dan melakukan redirect ke SSO Login.
         return Promise.reject(refreshError);

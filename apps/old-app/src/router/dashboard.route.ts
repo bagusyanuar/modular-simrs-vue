@@ -10,6 +10,10 @@ export const dashboardRoutes: RouteRecordRaw[] = [
         path: '',
         component: () => import('@/pages/dashboard/DashboardPage.vue'),
       },
+      {
+        path: '/installation',
+        component: () => import('@/pages/installation/InstallationPage.vue'),
+      },
     ],
   },
 ];

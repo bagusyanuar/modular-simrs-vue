@@ -26,11 +26,7 @@ const { isActive } = useActiveMenu();
         </div>
       </div>
       <NSidebarGroup label="Menu">
-        <NSidebarItem
-          icon="lucide:layout-dashboard"
-          to="/dashboard"
-          :active="isActive('/dashboard')"
-        >
+        <NSidebarItem icon="lucide:layout-dashboard" to="/dashboard" :active="isActive('/dashboard')">
           Dashboard
         </NSidebarItem>
         <NSidebarMenuSub>
@@ -38,18 +34,13 @@ const { isActive } = useActiveMenu();
             Master Data
           </NSidebarMenuSubTrigger>
           <NSidebarMenuSubContent>
-            <NSidebarItem
-              icon="lucide:building"
-              href="/v2/unit"
-              :active="isActive('/v2/unit')"
-            >
+            <NSidebarItem to="/installation" :active="isActive('/installation')">
+              Instalasi
+            </NSidebarItem>
+            <NSidebarItem href="/v2/unit" :active="isActive('/v2/unit')">
               Unit
             </NSidebarItem>
-            <NSidebarItem
-              icon="lucide:user-cog"
-              to="/staff"
-              :active="isActive('/staff')"
-            >
+            <NSidebarItem to="/staff" :active="isActive('/staff')">
               Staff
             </NSidebarItem>
           </NSidebarMenuSubContent>
@@ -67,11 +58,7 @@ const { isActive } = useActiveMenu();
             </NSidebarItem>
           </NSidebarMenuSubContent>
         </NSidebarMenuSub>
-        <NSidebarItem
-          icon="lucide:wallet"
-          to="/billing"
-          :active="isActive('/billing')"
-        >
+        <NSidebarItem icon="lucide:wallet" to="/billing" :active="isActive('/billing')">
           Kendali Biaya
         </NSidebarItem>
       </NSidebarGroup>
