@@ -12,7 +12,14 @@
     "vue": "^3.5.30",
     "vue-router": "^5.0.4",
     "tailwindcss": "^4.2.2",
-    "@genrs/presentation": "workspace:*"
+    "@genrs/auth": "workspace:*",
+    "@genrs/ui": "workspace:*",
+    "@genrs/core": "workspace:*",
+    "@genrs/infrastructure": "workspace:*",
+    "@genrs/presentation": "workspace:*",
+    "vee-validate": "^4.15.0",
+    "@vee-validate/zod": "^4.15.0",
+    "zod": "^3.25.23"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",

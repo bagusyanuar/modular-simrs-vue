@@ -4,7 +4,7 @@ import axios, {
   type AxiosResponse,
 } from 'axios';
 import type { AxiosInterceptors } from './api.provider';
-import { BrowserStorage, STORAGE_KEYS } from '@/infrastructure/sources/storage';
+import { SessionManager } from '@genrs/auth';
 
 declare module 'axios' {
   export interface InternalAxiosRequestConfig {
@@ -14,9 +14,10 @@ declare module 'axios' {
 
 export const mainInterceptors: AxiosInterceptors = {
   onRequest: (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('access_token');
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // 🔐 Ambil token dari Shared Cookie via SessionManager
+    const session = SessionManager.get();
+    if (session?.accessToken && config.headers) {
+      config.headers.Authorization = `Bearer ${session.accessToken}`;
     }
     return config;
   },
@@ -25,6 +26,7 @@ export const mainInterceptors: AxiosInterceptors = {
   onResponseError: async (error: AxiosError) => {
     const originalRequest = error.config;
 
+    // Handle 401 & Auto Refresh
     if (
       error.response?.status === 401 &&
       originalRequest &&
@@ -33,24 +35,42 @@ export const mainInterceptors: AxiosInterceptors = {
       originalRequest._retry = true;
 
       try {
+        console.log('[Interceptors] 401 detected. Attempting token refresh...');
+        const session = SessionManager.get();
+        
+        // 🔄 Hit Auth Server for Refresh
+        // Menggunakan instance axios baru tanpa interceptors global
+        // Pastikan withCredentials true agar cookie HttpOnly terkirim jika ada
         const { data } = await axios.post(
-          `${import.meta.env.VITE_API_URL}/auth/refresh`
+          `${import.meta.env.VITE_API_URL}/auth/refresh`,
+          { refresh_token: session?.refreshToken }, // Tetap kirim body jika ada
+          { withCredentials: true }
         );
 
-        BrowserStorage.set<string>(
-          STORAGE_KEYS.ACCESS_TOKEN,
-          data.access_token
-        );
+        console.log('[Interceptors] Refresh successful.');
 
+        // 💾 Simpan session baru ke Shared Cookie
+        SessionManager.save({
+          accessToken: data.access_token,
+          refreshToken: data.refresh_token || session?.refreshToken,
+        });
+
+        // Update Authorization header for original request
         if (originalRequest.headers) {
           originalRequest.headers.Authorization = `Bearer ${data.access_token}`;
         }
 
-        // re run failed request
+        // Re-run failed request
         return axios(originalRequest);
-      } catch (refreshError) {
-        localStorage.clear();
-        window.location.href = '/login';
+      } catch (refreshError: any) {
+        // 🚨 Refresh gagal (misal: refresh token expired)
+        console.error('[Interceptors] Refresh token failed:', refreshError.response?.data || refreshError.message);
+        
+        // Bersihkan session local
+        SessionManager.logout();
+        
+        // Buang error agar SSOGuard di router bisa mendeteksi session hilang
+        // dan melakukan redirect ke SSO Login.
         return Promise.reject(refreshError);
       }
     }

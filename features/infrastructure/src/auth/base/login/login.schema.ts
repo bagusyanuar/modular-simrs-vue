@@ -3,8 +3,8 @@
  */
 
 export interface LoginRequest {
-  username?: string;
-  password?: string;
+  email: string;
+  password: string;
 }
 
 export interface UserResponse {
@@ -20,7 +20,15 @@ export interface UserResponse {
 }
 
 export interface LoginResponse {
-  user: UserResponse;
-  access_token: string;
-  refresh_token: string;
+  success: boolean;
+  message: string;
+  data: {
+    access_token: string;
+  };
+}
+
+export interface MeResponse {
+  success: boolean;
+  message: string;
+  data: UserResponse;
 }

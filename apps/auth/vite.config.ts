@@ -11,10 +11,12 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: process.env.VITE_PATH_SSO + '/',
+    envDir: path.resolve(__dirname, '../../'),
     plugins: [vue(), tailwindcss(), tenantResolver('auth', 'base')],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        '@genrs/ui': path.resolve(__dirname, '../../packages/ui/src'),
         '@genrs/core': path.resolve(__dirname, '../../features/core/src'),
         '@genrs/infrastructure': path.resolve(
           __dirname,
@@ -31,7 +33,7 @@ export default defineConfig(({ mode }) => {
       host: 'neurovi-simulation.test',
       port: 3002,
       strictPort: true,
-      open: true,
+      open: false,
       proxy: {
         [process.env.VITE_PATH_V2 || '/v2']: {
           target: 'http://localhost:3001',

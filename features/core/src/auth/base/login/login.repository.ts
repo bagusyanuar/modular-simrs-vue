@@ -1,5 +1,5 @@
-import { AuthUser, AuthResult } from '../domains/models/auth.model';
-import { AuthCredentials } from '../domains/inputs/auth.input';
+import { AuthUser, AuthResult } from './login.model';
+import { AuthCredentials } from './login.input';
 
 /**
  * Interface for Authentication Repository

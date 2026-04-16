@@ -5,6 +5,10 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
+      "@genrs/core/*": ["../../features/core/src/*"],
+      "@genrs/infrastructure/*": ["../../features/infrastructure/src/*"],
+      "@genrs/auth": ["../../packages/auth/src/index.ts"],
+      "@genrs/auth/*": ["../../packages/auth/src/*"],
       "@page/*": ["./src/simrs/base/*"]
     }
   },

@@ -5,7 +5,7 @@ import { CookieStorage } from './storage';
  */
 export interface AuthSession {
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
 }
 
 /**
@@ -48,30 +48,34 @@ export const SessionManager = {
   save(session: AuthSession): void {
     const { domain, secure, expires } = this.config;
     
-    CookieStorage.set('access_token', session.accessToken, { 
-      domain, 
-      secure, 
-      expires,
-      path: '/' 
-    });
+    if (session.accessToken) {
+      CookieStorage.set('access_token', session.accessToken, { 
+        domain, 
+        secure, 
+        expires,
+        path: '/' 
+      });
+    }
     
-    CookieStorage.set('refresh_token', session.refreshToken, { 
-      domain, 
-      secure, 
-      expires,
-      path: '/' 
-    });
+    if (session.refreshToken) {
+      CookieStorage.set('refresh_token', session.refreshToken, { 
+        domain, 
+        secure, 
+        expires,
+        path: '/' 
+      });
+    }
   },
 
   /**
    * Retrieves current session from shared cookies
+   * Note: refresh_token mungkin tidak terbaca jika di-set sebagai HttpOnly oleh backend
    */
   get(): AuthSession | null {
     const accessToken = CookieStorage.get('access_token');
-    const refreshToken = CookieStorage.get('refresh_token');
+    if (!accessToken) return null;
 
-    if (!accessToken || !refreshToken) return null;
-
+    const refreshToken = CookieStorage.get('refresh_token') ?? undefined;
     return { accessToken, refreshToken };
   },
 

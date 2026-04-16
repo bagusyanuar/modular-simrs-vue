@@ -22,6 +22,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: process.env.VITE_PATH_V2 + '/',
+    envDir: path.resolve(__dirname, '../../'),
     plugins: [vue(), tailwindcss(), tenantResolver('simrs', tenant)],
     server: {
       host: 'neurovi-simulation.test',

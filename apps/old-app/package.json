@@ -17,6 +17,7 @@
     "zod": "^3.25.76",
     "@vee-validate/zod": "^4.15.1",
     "@tanstack/vue-query": "^5.92.1",
+    "@genrs/auth": "workspace:*",
     "@genrs/ui": "workspace:*"
   },
   "devDependencies": {

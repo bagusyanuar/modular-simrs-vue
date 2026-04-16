@@ -2,6 +2,7 @@ import type { AuthCredentials, AuthUser, AuthResult } from '@genrs/core/auth/bas
 import type {
   LoginRequest,
   LoginResponse,
+  MeResponse,
   UserResponse,
 } from './login.schema';
 
@@ -22,11 +23,13 @@ export const mapAuthUserFromResponse = (data: UserResponse): AuthUser => {
   };
 };
 
-export const mapAuthResultFromResponse = (data: LoginResponse): AuthResult => {
+export const mapMeFromResponse = (response: MeResponse): AuthUser => {
+  return mapAuthUserFromResponse(response.data);
+};
+
+export const mapAuthResultFromResponse = (response: LoginResponse): AuthResult => {
   return {
-    user: mapAuthUserFromResponse(data.user),
-    accessToken: data.access_token,
-    refreshToken: data.refresh_token,
+    accessToken: response.data.access_token,
   };
 };
 
@@ -34,7 +37,7 @@ export const mapAuthCredentialsToRequest = (
   credentials: AuthCredentials
 ): LoginRequest => {
   return {
-    username: credentials.username,
+    email: credentials.email,
     password: credentials.password,
   };
 };

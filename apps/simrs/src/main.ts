@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import './style.css';
 import App from './App.vue';
 import appRouter from './routes/app-router';
-import { SessionManager } from '@genrs/auth';
+import { SessionManager, createSSOGuard } from '@genrs/auth';
 
 // 🔐 SSO Initialization
 SessionManager.configure({
@@ -20,5 +20,9 @@ console.log('🌍 Environment Check:', {
 });
 
 const app = createApp(App);
+
+// 🛡️ Register SSO Guard
+createSSOGuard(appRouter);
+
 app.use(appRouter);
 app.mount('#app');

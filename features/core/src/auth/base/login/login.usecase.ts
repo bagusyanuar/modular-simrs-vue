@@ -15,7 +15,7 @@ export class LoginUseCase {
     const result = await this.authRepository.login(credentials);
     
     // 3. Optional: Perform side effects (analytics, analytics, syncing data, etc.)
-    console.log(`[LoginUseCase] User ${result.user.username} logged in successfully.`);
+    console.log(`[LoginUseCase] User ${result.user?.username || 'unknown'} logged in successfully.`);
     
     return result;
   }

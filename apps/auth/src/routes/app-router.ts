@@ -41,6 +41,7 @@ function resolveRoutes(): RouteRecordRaw[] {
     }
   }
 
+  console.log('[AppRouter] Final Aggregated Routes:', aggregatedRoutes);
   return aggregatedRoutes;
 }
 

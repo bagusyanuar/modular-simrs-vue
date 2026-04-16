@@ -13,26 +13,34 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: process.env.VITE_PATH_V1 || '/',
+    envDir: path.resolve(__dirname, '../../'),
     plugins: [vue(), tailwindcss()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        '@genrs/auth': path.resolve(__dirname, '../../packages/auth/src'),
       },
     },
     server: {
       host: 'neurovi-simulation.test',
       port: 3000,
       strictPort: true,
-      open: true,
       proxy: {
         [process.env.VITE_PATH_SSO || '/sso']: {
           target: 'http://localhost:3002',
           changeOrigin: true,
+          rewrite: (path) =>
+            path === process.env.VITE_PATH_SSO
+              ? process.env.VITE_PATH_SSO + '/'
+              : path,
         },
         [process.env.VITE_PATH_V2 || '/v2']: {
           target: 'http://localhost:3001',
           changeOrigin: true,
-          rewrite: (path) => (path === process.env.VITE_PATH_V2 ? process.env.VITE_PATH_V2 + '/' : path),
+          rewrite: (path) =>
+            path === process.env.VITE_PATH_V2
+              ? process.env.VITE_PATH_V2 + '/'
+              : path,
         },
       },
     },

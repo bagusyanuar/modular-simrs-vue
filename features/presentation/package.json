@@ -38,6 +38,9 @@
     "vue": "^3.5.30",
     "tailwindcss": "^4.2.2",
     "lucide-vue-next": "^1.0.0",
+    "vee-validate": "^4.15.1",
+    "zod": "^3.25.76",
+    "@vee-validate/zod": "^4.15.1",
     "@genrs/ui": "workspace:*",
     "@genrs/core": "workspace:*",
     "@genrs/infrastructure": "workspace:*"
