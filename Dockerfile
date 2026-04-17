@@ -1,6 +1,6 @@
-# Stage 1: Base
-FROM node:20-alpine AS base
-RUN apk add --no-cache libc6-compat
+# Stage 1: Base (Pake slim agar build toolchain lebih stabil)
+FROM node:20-slim AS base
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
@@ -27,28 +27,29 @@ RUN pnpm install --frozen-lockfile
 # Copy Full source
 COPY --from=pruner /app/out/full/ .
 
-# Build
+# BUILD TANPA VUE-TSC (Cek type via Husky/Local saja)
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
-RUN turbo build --filter=$PKG_NAME
 
-# Stage 4: Runner (Tanpa Vite Preview, pake sirv-cli lebih lincah & prod-ready)
+# 1. Build semua dependencies internal (packages/*)
+RUN pnpm turbo build --filter="$PKG_NAME^"
+# 2. Build aplikasi utama menggunakan vite secara langsung (skip vue-tsc)
+RUN pnpm --filter=$PKG_NAME exec vite build
+
+# Stage 4: Runner (Pake alpine biar image akhir super kecil)
 FROM node:20-alpine AS runner
 ARG APP_NAME
 ARG PKG_NAME
 
-# Kita butuh sirv-cli buat serve static files secara production-ready
+# Install sirv-cli buat serve static files
 RUN npm install -g sirv-cli
 
 WORKDIR /app
 
-# Kita cuma butuh folder dist dari app yang di-build
+# Ambil hasil build saja
 COPY --from=builder /app/apps/${APP_NAME}/dist ./dist
 
-# Port default
 EXPOSE 8080
 
-# Jalankan sirv untuk serve folder dist
-# --single: buat support SPA routing (biar gak 404 pas refresh)
-# --host: biar bisa diakses dari luar container
+# Serve menggunakan sirv agar support SPA routing
 CMD ["sh", "-c", "sirv dist --port 8080 --host --single"]
