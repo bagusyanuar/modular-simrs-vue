@@ -74,3 +74,33 @@ Script ini akan menjalankan `auth-app`, `old-app`, dan `simrs-app` secara bersam
 ## 7. Target Akhir
 
 Secara bertahap, module-module di V1 (`old-app`) akan dimatikan dan navigasi akan diarahkan ke V2 (`simrs`), hingga akhirnya `old-app` bisa di-pensiunkan sepenuhnya.
+
+## 8. Containerization (Docker)
+
+Sistem menggunakan **Multi-stage Dockerfile** di root direktori yang mendukung build selektif per-aplikasi menggunakan Turborepo.
+
+### 8.1 Build Strategy & Arguments
+
+Gunakan `--build-arg APP_NAME` untuk menentukan aplikasi mana yang akan dimasukkan ke dalam image.
+
+- **Dockerfile Context**: Harus dijalankan dari root direktori monorepo.
+- **Base Image**: `node:20-alpine` (untuk build & runtime).
+- **Runtime**: Menjalankan `pnpm preview` melalui port `4173`.
+
+### 8.2 Build & Tagging Commands
+
+Format tag yang direkomendasikan untuk **GHCR**: `ghcr.io/<owner>/<repo>/<app-name>:<tag>`
+
+| Aplikasi | Build Command |
+| :--- | :--- |
+| **Auth** | `docker build --build-arg APP_NAME=auth -t ghcr.io/bagusyanuar/modular-simrs-vue/auth:latest .` |
+| **SIMRS** | `docker build --build-arg APP_NAME=simrs -t ghcr.io/bagusyanuar/modular-simrs-vue/simrs:latest .` |
+| **Old App** | `docker build --build-arg APP_NAME=old-app -t ghcr.io/bagusyanuar/modular-simrs-vue/old-app:latest .` |
+
+### 8.3 Registry Login
+
+Sebelum melakukan push ke GHCR, pastikan sudah login menggunakan Personal Access Token (PAT):
+
+```bash
+echo $MY_PAT | docker login ghcr.io -u <github-username> --password-stdin
+```
