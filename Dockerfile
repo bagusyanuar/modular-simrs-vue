@@ -32,8 +32,9 @@ ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # 1. Build semua dependencies internal (packages/*)
-# Kita panggil turbo langsung (global) agar filter ^ tidak salah terbaca oleh pnpm
-RUN turbo build --filter="${PKG_NAME}^"
+# Pake filter "...pkg" (build pkg + deps) digabung "!pkg" (kecuali pkg itu sendiri)
+# Ini cara paling aman buat build cuma dependencies-nya aja.
+RUN turbo build --filter="...${PKG_NAME}" --filter="!${PKG_NAME}"
 
 # 2. Build aplikasi utama menggunakan vite secara langsung (skip vue-tsc)
 RUN pnpm --filter=$PKG_NAME exec vite build
