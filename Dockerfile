@@ -31,6 +31,7 @@ COPY --from=pruner /app/out/full/ .
 COPY tsconfig.base.json .
 
 # BUILD TANPA VUE-TSC (Cek type via Husky/Local saja)
+ARG BUILD_MODE=production
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
@@ -40,7 +41,8 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN turbo build --filter="...${PKG_NAME}" --filter="!${PKG_NAME}"
 
 # 2. Build aplikasi utama menggunakan vite secara langsung (skip vue-tsc)
-RUN pnpm --filter=$PKG_NAME exec vite build
+# Oper BUILD_MODE ke --mode vite buat penentuan Tenant
+RUN pnpm --filter=$PKG_NAME exec vite build --mode $BUILD_MODE
 
 # Stage 4: Runner (Pake alpine biar image akhir super kecil)
 FROM node:20-alpine AS runner

@@ -3,14 +3,16 @@ name: Build and Publish Docker Images
 on:
   push:
     tags:
-      - '*-v*' # Trigger cuma pas push tag: auth-v1.0.0, simrs-v1.2.3, dll
+      - '*-v*'          # Production (e.g., auth-v1.0.0)
+      - '*-staging-v*'  # Staging    (e.g., auth-staging-v1.0.0)
+      - '*-dev-v*'      # Development(e.g., auth-dev-v1.0.0)
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  # Job untuk menentukan app mana yang di-build berdasarkan tag
+  # Job untuk menentukan app dan environment mana yang di-build berdasarkan tag
   setup:
     runs-on: ubuntu-latest
     outputs:
@@ -18,9 +20,54 @@ jobs:
     steps:
       - id: set-apps
         run: |
-          # Ambil prefix sebelum '-v' (misal auth-v1.0.0 -> auth)
-          APP=$(echo "${{ github.ref_name }}" | cut -d'-' -f1)
+          TAG_NAME="${{ github.ref_name }}"
           
+          # 1. Deteksi App Name secara DINAMIS dari folder apps/
+          # Kita sort -r (reverse length) biar 'old-app' dapet giliran sebelum 'old'
+          APP=""
+          for dir in $(ls apps/ | awk '{ print length, $0 }' | sort -rn | cut -d" " -f2-); do
+            if [[ $TAG_NAME == "$dir-"* ]]; then
+              APP="$dir"
+              break
+            fi
+          done
+
+          # Fallback jika tidak ditemukan (misal tag salah format)
+          if [[ -z "$APP" ]]; then
+            APP=$(echo "$TAG_NAME" | cut -d'-' -f1)
+          fi
+          
+          # 2. Ambil sisanya (setelah app name dan sebelum -v*)
+          REMAINING=$(echo "$TAG_NAME" | sed "s/^$APP-//" | sed 's/-v.*//')
+          
+          # Default Values
+          ENV="prod"
+          MODE="production"
+          TENANT="base"
+
+          if [[ "$REMAINING" == "dev" ]]; then
+            ENV="dev"
+            MODE="development"
+          elif [[ "$REMAINING" == "staging" ]]; then
+            ENV="staging"
+            MODE="staging"
+          elif [[ "$REMAINING" != "" && "$REMAINING" != "$TAG_NAME" ]]; then
+            # Support dash di nama tenant (misal rs-pku)
+            if [[ "$REMAINING" == "dev-"* ]]; then
+               ENV="dev"
+               TENANT=$(echo "$REMAINING" | sed 's/^dev-//')
+               MODE="$TENANT"
+            elif [[ "$REMAINING" == "staging-"* ]]; then
+               ENV="staging"
+               TENANT=$(echo "$REMAINING" | sed 's/^staging-//')
+               MODE="$TENANT"
+            else
+               ENV="prod"
+               TENANT="$REMAINING"
+               MODE="$TENANT"
+            fi
+          fi
+
           # Mapping folder ke package name
           case $APP in
             "auth") PKG="@genrs/auth-app" ;;
@@ -29,7 +76,7 @@ jobs:
             *) PKG="$APP" ;;
           esac
           
-          echo "apps=[{\"app\":\"$APP\", \"pkg\":\"$PKG\"}]" >> $GITHUB_OUTPUT
+          echo "apps=[{\"app\":\"$APP\", \"pkg\":\"$PKG\", \"env\":\"$ENV\", \"mode\":\"$MODE\", \"tenant\":\"$TENANT\"}]" >> $GITHUB_OUTPUT
 
   build-and-push:
     needs: setup
@@ -63,8 +110,13 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.app }}
           tags: |
-            type=raw,value=latest,enable={{is_default_branch}}
-            type=ref,event=branch
+            # Tag khusus environment & tenant
+            type=raw,value=latest,enable=${{ matrix.env == 'prod' && matrix.tenant == 'base' }}
+            type=raw,value=${{ matrix.env }},enable=${{ matrix.tenant == 'base' }}
+            type=raw,value=${{ matrix.tenant }},enable=${{ matrix.tenant != 'base' }}
+            type=raw,value=${{ matrix.env }}-${{ matrix.tenant }},enable=${{ matrix.tenant != 'base' }}
+            # Tag sesuai nama git tag asli
+            type=ref,event=tag
             type=sha,format=short
 
       - name: Build and push Docker image
@@ -75,6 +127,7 @@ jobs:
           build-args: |
             APP_NAME=${{ matrix.app }}
             PKG_NAME=${{ matrix.pkg }}
+            BUILD_MODE=${{ matrix.mode }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
