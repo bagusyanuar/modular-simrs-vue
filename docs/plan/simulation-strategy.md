@@ -33,5 +33,31 @@ Meskipun token disimpan di Cookie, komunikasi ke Backend tetap menggunakan stand
 2. **SSO Redirect**: Jika user mengakses V1 atau V2 tanpa sesi valid, app akan me-redirect user ke `/sso/login?return_url=<current_url>`.
 3. **Seamless UI**: Sidebar dan Header di V1 dan V2 diusahakan identik secara visual menggunakan shared component dari `packages/ui`.
 
-## 5. Target Akhir
+## 6. Local Development Setup
+Untuk menjalankan ekosistem simulasi ini secara lokal, diperlukan konfigurasi host dan environment agar routing sub-domain/sub-path berjalan lancar.
+
+### 6.1 Hosts Configuration
+Tambahkan baris berikut di file `hosts` sistem (Windows: `C:\Windows\System32\drivers\etc\hosts`, Linux/macOS: `/etc/hosts`):
+
+```bash
+# Modular SIMRS Simulation Domains
+127.0.0.1  neurovi-simulation.test
+127.0.0.1  auth.neurovi-simulation.test
+127.0.0.1  simrs.neurovi-simulation.test
+127.0.0.1  old-app.neurovi-simulation.test
+```
+
+### 6.2 Environment Variables
+Pastikan file `.env` di root direktori sudah dikonfigurasi. Referensi dapat dilihat pada `.env.example`.
+
+### 6.3 Running the Simulation
+Gunakan script pnpm yang sudah disediakan di root `package.json` untuk menjalankan semua aplikasi sekaligus:
+
+```bash
+pnpm dev:simulation
+```
+Script ini akan menjalankan `auth-app`, `old-app`, dan `simrs-app` secara bersamaan menggunakan Turborepo.
+
+## 7. Target Akhir
 Secara bertahap, module-module di V1 (`old-app`) akan dimatikan dan navigasi akan diarahkan ke V2 (`simrs`), hingga akhirnya `old-app` bisa di-pensiunkan sepenuhnya.
+
