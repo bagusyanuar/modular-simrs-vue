@@ -27,6 +27,9 @@ RUN pnpm install --frozen-lockfile
 # Copy Full source
 COPY --from=pruner /app/out/full/ .
 
+# Manually copy root config files that might be missed by turbo prune
+COPY tsconfig.base.json .
+
 # BUILD TANPA VUE-TSC (Cek type via Husky/Local saja)
 ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
