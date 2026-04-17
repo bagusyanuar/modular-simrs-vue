@@ -39,18 +39,19 @@ const { isActive } = useActiveMenu();
           </NSidebarMenuSubTrigger>
           <NSidebarMenuSubContent>
             <NSidebarItem
-              icon="lucide:building"
-              href="/v2/unit"
-              :active="isActive('/v2/unit')"
+              :href="'/installation'"
+              :active="isActive('/installation')"
             >
+              Instalasi
+            </NSidebarItem>
+            <NSidebarItem href="/v2/unit" :active="isActive('/v2/unit')">
               Unit
             </NSidebarItem>
-            <NSidebarItem
-              icon="lucide:user-cog"
-              to="/staff"
-              :active="isActive('/staff')"
-            >
+            <NSidebarItem :href="'/staff'" :active="isActive('/staff')">
               Staff
+            </NSidebarItem>
+            <NSidebarItem :href="'/specialty'" :active="isActive('/specialty')">
+              Spesialisasi
             </NSidebarItem>
           </NSidebarMenuSubContent>
         </NSidebarMenuSub>

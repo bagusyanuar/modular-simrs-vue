@@ -17,6 +17,11 @@ export const dashboardRoutes: RouteRecordRaw[] = [
         name: 'installation',
         component: () => import('@/pages/installation/InstallationPage.vue'),
       },
+      {
+        path: 'specialty',
+        name: 'specialty',
+        component: () => import('@/pages/specialty/SpecialityPage.vue'),
+      },
       // Bisa tambahkan rute lain di sini nantinya
     ],
   },

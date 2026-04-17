@@ -26,7 +26,11 @@ const { isActive } = useActiveMenu();
         </div>
       </div>
       <NSidebarGroup label="Menu">
-        <NSidebarItem icon="lucide:layout-dashboard" to="/dashboard" :active="isActive('/dashboard')">
+        <NSidebarItem
+          icon="lucide:layout-dashboard"
+          to="/dashboard"
+          :active="isActive('/dashboard')"
+        >
           Dashboard
         </NSidebarItem>
         <NSidebarMenuSub>
@@ -43,6 +47,9 @@ const { isActive } = useActiveMenu();
             <NSidebarItem to="/staff" :active="isActive('/staff')">
               Staff
             </NSidebarItem>
+            <NSidebarItem to="/specialty" :active="isActive('/specialty')">
+              Spesialisasi
+            </NSidebarItem>
           </NSidebarMenuSubContent>
         </NSidebarMenuSub>
         <NSidebarMenuSub>
@@ -58,7 +65,11 @@ const { isActive } = useActiveMenu();
             </NSidebarItem>
           </NSidebarMenuSubContent>
         </NSidebarMenuSub>
-        <NSidebarItem icon="lucide:wallet" to="/billing" :active="isActive('/billing')">
+        <NSidebarItem
+          icon="lucide:wallet"
+          to="/billing"
+          :active="isActive('/billing')"
+        >
           Kendali Biaya
         </NSidebarItem>
       </NSidebarGroup>

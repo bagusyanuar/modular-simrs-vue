@@ -21,7 +21,7 @@ export const mapInstallationFormToRequest = (form: InstallationForm): Installati
   };
 };
 
-export const mapResponseToModel = (res: InstallationResponse): InstallationModel => {
+export const mapInstallationResponseToModel = (res: InstallationResponse): InstallationModel => {
   return {
     id: res.id,
     code: res.code,

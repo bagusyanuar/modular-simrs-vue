@@ -7,7 +7,7 @@ import type { InstallationQuery, InstallationRequest, InstallationResponse } fro
 import {
     mapInstallationFormToRequest,
     mapInstallationParamsToQuery,
-    mapResponseToModel
+    mapInstallationResponseToModel
 } from '../mappers/installation.mapper';
 
 export class ApiInstallationRepository implements InstallationRepository {
@@ -17,7 +17,7 @@ export class ApiInstallationRepository implements InstallationRepository {
         try {
             const query: InstallationQuery = mapInstallationParamsToQuery(params);
             const res = await api.get<APIResponse<InstallationResponse[]>>(this.path, { params: query });
-            return (res.data.data || []).map(mapResponseToModel);
+            return (res.data.data || []).map(mapInstallationResponseToModel);
         } catch (error) {
             console.error('[ApiInstallationRepository] find error:', error);
             throw error;
@@ -28,7 +28,7 @@ export class ApiInstallationRepository implements InstallationRepository {
         try {
             const res = await api.get<APIResponse<InstallationResponse>>(`${this.path}/${id}`);
             if (!res.data.data) throw new Error('Installation not found');
-            return mapResponseToModel(res.data.data);
+            return mapInstallationResponseToModel(res.data.data);
         } catch (error) {
             console.error('[ApiInstallationRepository] findById error:', error);
             throw error;
@@ -40,7 +40,7 @@ export class ApiInstallationRepository implements InstallationRepository {
             const request: InstallationRequest = mapInstallationFormToRequest(form);
             const res = await api.post<APIResponse<InstallationResponse>>(this.path, request);
             if (!res.data.data) throw new Error('Failed to create installation');
-            return mapResponseToModel(res.data.data);
+            return mapInstallationResponseToModel(res.data.data);
         } catch (error) {
             console.error('[ApiInstallationRepository] create error:', error);
             throw error;
@@ -65,7 +65,7 @@ export class ApiInstallationRepository implements InstallationRepository {
                 } as InstallationModel;
             }
             
-            return mapResponseToModel(res.data.data);
+            return mapInstallationResponseToModel(res.data.data);
         } catch (error) {
             console.error('[ApiInstallationRepository] update error:', error);
             throw error;
