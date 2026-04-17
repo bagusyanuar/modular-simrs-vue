@@ -104,3 +104,16 @@ Sebelum melakukan push ke GHCR, pastikan sudah login menggunakan Personal Access
 ```bash
 echo $MY_PAT | docker login ghcr.io -u <github-username> --password-stdin
 ```
+
+### 8.4 CI/CD Tagging Strategy
+
+Build otomatis via **GitHub Actions** dipicu menggunakan Git Tags dengan format `[app-name]-v[version]`.
+
+| Target App | Tag Format | Command Contoh |
+| :--- | :--- | :--- |
+| **Auth** | `auth-v*` | `git tag auth-v1.0.0 && git push origin auth-v1.0.0` |
+| **SIMRS** | `simrs-v*` | `git tag simrs-v1.0.0 && git push origin simrs-v1.0.0` |
+| **Old App** | `old-app-v*` | `git tag old-app-v1.0.0 && git push origin old-app-v1.0.0` |
+
+> [!NOTE]
+> Workflow ini bersifat selektif. Jika Anda melakukan push tag `auth-v1.0.0`, maka sistem hanya akan melakukan build dan push untuk image **Auth** saja. Push ke branch biasa tidak akan men-trigger build image.

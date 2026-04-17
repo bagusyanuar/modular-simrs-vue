@@ -1,0 +1,71 @@
+name: Build and Publish Docker Images
+
+on:
+  push:
+    tags:
+      - '*-v*' # Trigger cuma pas push tag: auth-v1.0.0, simrs-v1.2.3, dll
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Job untuk menentukan app mana yang di-build berdasarkan tag
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      app_list: ${{ steps.set-apps.outputs.apps }}
+    steps:
+      - id: set-apps
+        run: |
+          # Ambil prefix sebelum '-v' (misal auth-v1.0.0 -> auth)
+          APP=$(echo "${{ github.ref_name }}" | cut -d'-' -f1)
+          echo "apps=[\"$APP\"]" >> $GITHUB_OUTPUT
+
+  build-and-push:
+    needs: setup
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.setup.outputs.app_list) }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_PAT }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/${{ matrix.app }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=ref,event=branch
+            type=sha,format=short
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          build-args: |
+            APP_NAME=${{ matrix.app }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
