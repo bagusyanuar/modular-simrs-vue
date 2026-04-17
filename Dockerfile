@@ -32,14 +32,15 @@ ENV NODE_ENV=production
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # 1. Build semua dependencies internal (packages/*)
-RUN pnpm turbo build --filter="$PKG_NAME^"
+# Kita panggil turbo langsung (global) agar filter ^ tidak salah terbaca oleh pnpm
+RUN turbo build --filter="${PKG_NAME}^"
+
 # 2. Build aplikasi utama menggunakan vite secara langsung (skip vue-tsc)
 RUN pnpm --filter=$PKG_NAME exec vite build
 
 # Stage 4: Runner (Pake alpine biar image akhir super kecil)
 FROM node:20-alpine AS runner
 ARG APP_NAME
-ARG PKG_NAME
 
 # Install sirv-cli buat serve static files
 RUN npm install -g sirv-cli
