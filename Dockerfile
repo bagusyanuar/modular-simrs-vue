@@ -1,51 +1,54 @@
-# Stage 1: Base image
+# Stage 1: Base
 FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
 RUN npm install -g turbo
 
-# Stage 2: Prune workspace
+# Stage 2: Prune
 FROM base AS pruner
 ARG PKG_NAME
 WORKDIR /app
 COPY . .
-# Menghasilkan subset workspace yang hanya dibutuhkan oleh target app
 RUN turbo prune --scope=$PKG_NAME --docker
 
-# Stage 3: Install dependencies
-FROM base AS installer
-ARG PKG_NAME
-WORKDIR /app
-# Ambil file config pnpm/package yang sudah di-prune
-COPY --from=pruner /app/out/json/ .
-COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
-RUN pnpm install --frozen-lockfile
-
-# Stage 4: Build app
+# Stage 3: Builder
 FROM base AS builder
 ARG APP_NAME
 ARG PKG_NAME
 WORKDIR /app
+
+# Copy JSON & lockfile
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
+
+# Copy Full source
 COPY --from=pruner /app/out/full/ .
-COPY --from=installer /app/node_modules ./node_modules
-# Inject ENV production jika diperlukan (opsional)
+
+# Build
 ENV NODE_ENV=production
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN turbo build --filter=$PKG_NAME
 
-# Stage 5: Runner (Node only)
-FROM base AS runner
+# Stage 4: Runner (Tanpa Vite Preview, pake sirv-cli lebih lincah & prod-ready)
+FROM node:20-alpine AS runner
 ARG APP_NAME
 ARG PKG_NAME
+
+# Kita butuh sirv-cli buat serve static files secara production-ready
+RUN npm install -g sirv-cli
+
 WORKDIR /app
 
-# Copy everything from builder (including node_modules and built dist)
-COPY --from=builder /app .
+# Kita cuma butuh folder dist dari app yang di-build
+COPY --from=builder /app/apps/${APP_NAME}/dist ./dist
 
-# Port default Vite preview (4173) atau sesuaikan dengan config
-EXPOSE 4173
+# Port default
+EXPOSE 8080
 
-# Jalankan preview atau command lain secara JSON format
-# Pakai shell helper supaya bisa baca filter dari arg
-ENTRYPOINT ["pnpm", "turbo", "run", "preview"]
-CMD ["--filter=$PKG_NAME"]
+# Jalankan sirv untuk serve folder dist
+# --single: buat support SPA routing (biar gak 404 pas refresh)
+# --host: biar bisa diakses dari luar container
+CMD ["sh", "-c", "sirv dist --port 8080 --host --single"]
