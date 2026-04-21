@@ -1,5 +1,5 @@
 {
-  "name": "@genrs/sso-app",
+  "name": "@genrs/v1-app",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -11,16 +11,7 @@
   "dependencies": {
     "vue": "^3.5.30",
     "vue-router": "^5.0.4",
-    "tailwindcss": "^4.2.2",
-    "@genrs/auth": "workspace:*",
-    "@genrs/ui": "workspace:*",
-    "@genrs/core": "workspace:*",
-    "@genrs/infrastructure": "workspace:*",
-    "@genrs/presentation": "workspace:*",
-    "@genrs/utils": "workspace:*",
-    "vee-validate": "^4.15.0",
-    "@vee-validate/zod": "^4.15.0",
-    "zod": "^3.25.23"
+    "tailwindcss": "^4.2.2"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
