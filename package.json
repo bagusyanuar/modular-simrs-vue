@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "dev:auth": "turbo run dev --filter=@genrs/auth-app",
+    "dev:sso": "turbo run dev --filter=@genrs/sso-app",
     "dev:simrs": "turbo run dev --filter=@genrs/simrs-app --filter=@genrs/auth-app --",
     "dev:old": "turbo run dev --filter=@genrs/old-app",
     "dev:simulation": "turbo run dev --filter=@genrs/old-app --filter=@genrs/auth-app --filter=@genrs/simrs-app",
