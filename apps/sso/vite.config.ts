@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
+import { tenantResolver } from '../../features/presentation/vite-plugin-tenant';
 import path from 'path';
 
 // https://vite.dev/config/
@@ -9,13 +10,19 @@ export default defineConfig(({ mode }) => {
   const appEnv = loadEnv(mode, process.cwd(), 'VITE_');
   Object.assign(process.env, globalEnv, appEnv);
 
+  const tenant = process.env.VITE_TENANT || 'base';
+
   return {
     base: process.env.VITE_PATH_SSO + '/',
     envDir: path.resolve(__dirname, '../../'),
-    plugins: [vue(), tailwindcss()],
+    plugins: [vue(), tailwindcss(), tenantResolver('auth', tenant)],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        '@genrs/presentation': path.resolve(
+          __dirname,
+          '../../features/presentation/src'
+        ),
       },
     },
     server: {

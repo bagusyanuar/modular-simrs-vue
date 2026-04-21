@@ -5,7 +5,7 @@
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],
-      "@page/*": ["../../features/presentation/src/simrs/base/*"]
+      "@page/*": ["../../features/presentation/src/auth/base/*"]
     },
     /* Linting */
     "strict": true,

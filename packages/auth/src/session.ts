@@ -32,7 +32,9 @@ export const SessionManager = {
     expires: 7,
     clientId: '',
     redirectUri: '',
-    authServerUrl: import.meta.env.VITE_AUTH_SERVER_URL || 'http://neurovi-simulation.test:3000',
+    authServerUrl:
+      import.meta.env.VITE_AUTH_SERVER_URL ||
+      'http://neurovi-simulation.test:3000',
   } as SessionConfig,
 
   /**
@@ -47,22 +49,22 @@ export const SessionManager = {
    */
   save(session: AuthSession): void {
     const { domain, secure, expires } = this.config;
-    
+
     if (session.accessToken) {
-      CookieStorage.set('access_token', session.accessToken, { 
-        domain, 
-        secure, 
+      CookieStorage.set('access_token', session.accessToken, {
+        domain,
+        secure,
         expires,
-        path: '/' 
+        path: '/',
       });
     }
-    
+
     if (session.refreshToken) {
-      CookieStorage.set('refresh_token', session.refreshToken, { 
-        domain, 
-        secure, 
+      CookieStorage.set('refresh_token', session.refreshToken, {
+        domain,
+        secure,
         expires,
-        path: '/' 
+        path: '/',
       });
     }
   },
@@ -93,5 +95,9 @@ export const SessionManager = {
    */
   isAuthenticated(): boolean {
     return !!CookieStorage.get('access_token');
-  }
+  },
+
+  hasRefreshToken(): boolean {
+    return !!CookieStorage.get('refresh_token');
+  },
 };
