@@ -47,7 +47,7 @@ const { isActive } = useActiveMenu();
             <NSidebarItem href="/v2/unit" :active="isActive('/v2/unit')">
               Unit
             </NSidebarItem>
-            <NSidebarItem href="/v2/staff" :active="isActive('/v2/staff')">
+            <NSidebarItem to="/staff" :active="isActive('/staff')">
               Staff
             </NSidebarItem>
             <NSidebarItem to="/specialty" :active="isActive('/specialty')">
@@ -70,8 +70,8 @@ const { isActive } = useActiveMenu();
         </NSidebarMenuSub>
         <NSidebarItem
           icon="lucide:wallet"
-          to="/billing"
-          :active="isActive('/billing')"
+          :href="'/v2/billing'"
+          :active="isActive('/v2/billing')"
         >
           Kendali Biaya
         </NSidebarItem>

@@ -5,8 +5,8 @@ import type { RouteRecordRaw } from 'vue-router';
  * Menambahkan rute eksklusif yang hanya ada di tenant ini.
  */
 export const billingExtraRoutes: RouteRecordRaw[] = [
-  // {
-  //   path: '/billing/custom-page',
-  //   component: () => import('./pages/CustomPage.vue'),
-  // },
+  {
+    path: '/billing',
+    component: () => import('./Billing.vue'),
+  },
 ];
