@@ -20,6 +20,10 @@ Untuk efisiensi dan keamanan, setiap aplikasi menggunakan strategi **Multi-stage
 - **Stage 2 (Runtime)**: Menggunakan `nginx:alpine`. Hanya menyalin file `dist` dari Stage 1. 
 - **Hasil**: Image aplikasi yang sangat kecil (~20-50 MB) dan aman (tanpa source code/Node.js di dalam container).
 
+> [!IMPORTANT]
+> **Catatan untuk Tim Infra:**
+> Karena arsitektur Frontend menggunakan mekanisme *Baked-in Environment*, Tim Infra **WAJIB** memasukkan/menempelkan file `.env` global (berisi variabel production seperti SSO Domain & API URL) ke dalam root direktori sebelum menjalankan perintah `docker build`. Variabel di level tenant akan otomatis diambil dari file `.env.[tenant]` yang ada di folder aplikasi masing-masing.
+
 ## 3. GHCR.io Integration
 
 Semua docker images disimpan di **GitHub Container Registry (GHCR)**. 
@@ -66,6 +70,14 @@ git push origin simrs-rspku-v1.0.0
 # 4. Build Staging Tenant (RSPKU)
 git tag simrs-staging-rspku-v1.0.0
 git push origin simrs-staging-rspku-v1.0.0
+
+# 5. Build Development (Base)
+git tag simrs-dev-v1.0.0
+git push origin simrs-dev-v1.0.0
+
+# 6. Build Development Tenant (RSPKU)
+git tag simrs-dev-rspku-v1.0.0
+git push origin simrs-dev-rspku-v1.0.0
 ```
 
 > [!IMPORTANT]
