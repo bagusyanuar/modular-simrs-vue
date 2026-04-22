@@ -26,11 +26,56 @@ Semua docker images disimpan di **GitHub Container Registry (GHCR)**.
 - **Registry URL**: `ghcr.io/bagusyanuar/modular-simrs-vue/`
 - **Naming Convention**: `[app-name]:latest` atau `[app-name]:v[version]`.
 
-## 4. Deployment Architecture
+## 4. Git Tag-based Build Strategy
+
+Proses build otomatis dipicu oleh **Git Tag** dengan konvensi penamaan tertentu untuk menentukan Aplikasi, Environment, dan Tenant.
+
+| Tag Pattern | Target App | Environment | Tenant | Vite Mode |
+| :--- | :--- | :--- | :--- | :--- |
+| `[app]-v*` | `[app]` | Production | base | `production` |
+| `[app]-dev-v*` | `[app]` | Development | base | `development` |
+| `[app]-staging-v*` | `[app]` | Staging | base | `staging` |
+| `[app]-[tenant]-v*` | `[app]` | Production | `[tenant]` | `[tenant]` |
+| `[app]-dev-[tenant]-v*` | `[app]` | Development | `[tenant]` | `development-[tenant]` |
+| `[app]-staging-[tenant]-v*` | `[app]` | Staging | `[tenant]` | `staging-[tenant]` |
+
+### 4.1 Mekanisme Build Mode
+Workflow akan mengekstrak informasi dari tag dan meneruskannya sebagai `BUILD_MODE` ke Docker. Vite kemudian akan memuat file `.env` yang sesuai:
+- `MODE=rspku` -> Memuat `.env.rspku`
+- `MODE=staging-rspku` -> Memuat `.env.staging-rspku`
+
+Ini memungkinkan kustomisasi `VITE_TENANT` dan API URL pada level tenant per environment.
+
+### 4.2 Cara Build (Push Tag)
+
+Gunakan perintah git tag berikut untuk memicu build otomatis via GitHub Actions:
+
+```bash
+# 1. Build Production (Base)
+git tag simrs-v1.0.0
+git push origin simrs-v1.0.0
+
+# 2. Build Staging (Base)
+git tag simrs-staging-v1.0.0
+git push origin simrs-staging-v1.0.0
+
+# 3. Build Production Tenant (RSPKU)
+git tag simrs-rspku-v1.0.0
+git push origin simrs-rspku-v1.0.0
+
+# 4. Build Staging Tenant (RSPKU)
+git tag simrs-staging-rspku-v1.0.0
+git push origin simrs-staging-rspku-v1.0.0
+```
+
+> [!IMPORTANT]
+> Pastikan nama aplikasi (`simrs`, `auth`, `old-app`) sesuai dengan nama folder di direktori `apps/`.
+
+## 5. Deployment Architecture
 
 Menggunakan pola **Reverse Proxy Gateway**. Satu pintu masuk utama (`gateway-nginx`) yang mendistribusikan traffic ke container masing-masing di dalam network Docker internal.
 
-### 4.1 `docker-compose.yml` (Contoh)
+### 5.1 `docker-compose.yml` (Contoh)
 
 ```yaml
 version: '3.8'
@@ -59,7 +104,7 @@ networks:
     driver: bridge
 ```
 
-### 4.2 `nginx.conf` Gateway (Routing Logic)
+### 5.2 `nginx.conf` Gateway (Routing Logic)
 
 ```nginx
 server {
@@ -80,7 +125,7 @@ server {
 }
 ```
 
-## 5. Keuntungan Arsitektur
+## 6. Keuntungan Arsitektur
 1. **Independent Deployment**: Update module tertentu tanpa mengganggu module lain.
 2. **Resource Efficiency**: Hemat RAM Cold-Storage karena image sangat kecil.
 3. **Security**: Port internal aplikasi tidak terekspos ke dunia luar.

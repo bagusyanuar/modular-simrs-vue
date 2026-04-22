@@ -47,7 +47,7 @@ const { isActive } = useActiveMenu();
             <NSidebarItem href="/v2/unit" :active="isActive('/v2/unit')">
               Unit
             </NSidebarItem>
-            <NSidebarItem :href="'/staff'" :active="isActive('/staff')">
+            <NSidebarItem href="/v2/staff" :active="isActive('/v2/staff')">
               Staff
             </NSidebarItem>
             <NSidebarItem :href="'/specialty'" :active="isActive('/specialty')">

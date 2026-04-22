@@ -38,13 +38,16 @@ const { isActive } = useActiveMenu();
             Master Data
           </NSidebarMenuSubTrigger>
           <NSidebarMenuSubContent>
-            <NSidebarItem to="/installation" :active="isActive('/installation')">
+            <NSidebarItem
+              to="/installation"
+              :active="isActive('/installation')"
+            >
               Instalasi
             </NSidebarItem>
             <NSidebarItem href="/v2/unit" :active="isActive('/v2/unit')">
               Unit
             </NSidebarItem>
-            <NSidebarItem to="/staff" :active="isActive('/staff')">
+            <NSidebarItem href="/v2/staff" :active="isActive('/v2/staff')">
               Staff
             </NSidebarItem>
             <NSidebarItem to="/specialty" :active="isActive('/specialty')">

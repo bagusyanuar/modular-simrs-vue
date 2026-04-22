@@ -56,11 +56,11 @@ jobs:
             if [[ "$REMAINING" == "dev-"* ]]; then
                ENV="dev"
                TENANT=$(echo "$REMAINING" | sed 's/^dev-//')
-               MODE="$TENANT"
+               MODE="development-$TENANT"
             elif [[ "$REMAINING" == "staging-"* ]]; then
                ENV="staging"
                TENANT=$(echo "$REMAINING" | sed 's/^staging-//')
-               MODE="$TENANT"
+               MODE="staging-$TENANT"
             else
                ENV="prod"
                TENANT="$REMAINING"

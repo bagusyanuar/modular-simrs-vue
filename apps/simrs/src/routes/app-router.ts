@@ -7,6 +7,7 @@ import AppLayout from '../layouts/AppLayout.vue';
 import { activeModules } from '@page/manifest';
 import { moduleLibrary } from 'virtual:page-registry';
 import { createSSOGuard } from '@genrs/auth';
+import { h } from 'vue';
 
 function resolveRoutes(): RouteRecordRaw[] {
   const aggregatedRoutes: RouteRecordRaw[] = [];
@@ -64,6 +65,13 @@ const appRouter = createRouter({
     {
       path: '/callback',
       component: () => import('../App.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: {
+        render: () => h('div', 'halaman masih maintenance'),
+      },
     },
   ],
 });
