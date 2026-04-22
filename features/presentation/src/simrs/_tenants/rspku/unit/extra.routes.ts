@@ -10,4 +10,9 @@ export const unitExtraRoutes: RouteRecordRaw[] = [
     // Menggunakan component Unit yang sudah dicustom oleh user
     component: () => import('./ExtraPage.vue'),
   },
+  {
+    path: '/unit',
+    // Menggunakan component Unit yang sudah dicustom oleh user
+    component: () => import('./OverrideBaseUnit.vue'),
+  },
 ];
