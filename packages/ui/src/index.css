@@ -73,6 +73,28 @@ body {
 }
 
 @theme inline {
+  --spacing-ns-1: 4px;
+  --spacing-ns-2: 6px;
+  --spacing-ns-3: 8px;
+  --spacing-ns-4: 12px;
+  --spacing-ns-5: 16px;
+  --spacing-ns-6: 20px;
+  --spacing-ns-7: 24px;
+  --spacing-ns-8: 28px;
+  --spacing-ns-9: 32px;
+  --spacing-ns-10: 36px;
+  --spacing-ns-11: 40px;
+  --spacing-ns-12: 60px;
+  --spacing-ns-13: 80px;
+
+  --radius-nr-1: 2px;
+  --radius-nr-2: 4px;
+  --radius-nr-3: 8px;
+  --radius-nr-4: 12px;
+  --radius-nr-5: 16px;
+  --radius-nr-6: 24px;
+  --radius-nr-7: 100px;
+
   /* Core Brand Palette — references :root vars for dark mode support */
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
