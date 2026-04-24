@@ -70,9 +70,8 @@ body {
   --slide-in-from-right-2: {
     --tw-enter-translate-x: 0.5rem;
   }
-}
 
-@theme inline {
+  /* Spacing Tokens */
   --spacing-ns-1: 4px;
   --spacing-ns-2: 6px;
   --spacing-ns-3: 8px;
@@ -87,6 +86,7 @@ body {
   --spacing-ns-12: 60px;
   --spacing-ns-13: 80px;
 
+  /* Radius Tokens */
   --radius-nr-1: 2px;
   --radius-nr-2: 4px;
   --radius-nr-3: 8px;
@@ -95,7 +95,7 @@ body {
   --radius-nr-6: 24px;
   --radius-nr-7: 100px;
 
-  /* Core Brand Palette — references :root vars for dark mode support */
+  /* Core Brand Palette */
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-hover: var(--brand-hover);
@@ -105,7 +105,7 @@ body {
   --color-foreground: var(--foreground);
   --color-border: var(--border);
 
-  /* color primary token */
+  /* Primary Palette */
   --color-primary-50: oklch(97.80% 0.009 232.36);
   --color-primary-100: oklch(95.07% 0.020 238.67);
   --color-primary-200: oklch(89.94% 0.044 230.23);
@@ -118,7 +118,7 @@ body {
   --color-primary-900: oklch(38.26% 0.071 237.55);
   --color-primary-950: oklch(28.86% 0.052 240.30);
 
-  /* color accent token */
+  /* Accent Palette */
   --color-accent-50: oklch(97.84% 0.015 315.97);
   --color-accent-100: oklch(94.96% 0.034 314.10);
   --color-accent-200: oklch(90.74% 0.063 312.61);
@@ -130,6 +130,18 @@ body {
   --color-accent-800: oklch(45.33% 0.199 312.96);
   --color-accent-900: oklch(40.44% 0.173 313.90);
   --color-accent-950: oklch(31.17% 0.147 312.48);
+
+  /* Custom Font Size Tokens (nt = Typography) */
+  --font-size-nt-h1: 1.5rem;
+  --font-size-nt-h2: 1.125rem;
+  --font-size-nt-base: 1rem;
+  --font-size-nt-sm: 0.875rem;
+  --font-size-nt-tiny: 0.75rem;
+  --font-size-nt-micro: 0.625rem;
+
+  /* Custom Line Height Tokens */
+  --leading-nl-tight: 1.2;
+  --leading-nl-normal: 1.4;
 }
 
 @keyframes in {
