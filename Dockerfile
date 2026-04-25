@@ -44,19 +44,28 @@ RUN turbo build --filter="...${PKG_NAME}" --filter="!${PKG_NAME}"
 # Oper BUILD_MODE ke --mode vite buat penentuan Tenant
 RUN pnpm --filter=$PKG_NAME exec vite build --mode $BUILD_MODE
 
-# Stage 4: Runner (Pake alpine biar image akhir super kecil)
-FROM node:20-alpine AS runner
+# Stage 4: Runner (Pake Nginx alpine biar tangguh & ringan)
+FROM nginx:alpine AS runner
 ARG APP_NAME
 
-# Install sirv-cli buat serve static files
-RUN npm install -g sirv-cli
+WORKDIR /usr/share/nginx/html
 
-WORKDIR /app
+# Bersihin default nginx html
+RUN rm -rf ./*
 
-# Ambil hasil build saja
-COPY --from=builder /app/apps/${APP_NAME}/dist ./dist
+# Ambil hasil build dari builder
+COPY --from=builder /app/apps/${APP_NAME}/dist .
 
+# Copy konfigurasi custom Nginx untuk SPA
+COPY scripts/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy script entrypoint
+COPY scripts/docker-entrypoint.sh /docker-entrypoint.d/99-env-inject.sh
+RUN chmod +x /docker-entrypoint.d/99-env-inject.sh
+
+# Ganti port nginx default menjadi 8080 (karena di nginx.conf kita set 8080)
 EXPOSE 8080
 
-# Serve menggunakan sirv agar support SPA routing
-CMD ["sh", "-c", "sirv dist --port 8080 --host --single"]
+# Nginx alpine udah punya ENTRYPOINT sendiri yang ngejalanin file di /docker-entrypoint.d/
+# Jadi kita cukup set CMD standar nginx
+CMD ["nginx", "-g", "daemon off;"]

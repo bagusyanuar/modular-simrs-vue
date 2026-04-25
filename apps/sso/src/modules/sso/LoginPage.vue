@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SessionManager } from '@genrs/auth';
+import { SSOSessionManager } from '@genrs/sso';
 import { useAuthFlow } from './composables/useAuthFlow';
 import IllustrationPanel from './components/IllustrationPanel.vue';
 import FormLogin from './components/FormLogin.vue';
@@ -7,7 +7,7 @@ import FormLogin from './components/FormLogin.vue';
 const { isAuthenticated } = useAuthFlow();
 
 const logout = () => {
-  SessionManager.logout();
+  SSOSessionManager.logout();
   window.location.reload();
 };
 
@@ -30,7 +30,7 @@ const dashboardUrl = '/dashboard';
       >
         <!-- 🔄 State: Redirecting -->
         <div
-          v-if="isAuthenticated && $route.query.return_url"
+          v-if="isAuthenticated && $route.query.redirect_uri"
           class="absolute inset-0 z-20 bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center p-8 text-center space-y-4 animate-in fade-in zoom-in duration-300"
         >
           <div
@@ -46,7 +46,7 @@ const dashboardUrl = '/dashboard';
 
         <!-- ✅ State: Authenticated (Manual Visit) -->
         <div
-          v-else-if="isAuthenticated && !$route.query.return_url"
+          v-else-if="isAuthenticated && !$route.query.redirect_uri"
           class="absolute inset-0 z-20 bg-white flex flex-col items-center justify-center p-12 text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500"
         >
           <div

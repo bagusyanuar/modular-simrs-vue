@@ -2,11 +2,16 @@ import { createApp } from 'vue';
 import './style.css';
 import App from './App.vue';
 import appRouter from './routes/app-router';
-// import { enforceGateway } from '@genrs/utils';
+import { SSOSessionManager } from '@genrs/sso';
+import { getEnv } from '@genrs/utils';
 
-// enforceGateway(
-//   Number(import.meta.env.VITE_PORT_V1) || 3000,
-//   import.meta.env.VITE_DOMAIN
-// );
+// 🔐 Initialize SSO Session Configuration
+SSOSessionManager.configure({
+  domain: getEnv('VITE_SSO_DOMAIN'),
+  secure: window.location.protocol === 'https:',
+  expires: 7,
+});
 
-createApp(App).use(appRouter).mount('#app');
+const app = createApp(App);
+app.use(appRouter);
+app.mount('#app');

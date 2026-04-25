@@ -247,18 +247,21 @@ importers:
 
   apps/sso:
     dependencies:
-      '@genrs/auth':
-        specifier: workspace:*
-        version: link:../../packages/auth
       '@genrs/core':
         specifier: workspace:*
         version: link:../../features/core
+      '@genrs/http':
+        specifier: workspace:*
+        version: link:../../packages/http
       '@genrs/infrastructure':
         specifier: workspace:*
         version: link:../../features/infrastructure
       '@genrs/presentation':
         specifier: workspace:*
         version: link:../../features/presentation
+      '@genrs/sso':
+        specifier: workspace:*
+        version: link:../../packages/sso
       '@genrs/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -478,9 +481,6 @@ importers:
 
   packages/http:
     dependencies:
-      '@genrs/auth':
-        specifier: workspace:*
-        version: link:../auth
       axios:
         specifier: ^1.15.0
         version: 1.15.0
