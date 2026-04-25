@@ -64,5 +64,18 @@ export const createSSOClient = (config: SSOConfig) => {
       });
       return data;
     },
+
+    /**
+     * Refresh Token
+     * Hit POST /token to exchange refresh_token for a new access_token
+     */
+    async refreshToken(params: { refresh_token: string }): Promise<TokenResponse> {
+      const { data } = await api.post('/token', {
+        grant_type: 'refresh_token',
+        client_id: config.clientId,
+        refresh_token: params.refresh_token,
+      });
+      return data;
+    },
   };
 };
