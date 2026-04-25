@@ -31,35 +31,21 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
   }
 
   router.beforeEach(async (to, _from, next) => {
-    console.log('🔍 [SSOGuard] Initialized for path:', to.path);
-    
     // 1. Handle Callback Route (Tahap C)
     const isCallback = to.path === callbackPath || to.path === `${callbackPath}/`;
     if (isCallback) {
-      console.log('🔄 [SSOGuard] Tahap C: Callback Path Detected');
       const code = to.query.code as string;
       const state = to.query.state as string;
       const verifier = sessionStorage.getItem('sso_verifier');
       const savedState = sessionStorage.getItem('sso_state');
 
-      console.log('[SSOGuard] PKCE Data Check:', { 
-        hasCode: !!code, 
-        hasVerifier: !!verifier, 
-        stateMatch: state === savedState,
-        queryState: state,
-        savedState: savedState
-      });
-
       if (!code || !verifier || state !== savedState) {
-        console.warn('[SSOGuard] PKCE Validation Failed! Missing data or state mismatch.');
+        console.warn('[SSOGuard] Invalid Callback data.');
         return next('/');
       }
 
       try {
-        console.log('[SSOGuard] Attempting Exchange Token...');
         const tokens = await client.exchangeToken({ code, code_verifier: verifier });
-        console.log('[SSOGuard] Exchange Token Success! Tokens received.');
-        
         const session = {
           accessToken: tokens.access_token,
           refreshToken: tokens.refresh_token,
@@ -71,28 +57,18 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
         sessionStorage.removeItem('sso_verifier');
         sessionStorage.removeItem('sso_state');
         
-        console.log('✅ [SSOGuard] Login Complete! Redirecting to dashboard...');
         return next('/');
-      } catch (error: any) {
-        const errorData = error?.response?.data || error.message;
-        console.error('[SSOGuard] Exchange Token FAILED:', errorData);
-        alert('Exchange Token Gagal! Cek Console. Error: ' + JSON.stringify(errorData));
+      } catch (error) {
+        console.error('[SSOGuard] Token Exchange Error:', error);
         return next('/');
       }
     }
 
-    console.log('[SSOGuard] Checking Public Meta...', to.meta);
     // 2. Skip for public routes
-    if (to.meta?.public) {
-      console.log('[SSOGuard] Public Route! Allowing access.');
-      return next();
-    }
+    if (to.meta?.public) return next();
 
     // 3. Check local session
-    const isAuthed = SSOSessionManager.isAuthenticated();
-    console.log('[SSOGuard] Local Session Check:', isAuthed);
-    
-    if (isAuthed) {
+    if (SSOSessionManager.isAuthenticated()) {
       return next();
     }
 

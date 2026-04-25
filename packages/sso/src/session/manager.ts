@@ -29,14 +29,12 @@ export const SSOSessionManager = {
   },
 
   save(session: AuthSession): void {
-    console.log('[SSOSessionManager] Saving session...', { hasAccess: !!session.accessToken, hasRefresh: !!session.refreshToken });
     if (session.accessToken) {
       localStorage.setItem(STORAGE_KEY_ACCESS, session.accessToken);
     }
     if (session.refreshToken) {
       localStorage.setItem(STORAGE_KEY_REFRESH, session.refreshToken);
     }
-    console.log('[SSOSessionManager] Session saved ✅');
   },
 
   get(): AuthSession | null {
@@ -52,8 +50,6 @@ export const SSOSessionManager = {
   },
 
   isAuthenticated(): boolean {
-    const result = !!localStorage.getItem(STORAGE_KEY_ACCESS);
-    console.log('[SSOSessionManager] isAuthenticated:', result);
-    return result;
+    return !!localStorage.getItem(STORAGE_KEY_ACCESS);
   },
 };
