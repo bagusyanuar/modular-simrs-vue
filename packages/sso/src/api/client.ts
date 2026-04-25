@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { SSOSessionManager } from '../session/manager';
 
 export interface TokenResponse {
   access_token: string;
@@ -20,6 +21,56 @@ export const createSSOClient = (config: SSOConfig) => {
     baseURL: config.baseUrl,
     withCredentials: true, // Important for Silent Login session cookies
   });
+
+  // 🛡️ Request Interceptor: Inject Bearer Token
+  api.interceptors.request.use((conf) => {
+    const session = SSOSessionManager.get();
+    if (session?.accessToken) {
+      conf.headers.Authorization = `Bearer ${session.accessToken}`;
+    }
+    return conf;
+  });
+
+  // 🛡️ Response Interceptor: Auto Refresh on 401
+  api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+
+        const session = SSOSessionManager.get();
+        if (session?.refreshToken) {
+          try {
+            console.log('[SSOClient] Access token expired. Attempting refresh...');
+            
+            // Panggil endpoint refresh secara manual (biar gak lewat interceptor ini lagi)
+            const { data } = await axios.post(`${config.baseUrl}/token`, {
+              client_id: config.clientId,
+              refresh_token: session.refreshToken,
+              grant_type: 'refresh_token',
+            });
+
+            const unwrapped = data.data || data;
+            
+            SSOSessionManager.save({
+              accessToken: unwrapped.access_token,
+              refreshToken: unwrapped.refresh_token,
+            });
+
+            // Update header and retry
+            originalRequest.headers.Authorization = `Bearer ${unwrapped.access_token}`;
+            return api(originalRequest);
+          } catch (refreshError) {
+            SSOSessionManager.logout();
+            return Promise.reject(refreshError);
+          }
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
 
   return {
     /**
@@ -63,12 +114,6 @@ export const createSSOClient = (config: SSOConfig) => {
       code: string;
       code_verifier: string;
     }): Promise<TokenResponse> {
-      console.log('[SSOClient] Exchanging token with:', { 
-        client_id: config.clientId, 
-        code: params.code,
-        redirect_uri: config.redirectUri 
-      });
-
       const { data } = await api.post('/token', {
         grant_type: 'authorization_code',
         client_id: config.clientId,
@@ -77,9 +122,7 @@ export const createSSOClient = (config: SSOConfig) => {
         redirect_uri: config.redirectUri,
       });
       
-      const unwrapped = data.data || data;
-      console.log('[SSOClient] Token Received:', !!unwrapped.access_token);
-      return unwrapped;
+      return data.data || data;
     },
 
     /**
@@ -92,6 +135,7 @@ export const createSSOClient = (config: SSOConfig) => {
       const { data } = await api.post('/token', {
         client_id: config.clientId,
         refresh_token: params.refresh_token,
+        grant_type: 'refresh_token',
       });
       return data.data || data;
     },

@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { SSOSessionManager } from '@genrs/sso';
-import { NIcon } from '@genrs/ui/components/icons';
 import { useAuthFlow } from './composables/useAuthFlow';
 import IllustrationPanel from './components/IllustrationPanel.vue';
 import FormLogin from './components/FormLogin.vue';
 
-const { isAuthenticated, isInvalidSSORequest } = useAuthFlow();
+const { isAuthenticated } = useAuthFlow();
 
 const logout = () => {
   SSOSessionManager.logout();
