@@ -10,9 +10,12 @@
   },
   "dependencies": {
     "vue": "^3.5.30",
-    "vue-router": "^5.0.4",
+    "vue-router": "^4.5.0",
     "tailwindcss": "^4.2.2",
-    "@genrs/utils": "workspace:*"
+    "@genrs/utils": "workspace:*",
+    "@genrs/presentation": "workspace:*",
+    "@genrs/sso": "workspace:*",
+    "@genrs/http": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",

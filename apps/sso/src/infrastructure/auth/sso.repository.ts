@@ -7,17 +7,18 @@ import type {
 
 export class SSORepository implements IAuthorizeRepository {
   async authorize(input: AuthorizeInput): Promise<AuthorizeOutput> {
+    // Sekarang kita teruskan semua field termasuk client_id & redirect_uri
     const response = await ssoClient.authorize(input);
     
-    if (response.status === 200 && response.data?.code) {
-      return {
-        code: response.data.code
-      };
+    // Backend mungkin mengembalikan data langsung atau di-wrap dalam property 'data'
+    const code = response.data?.code || response.data?.data?.code;
+
+    if (response.status === 200 && code) {
+      return { code };
     }
     
     throw new Error(response.data?.message || 'Gagal mendapatkan otorisasi dari server.');
   }
 }
 
-// Export singleton instance
 export const ssoRepository = new SSORepository();

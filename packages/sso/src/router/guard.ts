@@ -31,52 +31,68 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
   }
 
   router.beforeEach(async (to, _from, next) => {
-    // 1. Skip for public routes
-    if (to.meta?.public) return next();
-
-    // 2. Handle Callback Route (Tahap C)
-    if (to.path === callbackPath) {
+    console.log('🔍 [SSOGuard] Initialized for path:', to.path);
+    
+    // 1. Handle Callback Route (Tahap C)
+    const isCallback = to.path === callbackPath || to.path === `${callbackPath}/`;
+    if (isCallback) {
+      console.log('🔄 [SSOGuard] Tahap C: Callback Path Detected');
       const code = to.query.code as string;
       const state = to.query.state as string;
       const verifier = sessionStorage.getItem('sso_verifier');
       const savedState = sessionStorage.getItem('sso_state');
 
-      // CSRF Protection: Validate state
-      if (state !== savedState) {
-        console.error('[SSOGuard] State mismatch! CSRF attack detected.');
-        return next(false);
+      console.log('[SSOGuard] PKCE Data Check:', { 
+        hasCode: !!code, 
+        hasVerifier: !!verifier, 
+        stateMatch: state === savedState,
+        queryState: state,
+        savedState: savedState
+      });
+
+      if (!code || !verifier || state !== savedState) {
+        console.warn('[SSOGuard] PKCE Validation Failed! Missing data or state mismatch.');
+        return next('/');
       }
 
-      if (code && verifier) {
-        try {
-          const tokens = await client.exchangeToken({ code, code_verifier: verifier });
-          const session = {
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-          };
+      try {
+        console.log('[SSOGuard] Attempting Exchange Token...');
+        const tokens = await client.exchangeToken({ code, code_verifier: verifier });
+        console.log('[SSOGuard] Exchange Token Success! Tokens received.');
+        
+        const session = {
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        };
 
-          SSOSessionManager.save(session);
-          
-          // Trigger optional callback for Pinia
-          if (options.onAuthenticated) {
-            options.onAuthenticated(session);
-          }
-          
-          // Cleanup
-          sessionStorage.removeItem('sso_verifier');
-          sessionStorage.removeItem('sso_state');
-          
-          // Redirect to home or original target
-          return next('/');
-        } catch (error) {
-          console.error('[SSOGuard] Token Exchange Failed:', error);
-          return next(false);
-        }
+        SSOSessionManager.save(session);
+        if (options.onAuthenticated) options.onAuthenticated(session);
+        
+        sessionStorage.removeItem('sso_verifier');
+        sessionStorage.removeItem('sso_state');
+        
+        console.log('✅ [SSOGuard] Login Complete! Redirecting to dashboard...');
+        return next('/');
+      } catch (error: any) {
+        const errorData = error?.response?.data || error.message;
+        console.error('[SSOGuard] Exchange Token FAILED:', errorData);
+        alert('Exchange Token Gagal! Cek Console. Error: ' + JSON.stringify(errorData));
+        return next('/');
       }
     }
 
+    console.log('[SSOGuard] Checking Public Meta...', to.meta);
+    // 2. Skip for public routes
+    if (to.meta?.public) {
+      console.log('[SSOGuard] Public Route! Allowing access.');
+      return next();
+    }
+
     // 3. Check local session
-    if (SSOSessionManager.isAuthenticated()) {
+    const isAuthed = SSOSessionManager.isAuthenticated();
+    console.log('[SSOGuard] Local Session Check:', isAuthed);
+    
+    if (isAuthed) {
       return next();
     }
 
@@ -94,8 +110,10 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
         state: state
       });
       
-      if (response.status === 200 && response.data?.code) {
-        const code = response.data.code;
+      const silentCode = response.data?.code || response.data?.data?.code;
+
+      if (response.status === 200 && silentCode) {
+        const code = silentCode;
         const tokens = await client.exchangeToken({ code, code_verifier: verifier });
         const session = {
           accessToken: tokens.access_token,
@@ -113,25 +131,45 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
         return next();
       }
     } catch (error: any) {
-      // 5. Silent Login Failed (401) -> Redirect to Portal (Tahap B)
-      if (error.response?.status === 401) {
-        console.log('[SSOGuard] Silent login failed. Redirecting to Portal...');
-        
-        const verifier = sessionStorage.getItem('sso_verifier');
-        const state = sessionStorage.getItem('sso_state');
-        if (!verifier || !state) return next(false);
-
-        const challenge = await generateChallenge(verifier);
-        const returnUrl = encodeURIComponent(window.location.origin + callbackPath);
-        
-        const loginUrl = `${options.portalUrl}/login?client_id=${options.clientId}&code_challenge=${challenge}&state=${state}&redirect_uri=${returnUrl}`;
-        
-        next(false);
-        window.location.href = loginUrl;
-        return;
-      }
+      // Redirect ke Portal untuk semua kondisi error:
+      // - 401: Sesi expired di BE
+      // - Network Error: BE belum jalan / CORS issue
+      // - Lainnya: Anggap belum login, suruh login dulu
       
-      console.error('[SSOGuard] Critical Error:', error);
+      const status = error.response?.status;
+      const isNetworkError = !error.response;
+      
+      console.log(`[SSOGuard] Error (status=${status}, network=${isNetworkError}). Redirecting to Portal...`);
+      
+      // Ambil dari session, kalau gak ada kita generate baru biar tetep bisa redirect
+      let verifier = sessionStorage.getItem('sso_verifier');
+      let state = sessionStorage.getItem('sso_state');
+      
+      if (!verifier || !state) {
+        verifier = generateVerifier();
+        state = generateRandomString();
+        sessionStorage.setItem('sso_verifier', verifier);
+        sessionStorage.setItem('sso_state', state);
+      }
+
+      const challenge = await generateChallenge(verifier);
+      
+      // 🛠️ Gunakan URL API biar lebih aman & robust
+      const url = new URL(options.portalUrl);
+      url.searchParams.set('client_id', options.clientId);
+      url.searchParams.set('code_challenge', challenge);
+      url.searchParams.set('state', state);
+      url.searchParams.set('redirect_uri', options.redirectUri);
+      
+      const loginUrl = url.toString();
+      
+      console.log('🚀 [SSOGuard] FINAL REDIRECT URL:', loginUrl);
+      
+      // Gunakan setTimeout biar event loop Vue Router selesai dulu baru kita paksa pindah halaman
+      setTimeout(() => {
+        window.location.replace(loginUrl);
+      }, 0);
+      
       return next(false);
     }
   });

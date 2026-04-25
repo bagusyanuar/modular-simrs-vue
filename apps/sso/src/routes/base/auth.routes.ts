@@ -6,4 +6,9 @@ export const authRoutes: RouteRecordRaw[] = [
     component: () => import('@/modules/sso/LoginPage.vue'),
     meta: { public: true },
   },
+  {
+    path: '/callback',
+    component: () => import('@/modules/sso/LoginPage.vue'),
+    meta: { public: true },
+  },
 ];

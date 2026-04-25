@@ -6,6 +6,7 @@
   "sideEffects": false,
   "exports": {
     "./simrs/*": "./src/simrs/*",
+    "./master-data/*": "./src/master-data/*",
     "./finance/*": "./src/finance/*",
     "./auth/*": "./src/auth/*",
     "./utils/*": "./src/utils/*",
@@ -19,6 +20,12 @@
         "./src/simrs/*.ts",
         "./src/simrs/*.vue",
         "./src/simrs/*"
+      ],
+      "master-data/*": [
+        "./src/master-data/*/index.ts",
+        "./src/master-data/*.ts",
+        "./src/master-data/*.vue",
+        "./src/master-data/*"
       ],
       "finance/*": [
         "./src/finance/*/index.ts",
@@ -57,6 +64,7 @@
     "@vee-validate/zod": "^4.15.1",
     "@genrs/ui": "workspace:*",
     "@genrs/core": "workspace:*",
+    "@genrs/utils": "workspace:*",
     "@genrs/infrastructure": "workspace:*"
   },
   "devDependencies": {

@@ -1,5 +1,3 @@
-import { CookieStorage } from './storage';
-
 export interface AuthSession {
   accessToken: string;
   refreshToken?: string;
@@ -11,9 +9,13 @@ export interface SessionConfig {
   expires: number;
 }
 
+const STORAGE_KEY_ACCESS = 'sso_access_token';
+const STORAGE_KEY_REFRESH = 'sso_refresh_token';
+
 /**
  * Internal Session Manager for SSO Package
- * Independent from @genrs/auth
+ * Uses localStorage for reliability in HTTP dev environments.
+ * Cookie cross-domain sharing requires HTTPS+SameSite=None.
  */
 export const SSOSessionManager = {
   config: {
@@ -27,42 +29,31 @@ export const SSOSessionManager = {
   },
 
   save(session: AuthSession): void {
-    const { domain, secure, expires } = this.config;
-
+    console.log('[SSOSessionManager] Saving session...', { hasAccess: !!session.accessToken, hasRefresh: !!session.refreshToken });
     if (session.accessToken) {
-      CookieStorage.set('access_token', session.accessToken, {
-        domain,
-        secure,
-        expires,
-        path: '/',
-      });
+      localStorage.setItem(STORAGE_KEY_ACCESS, session.accessToken);
     }
-
     if (session.refreshToken) {
-      CookieStorage.set('refresh_token', session.refreshToken, {
-        domain,
-        secure,
-        expires,
-        path: '/',
-      });
+      localStorage.setItem(STORAGE_KEY_REFRESH, session.refreshToken);
     }
+    console.log('[SSOSessionManager] Session saved ✅');
   },
 
   get(): AuthSession | null {
-    const accessToken = CookieStorage.get('access_token');
+    const accessToken = localStorage.getItem(STORAGE_KEY_ACCESS);
     if (!accessToken) return null;
-
-    const refreshToken = CookieStorage.get('refresh_token') ?? undefined;
+    const refreshToken = localStorage.getItem(STORAGE_KEY_REFRESH) ?? undefined;
     return { accessToken, refreshToken };
   },
 
   logout(): void {
-    const { domain } = this.config;
-    CookieStorage.remove('access_token', { domain, path: '/' });
-    CookieStorage.remove('refresh_token', { domain, path: '/' });
+    localStorage.removeItem(STORAGE_KEY_ACCESS);
+    localStorage.removeItem(STORAGE_KEY_REFRESH);
   },
 
   isAuthenticated(): boolean {
-    return !!CookieStorage.get('access_token');
+    const result = !!localStorage.getItem(STORAGE_KEY_ACCESS);
+    console.log('[SSOSessionManager] isAuthenticated:', result);
+    return result;
   },
 };

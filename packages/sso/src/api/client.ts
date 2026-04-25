@@ -34,7 +34,7 @@ export const createSSOClient = (config: SSOConfig) => {
           code_challenge: params.code_challenge,
           state: params.state,
           response_type: 'code',
-        }
+        },
       });
     },
 
@@ -42,11 +42,16 @@ export const createSSOClient = (config: SSOConfig) => {
      * Tahap B: Portal Login
      * Used by SSO App to exchange credentials for a code
      */
-    async authorize(body: any & { state: string }) {
+    async authorize(
+      body: any & { state: string; client_id?: string; redirect_uri?: string }
+    ) {
       return api.post('/authorize', {
-        ...body,
-        client_id: config.clientId,
-        redirect_uri: config.redirectUri,
+        client_id: body.client_id || config.clientId,
+        redirect_uri: body.redirect_uri || config.redirectUri,
+        email: body.email,
+        password: body.password,
+        code_challenge: body.code_challenge,
+        state: body.state,
       });
     },
 
@@ -54,7 +59,16 @@ export const createSSOClient = (config: SSOConfig) => {
      * Tahap C: Token Exchange
      * Hit POST /token to exchange code + verifier for JWT
      */
-    async exchangeToken(params: { code: string; code_verifier: string }): Promise<TokenResponse> {
+    async exchangeToken(params: {
+      code: string;
+      code_verifier: string;
+    }): Promise<TokenResponse> {
+      console.log('[SSOClient] Exchanging token with:', { 
+        client_id: config.clientId, 
+        code: params.code,
+        redirect_uri: config.redirectUri 
+      });
+
       const { data } = await api.post('/token', {
         grant_type: 'authorization_code',
         client_id: config.clientId,
@@ -62,20 +76,24 @@ export const createSSOClient = (config: SSOConfig) => {
         code_verifier: params.code_verifier,
         redirect_uri: config.redirectUri,
       });
-      return data;
+      
+      const unwrapped = data.data || data;
+      console.log('[SSOClient] Token Received:', !!unwrapped.access_token);
+      return unwrapped;
     },
 
     /**
      * Refresh Token
      * Hit POST /token to exchange refresh_token for a new access_token
      */
-    async refreshToken(params: { refresh_token: string }): Promise<TokenResponse> {
+    async refreshToken(params: {
+      refresh_token: string;
+    }): Promise<TokenResponse> {
       const { data } = await api.post('/token', {
-        grant_type: 'refresh_token',
         client_id: config.clientId,
         refresh_token: params.refresh_token,
       });
-      return data;
+      return data.data || data;
     },
   };
 };

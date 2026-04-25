@@ -10,21 +10,48 @@ export default defineConfig(({ mode }) => {
   Object.assign(process.env, globalEnv, appEnv);
 
   return {
-    base: process.env.VITE_PATH_V2_MASTER_DATA || '/v2/master-data/',
     envDir: path.resolve(__dirname, '../../'),
-    plugins: [vue(), tailwindcss()],
+    plugins: [
+      vue(),
+      tailwindcss(),
+      // 🛠️ Virtual Config Plugin for Dev Mode
+      {
+        name: 'virtual-config',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url === '/config.js') {
+              res.setHeader('Content-Type', 'application/javascript');
+              res.end('window.config = {};');
+              return;
+            }
+            next();
+          });
+        },
+      },
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
+        '@genrs/sso': path.resolve(__dirname, '../../packages/sso/src'),
+        '@genrs/utils': path.resolve(__dirname, '../../packages/utils/src'),
+        '@genrs/presentation': path.resolve(
+          __dirname,
+          '../../features/presentation/src'
+        ),
       },
     },
     server: {
       host: process.env.VITE_DOMAIN,
       allowedHosts: [`.${process.env.VITE_DOMAIN}`],
-      port: Number(process.env.VITE_PORT_V2_MASTER_DATA) || 3003,
+      port: Number(process.env.VITE_PORT_MASTER_DATA_APP) || 5173,
       strictPort: true,
       open: false,
-      proxy: {},
+      proxy: {
+        '/api/v1/sso': {
+          target: 'http://localhost:8081',
+          changeOrigin: true,
+        },
+      },
     },
   };
 });

@@ -3,6 +3,8 @@ export interface AuthorizeInput {
   password: string;
   code_challenge: string;
   state: string;
+  client_id: string;
+  redirect_uri: string;
 }
 
 export interface AuthorizeOutput {
@@ -17,7 +19,6 @@ export class AuthorizeUseCase {
   constructor(private repository: IAuthorizeRepository) {}
 
   async execute(input: AuthorizeInput): Promise<AuthorizeOutput> {
-    // Di sini bisa tambah logic tambahan (misal logging, audit trail, dkk)
     return await this.repository.authorize(input);
   }
 }

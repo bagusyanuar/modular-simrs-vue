@@ -11,7 +11,24 @@ export default defineConfig(({ mode }) => {
 
   return {
     envDir: path.resolve(__dirname, '../../'),
-    plugins: [vue(), tailwindcss()],
+    plugins: [
+      vue(),
+      tailwindcss(),
+      // 🛠️ Virtual Config Plugin for Dev Mode
+      {
+        name: 'virtual-config',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url === '/config.js') {
+              res.setHeader('Content-Type', 'application/javascript');
+              res.end('window.config = {};');
+              return;
+            }
+            next();
+          });
+        },
+      },
+    ],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
