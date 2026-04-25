@@ -1,11 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { activeModules } from '@page/manifest';
-import { moduleLibrary } from 'virtual:page-registry';
-import { resolveRoutes } from '@genrs/presentation/utils';
+import { authRoutes } from './base/auth.routes';
 
 const appRouter = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: resolveRoutes(activeModules, moduleLibrary),
+  routes: [...authRoutes],
 });
 
 export default appRouter;

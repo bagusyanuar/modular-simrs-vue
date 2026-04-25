@@ -131,17 +131,21 @@ body {
   --color-accent-900: oklch(40.44% 0.173 313.90);
   --color-accent-950: oklch(31.17% 0.147 312.48);
 
-  /* Custom Font Size Tokens (nt = Typography) */
-  --font-size-nt-h1: 1.5rem;
-  --font-size-nt-h2: 1.125rem;
-  --font-size-nt-base: 1rem;
-  --font-size-nt-sm: 0.875rem;
-  --font-size-nt-tiny: 0.75rem;
-  --font-size-nt-micro: 0.625rem;
+  /* Custom Font Size Tokens (neusize = Typography) */
+  --font-size-neusize-h1: 1.5rem;
+  --font-size-neusize-h2: 1.125rem;
+  --font-size-neusize-base: 1rem;
+  --font-size-neusize-sm: 0.875rem;
+  --font-size-neusize-tiny: 0.75rem;
+  --font-size-neusize-micro: 0.625rem;
 
   /* Custom Line Height Tokens */
   --leading-nl-tight: 1.2;
   --leading-nl-normal: 1.4;
+}
+
+@utility neusize-* {
+  font-size: --value(--font-size-neusize-*);
 }
 
 @keyframes in {

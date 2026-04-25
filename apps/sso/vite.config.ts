@@ -1,7 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
-import { tenantResolver } from '../../features/presentation/vite-plugin-tenant';
 import path from 'path';
 
 // https://vite.dev/config/
@@ -10,12 +9,9 @@ export default defineConfig(({ mode }) => {
   const appEnv = loadEnv(mode, process.cwd(), 'VITE_');
   Object.assign(process.env, globalEnv, appEnv);
 
-  const tenant = process.env.VITE_TENANT || 'base';
-
   return {
-    base: process.env.VITE_PATH_SSO + '/',
     envDir: path.resolve(__dirname, '../../'),
-    plugins: [vue(), tailwindcss(), tenantResolver('auth', tenant)],
+    plugins: [vue(), tailwindcss()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
@@ -26,9 +22,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: process.env.VITE_DOMAIN,
-      allowedHosts: [`.${process.env.VITE_DOMAIN}`],
-      port: Number(process.env.VITE_PORT_SSO) || 3001,
+      host: process.env.VITE_SSO_DOMAIN,
+      allowedHosts: [`.${process.env.VITE_SSO_DOMAIN}`],
+      port: Number(process.env.VITE_SSO_PORT) || 5174,
       strictPort: true,
       open: false,
       proxy: {},

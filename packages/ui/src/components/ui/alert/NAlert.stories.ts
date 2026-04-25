@@ -22,7 +22,23 @@ type Story = StoryObj<typeof NAlert>;
 export const Default: Story = {
   args: {
     type: 'info',
+    title: 'Info',
+    message: 'This is an info alert',
     class: '',
+  },
+  parameters: {
+    docs: {
+      source: {
+        code: `
+import { NAlert } from '@genrs/ui';
+
+<NAlert 
+  type="info" 
+  title="Info" 
+  message="This is an info alert" 
+/>`,
+      },
+    },
   },
   render: (args) => {
     return {
@@ -31,7 +47,7 @@ export const Default: Story = {
         return { args };
       },
       template: `
-        <NAlert title="Info" v-bind="args" />
+        <NAlert v-bind="args" />
       `,
     };
   },

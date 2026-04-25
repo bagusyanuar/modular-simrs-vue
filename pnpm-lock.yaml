@@ -495,6 +495,22 @@ importers:
         specifier: ^8.0.1
         version: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@20.19.39)(esbuild@0.27.4)(jiti@2.6.1)(stylus@0.57.0)(yaml@2.8.3)
 
+  packages/sso:
+    dependencies:
+      axios:
+        specifier: ^1.15.0
+        version: 1.15.0
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+      vite:
+        specifier: ^8.0.1
+        version: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@24.12.0)(esbuild@0.27.4)(jiti@2.6.1)(stylus@0.57.0)(yaml@2.8.3)
+      vue-router:
+        specifier: ^4.5.0
+        version: 4.6.4(vue@3.5.31(typescript@5.9.3))
+
   packages/ui:
     dependencies:
       '@iconify/vue':

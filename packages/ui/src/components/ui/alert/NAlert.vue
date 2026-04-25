@@ -28,7 +28,7 @@ const mergedClass = computed(() => {
 <template>
   <div :class="mergedClass">
     <div>
-      <Icon icon="lucide:info" class="text-primary-500 w-ns-5 h-ns-5 mt-3" />
+      <Icon icon="lucide:info" class="text-primary-500 w-ns-5 h-ns-5" />
     </div>
     <div class="flex-1 flex flex-col gap-ns-2">
       <NTypography variant="subtitle-md" class="text-neutral-950">
@@ -37,6 +37,9 @@ const mergedClass = computed(() => {
       <NTypography variant="body-sm" class="text-neutral-700">
         {{ props.message }}
       </NTypography>
+    </div>
+    <div>
+      <Icon icon="lucide:x" class="text-neutral-950 w-ns-5 h-ns-5" />
     </div>
   </div>
 </template>
