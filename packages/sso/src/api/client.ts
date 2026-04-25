@@ -26,12 +26,13 @@ export const createSSOClient = (config: SSOConfig) => {
      * Tahap A: Silent Login Check
      * Hit GET /authorize to check if user already has a session
      */
-    async checkSilentLogin(params: { code_challenge: string }) {
+    async checkSilentLogin(params: { code_challenge: string; state: string }) {
       return api.get('/authorize', {
         params: {
           client_id: config.clientId,
           redirect_uri: config.redirectUri,
           code_challenge: params.code_challenge,
+          state: params.state,
           response_type: 'code',
         }
       });
@@ -41,7 +42,7 @@ export const createSSOClient = (config: SSOConfig) => {
      * Tahap B: Portal Login
      * Used by SSO App to exchange credentials for a code
      */
-    async authorize(body: any) {
+    async authorize(body: any & { state: string }) {
       return api.post('/authorize', {
         ...body,
         client_id: config.clientId,

@@ -21,3 +21,12 @@ export const generateChallenge = async (verifier: string): Promise<string> => {
     .replace(/\//g, '_')
     .replace(/=+$/, '');
 };
+
+/**
+ * Generate a random string for CSRF protection (state)
+ */
+export const generateRandomString = (length = 32): string => {
+  const array = new Uint32Array(length / 2);
+  window.crypto.getRandomValues(array);
+  return Array.from(array, (dec) => ('0' + dec.toString(16)).substring(-2)).join('');
+};
