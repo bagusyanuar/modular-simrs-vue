@@ -43,12 +43,6 @@ export default defineConfig(({ mode }) => {
       port: Number(process.env.VITE_SSO_PORT) || 5174,
       strictPort: true,
       open: false,
-      proxy: {
-        '/api': {
-          target: 'http://localhost:8081',
-          changeOrigin: true,
-        },
-      },
     },
   };
 });

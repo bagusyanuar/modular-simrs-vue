@@ -13,15 +13,20 @@ if (loaderText) loaderText.innerText = 'Preparing content...';
 createSSOGuard(appRouter, {
   baseUrl: getEnv('VITE_SSO_BASE_URL'),
   clientId: getEnv('VITE_SSO_CLIENT_ID'),
-  redirectUri: `http://${getEnv('VITE_DOMAIN')}:${getEnv('VITE_PORT_MASTER_DATA_APP')}/callback`,
-  portalUrl: `http://${getEnv('VITE_SSO_DOMAIN')}:${getEnv('VITE_SSO_PORT')}`,
+  redirectUri: `${window.location.protocol}//${getEnv('VITE_DOMAIN')}:${getEnv('VITE_PORT_MASTER_DATA_APP')}/callback`,
+  portalUrl: `${window.location.protocol}//${getEnv('VITE_SSO_DOMAIN')}:${getEnv('VITE_SSO_PORT')}`,
+  endpoints: {
+    authorize: '/authorize',
+    login: '/authorize',
+    token: '/token',
+  },
   sessionConfig: {
     domain: (function () {
       const d = getEnv('VITE_SSO_COOKIE_DOMAIN');
       console.log('🔍 [MasterData] SSO Cookie Domain:', d);
       return d;
     })(),
-    secure: true, // 🔒 Paksa true karena kita sudah pakai HTTPS
+    secure: window.location.protocol === 'https:', // true = production, false = development
     persistentStorage: 'cookie', // 🍪 Refresh Token di Cookie (Shared)
 
     onSaveToken: (token) => {

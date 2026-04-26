@@ -46,12 +46,6 @@ export default defineConfig(({ mode }) => {
       port: Number(process.env.VITE_PORT_MASTER_DATA_APP) || 5173,
       strictPort: true,
       open: false,
-      proxy: {
-        '/api/v1/sso': {
-          target: 'http://localhost:8081',
-          changeOrigin: true,
-        },
-      },
     },
   };
 });

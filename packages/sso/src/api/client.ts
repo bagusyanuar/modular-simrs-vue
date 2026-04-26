@@ -7,10 +7,17 @@ export interface TokenResponse {
   expires_in: number;
 }
 
+export interface SSOEndpoints {
+  authorize: string; // GET /authorize (Check Session/Silent Login)
+  login: string;     // POST /authorize (Portal Login Form)
+  token: string;     // POST /token (Exchange & Refresh)
+}
+
 export interface SSOConfig {
   baseUrl: string;
   clientId: string;
   redirectUri: string;
+  endpoints?: Partial<SSOEndpoints>;
 }
 
 /**
@@ -21,6 +28,12 @@ export const createSSOClient = (config: SSOConfig) => {
     baseURL: config.baseUrl,
     withCredentials: true, // Important for Silent Login session cookies
   });
+
+  const endpoints: SSOEndpoints = {
+    authorize: config.endpoints?.authorize || '/authorize',
+    login: config.endpoints?.login || '/authorize',
+    token: config.endpoints?.token || '/token',
+  };
 
   // 🛡️ Request Interceptor: Inject Bearer Token
   api.interceptors.request.use((conf) => {
@@ -46,11 +59,11 @@ export const createSSOClient = (config: SSOConfig) => {
             console.log('[SSOClient] Access token expired. Attempting refresh...');
             
             // Panggil endpoint refresh secara manual (biar gak lewat interceptor ini lagi)
-            const { data } = await axios.post(`${config.baseUrl}/token`, {
+            const { data } = await axios.post(`${config.baseUrl}${endpoints.token}`, {
               client_id: config.clientId,
               refresh_token: session.refreshToken,
               grant_type: 'refresh_token',
-            });
+            }, { withCredentials: true }); // Tetap tambahkan withCredentials demi fleksibilitas
 
             const unwrapped = data.data || data;
             
@@ -78,7 +91,7 @@ export const createSSOClient = (config: SSOConfig) => {
      * Hit GET /authorize to check if user already has a session
      */
     async checkSilentLogin(params: { code_challenge: string; state: string }) {
-      return api.get('/authorize', {
+      return api.get(endpoints.authorize, {
         params: {
           client_id: config.clientId,
           redirect_uri: config.redirectUri,
@@ -96,7 +109,7 @@ export const createSSOClient = (config: SSOConfig) => {
     async authorize(
       body: any & { state: string; client_id?: string; redirect_uri?: string }
     ) {
-      return api.post('/authorize', {
+      return api.post(endpoints.login, {
         client_id: body.client_id || config.clientId,
         redirect_uri: body.redirect_uri || config.redirectUri,
         email: body.email,
@@ -114,7 +127,7 @@ export const createSSOClient = (config: SSOConfig) => {
       code: string;
       code_verifier: string;
     }): Promise<TokenResponse> {
-      const { data } = await api.post('/token', {
+      const { data } = await api.post(endpoints.token, {
         grant_type: 'authorization_code',
         client_id: config.clientId,
         code: params.code,
@@ -132,7 +145,7 @@ export const createSSOClient = (config: SSOConfig) => {
     async refreshToken(params: {
       refresh_token: string;
     }): Promise<TokenResponse> {
-      const { data } = await api.post('/token', {
+      const { data } = await api.post(endpoints.token, {
         client_id: config.clientId,
         refresh_token: params.refresh_token,
         grant_type: 'refresh_token',
