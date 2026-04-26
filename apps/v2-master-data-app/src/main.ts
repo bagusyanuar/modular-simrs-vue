@@ -30,10 +30,10 @@ createSSOGuard(appRouter, {
 
     onSaveToken: (token) => {
       console.log('💾 [MasterData] Saving access token to localStorage');
-      localStorage.setItem('sso_access_token', token);
+      localStorage.setItem('access_token', token);
     },
-    onGetToken: () => localStorage.getItem('sso_access_token'),
-    onClearToken: () => localStorage.removeItem('sso_access_token'),
+    onGetToken: () => localStorage.getItem('access_token'),
+    onClearToken: () => localStorage.removeItem('access_token'),
     refreshKey: 'refresh_token',
   },
   onAuthenticated: (session) => {
