@@ -23,7 +23,6 @@ createSSOGuard(appRouter, {
   sessionConfig: {
     domain: (function () {
       const d = getEnv('VITE_SSO_COOKIE_DOMAIN');
-      console.log('🔍 [MasterData] SSO Cookie Domain:', d);
       return d;
     })(),
     secure: window.location.protocol === 'https:', // true = production, false = development
@@ -35,6 +34,7 @@ createSSOGuard(appRouter, {
     },
     onGetToken: () => localStorage.getItem('sso_access_token'),
     onClearToken: () => localStorage.removeItem('sso_access_token'),
+    refreshKey: 'refresh_token',
   },
   onAuthenticated: (session) => {
     console.log('🎉 Successfully authenticated in Master Data App!', session);

@@ -17,9 +17,11 @@ export interface SessionConfig {
   onGetToken?: () => string | null;
   /** Hook untuk menghapus Access Token dari State Management eksternal */
   onClearToken?: () => void;
+  /** Custom key untuk menyimpan refresh token (Default: sso_refresh_token) */
+  refreshKey?: string;
 }
 
-const STORAGE_KEY_REFRESH = 'sso_refresh_token';
+let _refreshKey = 'refresh_token';
 
 // 🧠 Internal fallback storage (In-memory)
 let _accessToken: string | null = null;
@@ -38,6 +40,9 @@ export const SSOSessionManager = {
 
   configure(config: Partial<SessionConfig>): void {
     this.config = { ...this.config, ...config };
+    if (config.refreshKey) {
+      _refreshKey = config.refreshKey;
+    }
   },
 
   save(session: AuthSession): void {
@@ -51,9 +56,9 @@ export const SSOSessionManager = {
     // 2. Handle Refresh Token (Persistent)
     if (session.refreshToken) {
       if (this.config.persistentStorage === 'localstorage') {
-        localStorage.setItem(STORAGE_KEY_REFRESH, session.refreshToken);
+        localStorage.setItem(_refreshKey, session.refreshToken);
       } else {
-        CookieStorage.set(STORAGE_KEY_REFRESH, session.refreshToken, {
+        CookieStorage.set(_refreshKey, session.refreshToken, {
           domain: this.config.domain,
           secure: this.config.secure,
           expires: this.config.expires,
@@ -65,20 +70,21 @@ export const SSOSessionManager = {
 
   get(): AuthSession | null {
     // 1. Get Access Token
-    const accessToken = this.config.onGetToken 
-      ? this.config.onGetToken() 
+    const accessToken = this.config.onGetToken
+      ? this.config.onGetToken()
       : _accessToken;
 
     // 2. Get Refresh Token
-    const refreshToken = this.config.persistentStorage === 'localstorage'
-      ? localStorage.getItem(STORAGE_KEY_REFRESH)
-      : CookieStorage.get(STORAGE_KEY_REFRESH);
+    const refreshToken =
+      this.config.persistentStorage === 'localstorage'
+        ? localStorage.getItem(_refreshKey)
+        : CookieStorage.get(_refreshKey);
 
     if (!accessToken && !refreshToken) return null;
 
-    return { 
-      accessToken: accessToken || '', 
-      refreshToken: refreshToken ?? undefined 
+    return {
+      accessToken: accessToken || '',
+      refreshToken: refreshToken ?? undefined,
     };
   },
 
@@ -92,9 +98,9 @@ export const SSOSessionManager = {
 
     // 2. Clear Refresh Token
     if (this.config.persistentStorage === 'localstorage') {
-      localStorage.removeItem(STORAGE_KEY_REFRESH);
+      localStorage.removeItem(_refreshKey);
     } else {
-      CookieStorage.remove(STORAGE_KEY_REFRESH, {
+      CookieStorage.remove(_refreshKey, {
         domain: this.config.domain,
         secure: this.config.secure,
       });
@@ -105,8 +111,8 @@ export const SSOSessionManager = {
    * Check if we have an active access token
    */
   isAuthenticated(): boolean {
-    const token = this.config.onGetToken 
-      ? this.config.onGetToken() 
+    const token = this.config.onGetToken
+      ? this.config.onGetToken()
       : _accessToken;
     return !!token;
   },
@@ -115,9 +121,10 @@ export const SSOSessionManager = {
    * Check if we have a persisted session (refresh token)
    */
   hasPersistedSession(): boolean {
-    const token = this.config.persistentStorage === 'localstorage'
-      ? localStorage.getItem(STORAGE_KEY_REFRESH)
-      : CookieStorage.get(STORAGE_KEY_REFRESH);
+    const token =
+      this.config.persistentStorage === 'localstorage'
+        ? localStorage.getItem(_refreshKey)
+        : CookieStorage.get(_refreshKey);
     return !!token;
   },
 };
