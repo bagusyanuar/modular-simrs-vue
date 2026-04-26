@@ -3,7 +3,7 @@ import { SSOSessionManager } from '../session/manager';
 
 export interface TokenResponse {
   access_token: string;
-  refresh_token: string;
+  refresh_token?: string; // Opsional jika pakai HttpOnly Cookie
   expires_in: number;
 }
 
@@ -142,12 +142,12 @@ export const createSSOClient = (config: SSOConfig) => {
      * Refresh Token
      * Hit POST /token to exchange refresh_token for a new access_token
      */
-    async refreshToken(params: {
-      refresh_token: string;
+    async refreshToken(params?: {
+      refresh_token?: string;
     }): Promise<TokenResponse> {
       const { data } = await api.post(endpoints.token, {
         client_id: config.clientId,
-        refresh_token: params.refresh_token,
+        refresh_token: params?.refresh_token,
         grant_type: 'refresh_token',
       });
       return data.data || data;

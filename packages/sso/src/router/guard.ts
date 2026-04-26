@@ -119,36 +119,35 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
       return next();
     }
 
-    // 🔄 4. Try Automatic Refresh (from Cookie)
-    if (SSOSessionManager.hasPersistedSession()) {
+    // 🔄 4. Try Automatic Refresh (Cookie or LocalStorage)
+    // Sekarang lebih berani: Tetap coba refresh meskipun JS tidak melihat token (siapa tahu ada HttpOnly Cookie)
+    if (SSOSessionManager.hasPersistedSession() || SSOSessionManager.config.persistentStorage === 'cookie') {
       updateLoaderText('Downloading user info...');
       try {
         console.log(
-          '[SSOGuard] Session found in cookie. Attempting automatic refresh...'
+          '[SSOGuard] Attempting automatic refresh (Passive/Active)...'
         );
         const currentSession = SSOSessionManager.get();
 
-        if (currentSession?.refreshToken) {
-          const tokens = await client.refreshToken({
-            refresh_token: currentSession.refreshToken,
-          });
+        // Coba refresh: kirim token jika ada (Active), atau biarkan browser kirim cookie (Passive)
+        const tokens = await client.refreshToken(
+          currentSession?.refreshToken ? { refresh_token: currentSession.refreshToken } : undefined
+        );
 
-          const newSession = {
-            accessToken: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-          };
+        const newSession = {
+          accessToken: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        };
 
-          SSOSessionManager.save(newSession);
-          if (options.onAuthenticated) options.onAuthenticated(newSession);
+        SSOSessionManager.save(newSession);
+        if (options.onAuthenticated) options.onAuthenticated(newSession);
 
-          return next();
-        }
+        return next();
       } catch (error) {
         console.warn(
           '[SSOGuard] Automatic refresh failed. Proceeding to Silent Login flow.'
         );
-        // Jika refresh gagal, kita hapus session biar gak loop terus
-        SSOSessionManager.logout();
+        // Jangan logout total di sini biar gak ganggu flow berikutnya
       }
     }
 
