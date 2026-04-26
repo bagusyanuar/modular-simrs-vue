@@ -1,15 +1,15 @@
-import { useRoute } from 'vue-router';
+import { ref, computed, type Ref, type ComputedRef } from 'vue';
 import { useForm } from 'vee-validate';
 import { z } from 'zod';
 import { toTypedSchema } from '@vee-validate/zod';
 import {
   SSOSessionManager,
-  CookieStorage,
   generateChallenge,
 } from '@genrs/sso';
-import { getEnv } from '@genrs/utils';
 import { AuthorizeUseCase } from '@/core/auth/authorize.usecase';
 import { ssoRepository } from '@/infrastructure/auth/sso.repository';
+import { useDirectAccess } from './useDirectAccess';
+import { useOAuthParams } from './useOAuthParams';
 
 // Instantiate Use Case
 const authorizeUseCase = new AuthorizeUseCase(ssoRepository);
@@ -22,54 +22,45 @@ const loginSchema = z.object({
   password: z.string().min(6, 'Password minimal 6 karakter'),
 });
 
-// 🏴‍☠️ Global flag & state biar gak double init dan datanya sinkron di semua komponen
+export interface UseAuthFlowReturn {
+  email: Ref<string | undefined>;
+  emailAttrs: Record<string, any>;
+  password: Ref<string | undefined>;
+  passwordAttrs: Record<string, any>;
+  errors: ComputedRef<Record<string, string | undefined>>;
+  loading: Ref<boolean> | boolean;
+  isAuthenticated: boolean;
+  isInvalidSSORequest: boolean;
+  handleLogin: (e?: Event) => Promise<void | Promise<void> | undefined> | void;
+  isDirectAccess: () => boolean;
+}
+
+// 🏴‍☠️ Global flag biar gak double init saat redirect
 let isAlreadyInitialized = false;
-const directParams = {
-  client_id: '',
-  redirect_uri: '',
-  state: '',
-  code_challenge: '',
-  verifier: '',
-};
 
-export function useAuthFlow() {
-  const route = useRoute();
-
-  /** Detect if this is a TRULY direct access (ALL OAuth params are missing) */
-  function isDirectAccess(): boolean {
-    // 🔍 Pake window.location.search langsung biar gak kena timing issue vue-router
-    const params = new URLSearchParams(window.location.search);
-
-    const hasClientId = !!params.get('client_id');
-    const hasRedirectUri = !!params.get('redirect_uri');
-    const hasState = !!params.get('state');
-    const hasChallenge = !!params.get('code_challenge');
-
-    // Kita cuma anggap direct access kalau 4 parameter utama ini ABSEN.
-    // Kalau ada satu aja, berarti ini flow resmi, JANGAN diganggu.
-    return !hasClientId && !hasRedirectUri && !hasState && !hasChallenge;
-  }
+export function useAuthFlow(): UseAuthFlowReturn {
+  const { isDirectAccess, handleDiscoveryRedirect } = useDirectAccess();
+  const { getOAuthParam, performRedirect, directParams } = useOAuthParams();
 
   // 🔄 [INIT] Discovery Redirect: Jika masuk portal tanpa param, lempar ke Master Data
   const isDirect = isDirectAccess();
   if (isDirect && !isAlreadyInitialized) {
     isAlreadyInitialized = true;
-
-    const redirectUri = getEnv('VITE_SSO_REDIRECT_URI') || '';
-    const masterDataUrl = redirectUri.split('/callback')[0] || '/';
-
-    console.log(
-      '🚀 [SSOPortal] Direct Access. Redirecting to Master Data:',
-      masterDataUrl
-    );
-    window.location.href = masterDataUrl;
+    handleDiscoveryRedirect();
 
     // Return minimal state for mounting
     return {
       isAuthenticated: false,
       loading: true,
-      handleLogin: () => {},
-    } as any;
+      handleLogin: async () => {},
+      isDirectAccess: () => true,
+      email: ref(undefined),
+      emailAttrs: {},
+      password: ref(undefined),
+      passwordAttrs: {},
+      errors: computed(() => ({})),
+      isInvalidSSORequest: false,
+    } as UseAuthFlowReturn;
   }
 
   const { handleSubmit, errors, defineField, isSubmitting, setErrors } =
@@ -81,32 +72,7 @@ export function useAuthFlow() {
   const [email, emailAttrs] = defineField('email');
   const [password, passwordAttrs] = defineField('password');
 
-  /** Standard OAuth redirect: send code+state back to client app's callback */
-  function performRedirect(code: string, state: string, redirectUri: string) {
-    const url = new URL(redirectUri);
-    url.searchParams.set('code', code);
-    url.searchParams.set('state', state);
-
-    // 🕵️‍♂️ Ambil verifier: Coba dari state internal dulu (paling aman), baru storage
-    const verifier =
-      directParams.verifier ||
-      sessionStorage.getItem('sso_verifier') ||
-      CookieStorage.get('sso_verifier');
-
-    if (verifier) {
-      url.hash = `verifier=${verifier}`;
-    }
-
-    window.location.href = url.toString();
-  }
-
   const handleLogin = handleSubmit(async (values) => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const getParam = (key: string) =>
-      urlParams.get(key) ||
-      (route.query[key] as string) ||
-      (directParams as any)[key];
-
     // Tunggu sebentar kalau challenge belum kelar digenerate
     if (isDirect && !directParams.code_challenge) {
       directParams.code_challenge = await generateChallenge(
@@ -114,10 +80,10 @@ export function useAuthFlow() {
       );
     }
 
-    let code_challenge = getParam('code_challenge');
-    let state = getParam('state');
-    let redirect_uri = getParam('redirect_uri');
-    let client_id = getParam('client_id');
+    const code_challenge = getOAuthParam('code_challenge');
+    const state = getOAuthParam('state');
+    const redirect_uri = getOAuthParam('redirect_uri');
+    const client_id = getOAuthParam('client_id');
 
     console.log('🚀 [SSOPortal] Attempting login with:', {
       client_id,
