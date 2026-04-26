@@ -17,6 +17,17 @@ export interface SSOGuardOptions extends SSOConfig {
   callbackPath?: string; // Default: /callback
   sessionConfig?: Partial<SessionConfig>;
   onAuthenticated?: (session: AuthSession) => void;
+  discoveryUrl?: string; // NEW: URL to redirect if direct access detected (e.g. Master Data)
+}
+
+/**
+ * Helper to update global loader text if it exists
+ */
+function updateLoaderText(text: string) {
+  if (typeof document !== 'undefined') {
+    const el = document.getElementById('loader-text');
+    if (el) el.innerText = text;
+  }
 }
 
 /**
@@ -32,6 +43,17 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
   }
 
   router.beforeEach(async (to, _from, next) => {
+    // 🔍 0. Discovery Flow (Direct Portal Access)
+    // Jika kita berada di portal dan param OAuth tidak lengkap, lempar ke Discovery URL (Master Data)
+    const isPortalPath = to.path === '/' || to.path === '/login';
+    const hasOAuthParams = !!(to.query.client_id && to.query.redirect_uri);
+
+    if (isPortalPath && !hasOAuthParams && options.discoveryUrl) {
+      console.log('[SSOGuard] Direct access detected. Redirecting to discovery:', options.discoveryUrl);
+      window.location.href = options.discoveryUrl;
+      return next(false);
+    }
+
     // 1. Handle Callback Route (Tahap C)
     const isCallback =
       to.path === callbackPath || to.path === `${callbackPath}/`;
@@ -99,6 +121,7 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
 
     // 🔄 4. Try Automatic Refresh (from Cookie)
     if (SSOSessionManager.hasPersistedSession()) {
+      updateLoaderText('Downloading user info...');
       try {
         console.log(
           '[SSOGuard] Session found in cookie. Attempting automatic refresh...'
@@ -130,6 +153,7 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
     }
 
     // 5. Tahap A: PKCE & Silent Login Check
+    updateLoaderText('Downloading user info...');
     try {
       const verifier = generateVerifier();
       const challenge = await generateChallenge(verifier);

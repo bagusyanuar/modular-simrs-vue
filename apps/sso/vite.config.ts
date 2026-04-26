@@ -1,7 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
-import basicSsl from '@vitejs/plugin-basic-ssl';
 import path from 'path';
 
 // https://vite.dev/config/
@@ -13,10 +12,8 @@ export default defineConfig(({ mode }) => {
   return {
     envDir: path.resolve(__dirname, '../../'),
     plugins: [
-      basicSsl(),
       vue(),
       tailwindcss(),
-      // 🛠️ Virtual Config Plugin for Dev Mode
       {
         name: 'virtual-config',
         configureServer(server) {
