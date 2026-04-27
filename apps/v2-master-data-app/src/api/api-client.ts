@@ -6,7 +6,7 @@ import { getEnv } from '@genrs/utils';
  * Shared API Client for Master Data App
  */
 const api = axios.create({
-  baseURL: getEnv('VITE_API_URL'),
+  baseURL: getEnv('VITE_API_BASE_URL'),
 });
 
 // Configure Agnostic Interceptors

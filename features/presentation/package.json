@@ -55,6 +55,7 @@
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "tamtech-neurovi-dev-libs": "^1.0.1",
     "vue": "^3.5.30",
     "vue-router": "^4.5.0",
     "tailwindcss": "^4.2.2",

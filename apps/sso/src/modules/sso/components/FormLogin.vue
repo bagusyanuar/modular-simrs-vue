@@ -6,6 +6,7 @@ import { NLabel } from '@genrs/ui/components/ui/label';
 import { NIcon } from '@genrs/ui/components/icons';
 import { NHelperText } from '@genrs/ui/components/ui/helper-text';
 import { useAuthFlow } from '../composables/useAuthFlow';
+import { NTypography } from 'tamtech-neurovi-dev-libs/ui/components/typography';
 
 const {
   email,
@@ -24,23 +25,34 @@ const {
     <div class="mb-10 text-center md:text-left">
       <div class="flex items-center gap-2 mb-4 justify-center md:justify-start">
         <div class="p-2 bg-teal-50 rounded-lg border border-teal-100 shadow-sm">
-           <NIcon icon="lucide:hospital" class="text-teal-600 w-6 h-6" />
+          <NIcon icon="lucide:hospital" class="text-teal-600 w-6 h-6" />
         </div>
-        <h1 class="text-stone-900 text-2xl font-black tracking-tight uppercase italic">Neurovi</h1>
+        <h1
+          class="text-stone-900 text-2xl font-black tracking-tight uppercase italic"
+        >
+          Neurovi
+        </h1>
       </div>
-      <h2 class="text-neutral-700 text-3xl font-bold tracking-tight">Welcome Back,</h2>
+      <h2 class="text-neutral-700 text-3xl font-bold tracking-tight">
+        Welcome Back,
+      </h2>
       <p class="text-neutral-500 text-sm mt-1">
         Masukkan kredensial Anda untuk mengakses SIMRS.
       </p>
+      <NTypography variant="heading-1" cek="coba"
+        >Dashboard Master Data (MDM) - GenRS</NTypography
+      >
     </div>
 
     <!-- Form Section -->
     <div class="flex-1 flex flex-col justify-center gap-5">
       <div class="w-full">
-        <NLabel size="sm" class="mb-1.5 ml-1 font-bold text-stone-600">Email Address</NLabel>
-        <NTextfield 
-          placeholder="nama@email.com" 
-          v-model="email" 
+        <NLabel size="sm" class="mb-1.5 ml-1 font-bold text-stone-600"
+          >Email Address</NLabel
+        >
+        <NTextfield
+          placeholder="nama@email.com"
+          v-model="email"
           v-bind="emailAttrs"
           :error="!!errors.email"
         >
@@ -56,7 +68,11 @@ const {
       <div class="w-full">
         <div class="flex justify-between items-center mb-1.5 ml-1">
           <NLabel size="sm" class="font-bold text-stone-600">Password</NLabel>
-          <a href="#" class="text-xs text-teal-600 font-bold hover:underline transition-all">Lupa Password?</a>
+          <a
+            href="#"
+            class="text-xs text-teal-600 font-bold hover:underline transition-all"
+            >Lupa Password?</a
+          >
         </div>
         <NPasswordfield
           placeholder="••••••••"
@@ -74,9 +90,9 @@ const {
       </div>
 
       <div class="w-full mt-4">
-        <NButton 
-          :loading="loading" 
-          class="w-full py-6 rounded-xl text-md font-bold shadow-lg shadow-teal-50 hover:shadow-teal-200 transition-all cursor-pointer" 
+        <NButton
+          :loading="loading"
+          class="w-full py-6 rounded-xl text-md font-bold shadow-lg shadow-teal-50 hover:shadow-teal-200 transition-all cursor-pointer"
           @click="handleLogin"
         >
           Sign In ke Akun
@@ -85,12 +101,16 @@ const {
     </div>
 
     <!-- Footer Branding -->
-    <div class="mt-8 flex items-center justify-between text-[10px] text-stone-400 font-bold tracking-widest uppercase">
+    <div
+      class="mt-8 flex items-center justify-between text-[10px] text-stone-400 font-bold tracking-widest uppercase"
+    >
       <div>GENRS SSO PORTAL</div>
       <div class="flex items-center gap-3">
         <a href="#" class="hover:text-stone-600 transition-colors">HELP</a>
         <span class="opacity-30">|</span>
-        <a href="#" class="hover:text-stone-600 transition-colors">PRIVACY POLICY</a>
+        <a href="#" class="hover:text-stone-600 transition-colors"
+          >PRIVACY POLICY</a
+        >
       </div>
     </div>
   </div>

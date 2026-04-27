@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { getEnv } from '@genrs/utils';
+import { NTypography } from 'tamtech-neurovi-dev-libs/ui/components/typography';
 </script>
 
 <template>
   <div class="min-h-screen bg-slate-50">
+    <NTypography variant="heading-1" cek="coba"
+      >Dashboard Master Data (MDM) - GenRS</NTypography
+    >
     <div class="container mx-auto py-8">
       <h1 class="text-3xl font-bold text-slate-800 mb-6">
         Dashboard Master Data (MDM) - GenRS

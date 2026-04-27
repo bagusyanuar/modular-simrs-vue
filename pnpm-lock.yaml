@@ -274,6 +274,9 @@ importers:
       tailwindcss:
         specifier: ^4.2.2
         version: 4.2.2
+      tamtech-neurovi-dev-libs:
+        specifier: ^1.0.1
+        version: 1.0.1(tailwindcss@4.2.2)(vue@3.5.31(typescript@5.9.3))
       vee-validate:
         specifier: ^4.15.0
         version: 4.15.1(vue@3.5.31(typescript@5.9.3))
@@ -363,6 +366,9 @@ importers:
       tailwindcss:
         specifier: ^4.2.2
         version: 4.2.2
+      tamtech-neurovi-dev-libs:
+        specifier: ^1.0.1
+        version: 1.0.1(tailwindcss@4.2.2)(vue@3.5.31(typescript@5.9.3))
       vue:
         specifier: ^3.5.30
         version: 3.5.31(typescript@5.9.3)
@@ -443,6 +449,9 @@ importers:
       tailwindcss:
         specifier: ^4.2.2
         version: 4.2.2
+      tamtech-neurovi-dev-libs:
+        specifier: ^1.0.1
+        version: 1.0.1(tailwindcss@4.2.2)(vue@3.5.31(typescript@5.9.3))
       vee-validate:
         specifier: ^4.15.1
         version: 4.15.1(vue@3.5.31(typescript@5.9.3))
@@ -3106,6 +3115,12 @@ packages:
 
   tailwindcss@4.2.2:
     resolution: {integrity: sha512-KWBIxs1Xb6NoLdMVqhbhgwZf2PGBpPEiwOqgI4pFIYbNTfBXiKYyWoTsXgBQ9WFg/OlhnvHaY+AEpW7wSmFo2Q==}
+
+  tamtech-neurovi-dev-libs@1.0.1:
+    resolution: {integrity: sha512-CDnNc5TE4REV08F9nkshMnxq5U0jree+sdwac5axQx0aKUvnV8OdAfa3wgiywOdwznJBIuYKPHiH8x1u5mnr7A==}
+    peerDependencies:
+      tailwindcss: ^4.0.0
+      vue: ^3.5.30
 
   tapable@2.3.2:
     resolution: {integrity: sha512-1MOpMXuhGzGL5TTCZFItxCc0AARf1EZFQkGqMm7ERKj8+Hgr5oLvJOVFcC+lRmR8hCe2S3jC4T5D7Vg/d7/fhA==}
@@ -5959,6 +5974,14 @@ snapshots:
   tailwind-merge@3.5.0: {}
 
   tailwindcss@4.2.2: {}
+
+  tamtech-neurovi-dev-libs@1.0.1(tailwindcss@4.2.2)(vue@3.5.31(typescript@5.9.3)):
+    dependencies:
+      class-variance-authority: 0.7.1
+      clsx: 2.1.1
+      tailwind-merge: 3.5.0
+      tailwindcss: 4.2.2
+      vue: 3.5.31(typescript@5.9.3)
 
   tapable@2.3.2: {}
 
