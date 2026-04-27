@@ -1,13 +1,18 @@
 import { createApp } from 'vue';
+import { createPinia } from 'pinia';
 import './style.css';
 import App from './App.vue';
 import appRouter from './routes/app-router';
 import { createSSOGuard } from '@genrs/sso';
 import { getEnv } from '@genrs/utils';
+import { useAuthStore } from './stores/auth';
 
 // 🏁 [UI] Set initial loading context
 const loaderText = document.getElementById('loader-text');
 if (loaderText) loaderText.innerText = 'Preparing content...';
+
+// 🍍 Initialize Pinia early
+const pinia = createPinia();
 
 // 🔐 Setup SSO Guard
 createSSOGuard(appRouter, {
@@ -21,19 +26,24 @@ createSSOGuard(appRouter, {
     token: '/token',
   },
   sessionConfig: {
-    domain: (function () {
-      const d = getEnv('VITE_SSO_COOKIE_DOMAIN');
-      return d;
-    })(),
-    secure: window.location.protocol === 'https:', // true = production, false = development
-    persistentStorage: 'cookie', // 🍪 Refresh Token di Cookie (Shared)
+    domain: getEnv('VITE_SSO_COOKIE_DOMAIN'),
+    secure: window.location.protocol === 'https:',
+    persistentStorage: 'cookie',
 
+    // 🔗 Link to Pinia Store
     onSaveToken: (token) => {
-      console.log('💾 [MasterData] Saving access token to localStorage');
-      localStorage.setItem('access_token', token);
+      console.log('💾 [MasterData] Saving access token to Pinia');
+      const authStore = useAuthStore(pinia); // Pass pinia instance if called outside setup
+      authStore.setToken(token);
     },
-    onGetToken: () => localStorage.getItem('access_token'),
-    onClearToken: () => localStorage.removeItem('access_token'),
+    onGetToken: () => {
+      const authStore = useAuthStore(pinia);
+      return authStore.accessToken;
+    },
+    onClearToken: () => {
+      const authStore = useAuthStore(pinia);
+      authStore.clearToken();
+    },
     refreshKey: 'refresh_token',
   },
   onAuthenticated: (session) => {
@@ -42,6 +52,7 @@ createSSOGuard(appRouter, {
 });
 
 const app = createApp(App);
+app.use(pinia);
 app.use(appRouter);
 app.mount('#app');
 
