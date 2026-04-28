@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import { authRoutes } from './base/auth.routes';
+import tenantRoutes from 'virtual:tenant-routes';
 
 const appRouter = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [...authRoutes],
+  routes: [...tenantRoutes],
 });
 
 export default appRouter;
