@@ -1,5 +1,5 @@
 {
-  "name": "@genrs/core-module",
+  "name": "@genossys-hospital/core",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -8,32 +8,14 @@
   },
   "sideEffects": false,
   "exports": {
-    "./utils/*": "./src/utils/*",
-    "./finance/*": "./src/finance/*",
-    "./simrs/*": "./src/simrs/*",
-    "./auth/*": "./src/auth/*"
+    "./*": "./src/*/index.ts"
   },
   "typesVersions": {
     "*": {
-      "utils/*": [
-        "./src/utils/*/index.ts",
-        "./src/utils/*.ts",
-        "./src/utils/*"
-      ],
-      "finance/*": [
-        "./src/finance/*/index.ts",
-        "./src/finance/*.ts",
-        "./src/finance/*"
-      ],
-      "simrs/*": [
-        "./src/simrs/*/index.ts",
-        "./src/simrs/*.ts",
-        "./src/simrs/*"
-      ],
-      "auth/*": [
-        "./src/auth/*/index.ts",
-        "./src/auth/*.ts",
-        "./src/auth/*"
+      "/*": [
+        "./src/*/index.ts",
+        "./src/*.ts",
+        "./src/*"
       ]
     }
   },

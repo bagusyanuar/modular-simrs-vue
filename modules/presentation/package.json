@@ -1,5 +1,5 @@
 {
-  "name": "@genrs/v2-master-data-app",
+  "name": "@genossys-hospital/presentation",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,16 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@genrs/http": "workspace:*",
-    "@genrs/presentation": "workspace:*",
-    "@genossys-hospital/presentation": "workspace:*",
-    "@genrs/sso": "workspace:*",
-    "@genrs/utils": "workspace:*",
-    "pinia": "^3.0.4",
+    "@vee-validate/zod": "^4.15.0",
     "tailwindcss": "^4.2.2",
-    "tamtech-neurovi-dev-libs": "^1.0.1",
+    "vee-validate": "^4.15.0",
     "vue": "^3.5.30",
-    "vue-router": "^4.5.0"
+    "zod": "^3.25.23",
+    "@genrs/utils": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",

@@ -14,7 +14,6 @@ export default defineConfig(({ mode }) => {
     plugins: [
       vue(),
       tailwindcss(),
-      // 🛠️ Virtual Config Plugin for Dev Mode
       {
         name: 'virtual-config',
         configureServer(server) {
@@ -32,12 +31,6 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        '@genrs/sso': path.resolve(__dirname, '../../packages/sso/src'),
-        '@genrs/utils': path.resolve(__dirname, '../../packages/utils/src'),
-        '@genrs/presentation': path.resolve(
-          __dirname,
-          '../../features/presentation/src'
-        ),
         '@genossys-hospital/presentation': path.resolve(
           __dirname,
           '../../modules/presentation/src'
@@ -45,9 +38,9 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: process.env.VITE_DOMAIN,
-      allowedHosts: [`.${process.env.VITE_DOMAIN}`],
-      port: Number(process.env.VITE_PORT_MASTER_DATA_APP) || 5173,
+      host: process.env.VITE_SSO_DOMAIN,
+      allowedHosts: [`.${process.env.VITE_SSO_DOMAIN}`],
+      port: Number(process.env.VITE_SSO_PORT) || 5174,
       strictPort: true,
       open: false,
     },

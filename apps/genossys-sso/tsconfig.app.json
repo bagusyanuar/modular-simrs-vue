@@ -5,7 +5,6 @@
     "types": ["vite/client"],
     "paths": {
       "@/*": ["./src/*"],
-      "@page/*": ["../../features/presentation/src/simrs/base/*"],
       "@genossys-hospital/presentation/*": ["../../modules/presentation/src/*"]
     },
     /* Linting */

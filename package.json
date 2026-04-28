@@ -12,6 +12,7 @@
     "dev:old": "turbo run dev --filter=@genrs/old-app",
     "dev:simulation": "turbo run dev --filter=@genrs/old-app --filter=@genrs/auth-app --filter=@genrs/simrs-app --",
     "dev:new-simulation": "turbo run dev --filter=@genrs/sso-app --filter=@genrs/v1-app --filter=@genrs/v2-master-data-app",
+    "dev:genossys-simulation": "turbo run dev --filter=@genossys-hospital/sso-app",
     "build:simrs": "turbo run build --filter=@genrs/simrs-app --filter=@genrs/auth-app --",
     "create:tenant": "node scripts/create-tenant.mjs",
     "create:feature": "node scripts/scaffold-feature.mjs",
