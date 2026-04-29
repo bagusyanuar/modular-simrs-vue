@@ -12,6 +12,7 @@
     "tailwindcss": "^4.2.2",
     "vue": "^3.5.30",
     "vue-router": "^4.5.0",
+    "@genrs/utils": "workspace:*",
     "@genossys-hospital/presentation": "workspace:*"
   },
   "devDependencies": {

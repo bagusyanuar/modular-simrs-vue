@@ -590,6 +590,9 @@ importers:
       '@genrs/utils':
         specifier: workspace:*
         version: link:../../packages/utils
+      zod:
+        specifier: ^3.25.23
+        version: 3.25.76
     devDependencies:
       '@types/node':
         specifier: ^24.12.0
@@ -600,11 +603,17 @@ importers:
 
   modules/presentation:
     dependencies:
+      '@genossys-hospital/core':
+        specifier: workspace:*
+        version: link:../core
+      '@genossys-hospital/infrastructure':
+        specifier: workspace:*
+        version: link:../infrastructure
       '@genrs/utils':
         specifier: workspace:*
         version: link:../../packages/utils
       '@vee-validate/zod':
-        specifier: ^4.15.0
+        specifier: ^4.15.1
         version: 4.15.1(vue@3.5.31(typescript@5.9.3))(zod@3.25.76)
       tailwindcss:
         specifier: ^4.2.2

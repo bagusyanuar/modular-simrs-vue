@@ -13,6 +13,7 @@
     "baseUrl": ".",
     "paths": {
       "@genossys-hospital/core/*": ["../../modules/core/src/*"],
+      "@genossys-hospital/infrastructure/*": ["../../modules/infrastructure/src/*"],
       "@genossys-hospital/presentation/*": ["./src/*"]
     }
   },

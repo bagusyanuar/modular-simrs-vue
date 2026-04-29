@@ -9,12 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vee-validate/zod": "^4.15.0",
+    "@vee-validate/zod": "^4.15.1",
     "tailwindcss": "^4.2.2",
     "vee-validate": "^4.15.0",
     "vue": "^3.5.30",
     "zod": "^3.25.23",
-    "@genrs/utils": "workspace:*"
+    "@genrs/utils": "workspace:*",
+    "@genossys-hospital/core": "workspace:*",
+    "@genossys-hospital/infrastructure": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",

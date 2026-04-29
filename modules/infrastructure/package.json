@@ -27,7 +27,8 @@
     "@genossys-hospital/core": "workspace:*",
     "@genossys-hospital/sso-sdk": "workspace:*",
     "@genossys-hospital/http-sdk": "workspace:*",
-    "@genrs/utils": "workspace:*"
+    "@genrs/utils": "workspace:*",
+    "zod": "^3.25.23"
   },
   "devDependencies": {
     "@types/node": "^24.12.0",

@@ -5,6 +5,9 @@ import { NButton } from '@genrs/ui/components/ui/button';
 import { NLabel } from '@genrs/ui/components/ui/label';
 import { NIcon } from '@genrs/ui/components/icons';
 import { NHelperText } from '@genrs/ui/components/ui/helper-text';
+import { useLogin } from '../composables/useLogin'
+
+const { email, emailAttrs, password, passwordAttrs, errors } = useLogin()
 </script>
 
 <template>
@@ -15,9 +18,7 @@ import { NHelperText } from '@genrs/ui/components/ui/helper-text';
         <div class="p-2 bg-teal-50 rounded-lg border border-teal-100 shadow-sm">
           <NIcon icon="lucide:hospital" class="text-teal-600 w-6 h-6" />
         </div>
-        <h1
-          class="text-stone-900 text-2xl font-black tracking-tight uppercase italic"
-        >
+        <h1 class="text-stone-900 text-2xl font-black tracking-tight uppercase italic">
           Neurovi
         </h1>
       </div>
@@ -32,54 +33,43 @@ import { NHelperText } from '@genrs/ui/components/ui/helper-text';
     <!-- Form Section -->
     <div class="flex-1 flex flex-col justify-center gap-5">
       <div class="w-full">
-        <NLabel size="sm" class="mb-1.5 ml-1 font-bold text-stone-600"
-          >Email Address</NLabel
-        >
-        <NTextfield placeholder="nama@email.com">
+        <NLabel size="sm" class="mb-1.5 ml-1 font-bold text-stone-600">Email Address</NLabel>
+        <NTextfield v-model="email" v-bind="emailAttrs" placeholder="nama@email.com">
           <template #prefix>
             <NIcon icon="lucide:mail" class="w-4 text-stone-400" />
           </template>
         </NTextfield>
-        <NHelperText :error="false" size="sm"> </NHelperText>
+        <NHelperText :error="!!errors.email" size="sm"> {{ errors.email }} </NHelperText>
       </div>
 
       <div class="w-full">
         <div class="flex justify-between items-center mb-1.5 ml-1">
           <NLabel size="sm" class="font-bold text-stone-600">Password</NLabel>
-          <a
-            href="#"
-            class="text-xs text-teal-600 font-bold hover:underline transition-all"
-            >Lupa Password?</a
-          >
+          <a href="#" class="text-xs text-teal-600 font-bold hover:underline transition-all">Lupa Password?</a>
         </div>
-        <NPasswordfield placeholder="••••••••">
+        <NPasswordfield v-model="password" v-bind="passwordAttrs" placeholder="••••••••">
           <template #prefix>
             <NIcon icon="lucide:lock" class="w-4 text-stone-400" />
           </template>
         </NPasswordfield>
-        <NHelperText :error="false" size="sm"> </NHelperText>
+        <NHelperText :error="!!errors.password" size="sm"> {{ errors.password }} </NHelperText>
       </div>
 
       <div class="w-full mt-4">
         <NButton
-          class="w-full py-6 rounded-xl text-md font-bold shadow-lg shadow-teal-50 hover:shadow-teal-200 transition-all cursor-pointer"
-        >
+          class="w-full py-6 rounded-xl text-md font-bold shadow-lg shadow-teal-50 hover:shadow-teal-200 transition-all cursor-pointer">
           Sign In ke Akun
         </NButton>
       </div>
     </div>
 
     <!-- Footer Branding -->
-    <div
-      class="mt-8 flex items-center justify-between text-[10px] text-stone-400 font-bold tracking-widest uppercase"
-    >
+    <div class="mt-8 flex items-center justify-between text-[10px] text-stone-400 font-bold tracking-widest uppercase">
       <div>GENRS SSO PORTAL</div>
       <div class="flex items-center gap-3">
         <a href="#" class="hover:text-stone-600 transition-colors">HELP</a>
         <span class="opacity-30">|</span>
-        <a href="#" class="hover:text-stone-600 transition-colors"
-          >PRIVACY POLICY</a
-        >
+        <a href="#" class="hover:text-stone-600 transition-colors">PRIVACY POLICY</a>
       </div>
     </div>
   </div>
