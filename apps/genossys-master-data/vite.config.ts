@@ -60,6 +60,7 @@ export default defineConfig(({ mode }) => {
           __dirname,
           '../../modules/presentation/src'
         ),
+        '@genrs/ui': path.resolve(__dirname, '../../packages/ui/src'),
       },
     },
     server: {

@@ -1,16 +1,16 @@
 import type { RouteRecordRaw } from 'vue-router';
 import { V2Layout } from '@genrs/ui/layouts';
 
-export const unitRoutes: RouteRecordRaw[] = [
+export const staffRoutes: RouteRecordRaw[] = [
   {
-    path: '/unit',
-    name: 'unit',
+    path: '/staff',
+    name: 'staff',
     component: V2Layout,
     children: [
       {
         path: '',
         component: () =>
-          import('@genossys-hospital/presentation/unit/base/pages/Unit.vue'),
+          import('@genossys-hospital/presentation/staff/base/pages/StaffPage.vue'),
       },
     ],
     meta: { public: false },
