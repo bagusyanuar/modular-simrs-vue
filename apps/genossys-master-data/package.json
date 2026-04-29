@@ -1,5 +1,5 @@
 {
-  "name": "@genossys-hospital/sso-app",
+  "name": "@genossys-hospital/master-data-app",
   "private": true,
   "version": "1.0.0",
   "type": "module",

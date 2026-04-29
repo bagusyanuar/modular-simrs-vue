@@ -1,4 +1,4 @@
-import type { PaginationParam } from '../libs';
+import type { PaginationParam } from '../../libs';
 
 export interface UnitParams extends PaginationParam {
   search?: string;
