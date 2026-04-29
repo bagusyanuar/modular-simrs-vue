@@ -581,6 +581,9 @@ importers:
       '@genossys-hospital/core':
         specifier: workspace:*
         version: link:../core
+      '@genossys-hospital/http-sdk':
+        specifier: workspace:*
+        version: link:../../packages/http-sdk
       '@genossys-hospital/sso-sdk':
         specifier: workspace:*
         version: link:../../packages/sso-sdk

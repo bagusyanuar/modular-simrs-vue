@@ -26,6 +26,7 @@
   "dependencies": {
     "@genossys-hospital/core": "workspace:*",
     "@genossys-hospital/sso-sdk": "workspace:*",
+    "@genossys-hospital/http-sdk": "workspace:*",
     "@genrs/utils": "workspace:*"
   },
   "devDependencies": {
