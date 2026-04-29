@@ -6,9 +6,37 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Hospital Management System</title>
+  <!-- 🎨 Static Splash Loader Style -->
+  <link rel="stylesheet" href="/splash-loader.css" />
+  <script src="/config.js"></script>
+  <script>
+    (function () {
+      const config = window.config || {};
+      const params = new URLSearchParams(window.location.search);
+      const isDirectAccess = !params.get('client_id') && !params.get('redirect_uri');
+
+      // Note: Master Data biasanya tidak butuh auto-redirect di Head 
+      // kecuali kita mau cegat rute rute tertentu. 
+      // Tapi kita pasang saja script-nya agar window.config tersedia.
+    })();
+  </script>
 </head>
 
 <body>
+  <!-- 🌊 Premium Pre-load Splash -->
+  <div id="global-loader" class="splash-loader">
+    <div class="spinner-wrapper">
+      <div class="spinner-bg"></div>
+      <div class="spinner-active"></div>
+    </div>
+    <h2 id="loader-title" class="loader-title">
+      GENOSSYS HOSPITAL
+    </h2>
+    <p id="loader-text" class="loader-text">
+      Menghubungkan sesi aman Bosku...
+    </p>
+  </div>
+
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
 </body>

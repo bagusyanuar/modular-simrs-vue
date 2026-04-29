@@ -1,4 +1,4 @@
-import type { SSOConfig, TokenResponse } from '../types';
+import type { SSOConfig, TokenResponse, AuthSession } from '../types';
 import { createPKCEPair } from '../core/pkce';
 import { type AuthStorage, DefaultAuthStorage } from '../storage';
 import { SSOApi } from './instance';
@@ -22,6 +22,17 @@ export class SSOClient {
     this.loadSession();
   }
 
+  /**
+   * Update configuration at runtime
+   */
+  public updateConfig(config: Partial<SSOConfig>): void {
+    this.config = { ...this.config, ...config };
+    // Re-init API if baseUrl changed
+    if (config.baseUrl) {
+      this.api = new SSOApi(this.config);
+    }
+  }
+
   private get keys() {
     return {
       accessToken: this.config.storageKeys?.accessToken || 'sso_access_token',
@@ -37,7 +48,6 @@ export class SSOClient {
     this.storage.setItem(this.keys.pkceVerifier, verifier);
     this.storage.setItem(this.keys.pkceState, state);
 
-    const authorizeUrl = this.config.endpoints?.authorize || '/authorize';
     const params = new URLSearchParams({
       client_id: this.config.clientId,
       redirect_uri: this.config.redirectUri,
@@ -46,7 +56,7 @@ export class SSOClient {
       response_type: 'code',
     });
 
-    window.location.href = `${this.config.baseUrl}${authorizeUrl}?${params.toString()}`;
+    window.location.href = `${this.config.portalUrl}?${params.toString()}`;
   }
 
   /**
@@ -76,7 +86,7 @@ export class SSOClient {
   public async handleCallback(
     code: string,
     state: string
-  ): Promise<TokenResponse> {
+  ): Promise<AuthSession> {
     const storedVerifier = this.storage.getItem(this.keys.pkceVerifier);
     const storedState = this.storage.getItem(this.keys.pkceState);
 
@@ -95,10 +105,10 @@ export class SSOClient {
       });
 
       const response: TokenResponse = data.data || data;
-      this.saveSession(response);
+      const session = this.saveSession(response);
       this.clearPKCE();
 
-      return response;
+      return session;
     } catch (error) {
       this.clearPKCE();
       throw error;
@@ -158,7 +168,7 @@ export class SSOClient {
     return this.api.instance;
   }
 
-  private saveSession(response: TokenResponse): void {
+  private saveSession(response: TokenResponse): AuthSession {
     const expiresAt = Date.now() + response.expires_in * 1000;
 
     if (this.config.onSaveToken) {
@@ -176,6 +186,11 @@ export class SSOClient {
       CookieHelper.set(this.keys.accessToken, response.access_token, days);
       this.storage.setItem(this.keys.expiresAt, expiresAt.toString());
     }
+
+    return {
+      accessToken: response.access_token,
+      expiresAt: expiresAt,
+    };
   }
 
   private loadSession(): void {

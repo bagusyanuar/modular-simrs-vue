@@ -1,18 +1,35 @@
 import type { Router } from 'vue-router';
-import type { SSOClient } from '../index';
+import type { SSOClient } from '../client/sso-client';
+import type { AuthSession, SSOConfig } from '../types';
 
 export interface GuardOptions {
   auth: SSOClient;
   callbackPath?: string;
-  publicRoutes?: string[]; // Alternative to meta.public
+  publicRoutes?: string[];
+  /** Optional session configuration to override client defaults */
+  sessionConfig?: Partial<SSOConfig>;
+  /** Hook called when user is successfully authenticated (Safe with AuthSession type) */
+  onAuthenticated?: (session: AuthSession) => Promise<void> | void;
+  /** Hook called when authentication fails */
+  onAuthError?: (error: Error) => void;
+  /**
+   * Whether to automatically redirect to SSO Portal if unauthenticated.
+   * Default: true
+   */
+  autoRedirect?: boolean;
 }
 
 /**
- * Optimized Vue Router Guard for SSO SDK
+ * Enhanced Vue Router Guard for SSO SDK
  */
 export function createSSOGuard(router: Router, options: GuardOptions) {
   const { auth } = options;
   const callbackPath = options.callbackPath || '/callback';
+
+  // Apply optional session configuration
+  if (options.sessionConfig) {
+    auth.updateConfig(options.sessionConfig);
+  }
 
   router.beforeEach(async (to, _from, next) => {
     // 1. Handle Callback Route
@@ -22,10 +39,21 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
 
       if (code && state) {
         try {
-          await auth.handleCallback(code, state);
+          const session = await auth.handleCallback(code, state);
+          
+          // Trigger hook if provided
+          if (options.onAuthenticated) {
+            await options.onAuthenticated(session);
+          }
+          
           return next('/');
         } catch (error) {
-          console.error('[SSOSDK] Callback error:', error);
+          const err = error instanceof Error ? error : new Error('Authentication callback failed');
+          if (options.onAuthError) {
+            options.onAuthError(err);
+          } else {
+            console.error('[SSOSDK] Callback error:', err);
+          }
           return next('/');
         }
       }
@@ -45,19 +73,24 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
     const silentCode = await auth.checkSilentLogin();
     if (silentCode) {
       try {
-        // Exchange code immediately
-        const state = (window.sessionStorage.getItem('pkce_state') ||
-          '') as string;
-        await auth.handleCallback(silentCode, state);
+        const state = (window.sessionStorage.getItem('pkce_state') || '') as string;
+        const session = await auth.handleCallback(silentCode, state);
+        
+        // Trigger hook if provided
+        if (options.onAuthenticated) {
+          await options.onAuthenticated(session);
+        }
+        
         return next();
       } catch {
-        // Fall through to redirect
+        // Fall through to redirect if silent login fails
       }
     }
 
     // 5. Final Step: Redirect to Portal
-    // We use portal URL with full PKCE challenge
-    auth.login(); // This will trigger window.location.href redirect
+    if (options.autoRedirect !== false) {
+      auth.login();
+    }
     return next(false);
   });
 }

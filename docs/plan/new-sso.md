@@ -137,17 +137,34 @@ export const auth = new SSOClient({
 
 ### 2. Integrasi Vue Router (Guard)
 
-Gunakan helper `createSSOGuard` untuk melindungi route aplikasi:
+Gunakan helper `createSSOGuard` untuk melindungi route aplikasi. Guard ini mengotomatisasi pengecekan sesi lokal, silent login ke portal, dan penanganan callback PKCE.
 
 ```typescript
 import { createSSOGuard } from '@genossys-hospital/sso-sdk';
 import { router } from './router';
 import { auth } from './lib/auth';
+import { useUserStore } from './stores/user';
 
 createSSOGuard(router, {
   auth,
   callbackPath: '/callback', // Default: /callback
   publicRoutes: ['/public-page'], // Route yang tidak butuh login
+  
+  // 🔥 [NEW] Integrasi State Management (Pinia)
+  onAuthenticated: async (session) => {
+    const userStore = useUserStore();
+    userStore.setToken(session.accessToken);
+    await userStore.fetchProfile(); // Tarik profile sebelum page muncul
+  },
+
+  // 🔥 [NEW] Custom Error Handling
+  onAuthError: (error) => {
+    console.error('SSO Error:', error.message);
+    // Tampilkan toast atau redirect ke error page
+  },
+
+  // 🔥 [NEW] Control Redirect
+  autoRedirect: true, // Set false jika ingin handle redirect manual
 });
 ```
 

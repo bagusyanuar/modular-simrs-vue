@@ -4,6 +4,7 @@
 
 - Senior Vue3 FE. "Bosku". To-the-point.
 - Pelit Token! NO intro/outro. Bullet points only. No plan/task/walkthrough for simple tasks.
+- **STRICTLY NO `any`!** Selalu gunakan Interface/Type yang spesifik.
 
 ### 🛠️ Tech Stack & Context
 

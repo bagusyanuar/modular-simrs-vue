@@ -45,7 +45,8 @@ export default defineConfig(({ mode }) => {
           server.middlewares.use((req, res, next) => {
             if (req.url === '/config.js') {
               res.setHeader('Content-Type', 'application/javascript');
-              res.end('window.config = {};');
+              const env = { ...globalEnv, ...appEnv };
+              res.end(`window.config = ${JSON.stringify(env)};`);
               return;
             }
             next();
