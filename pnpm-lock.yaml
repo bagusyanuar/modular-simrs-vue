@@ -581,6 +581,9 @@ importers:
       '@genossys-hospital/core':
         specifier: workspace:*
         version: link:../core
+      '@genossys-hospital/sso-sdk':
+        specifier: workspace:*
+        version: link:../../packages/sso-sdk
     devDependencies:
       '@types/node':
         specifier: ^24.12.0

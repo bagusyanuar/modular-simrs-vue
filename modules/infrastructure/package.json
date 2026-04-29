@@ -24,7 +24,9 @@
     }
   },
   "dependencies": {
-    "@genossys-hospital/core": "workspace:*"
+    "@genossys-hospital/core": "workspace:*",
+    "@genossys-hospital/sso-sdk": "workspace:*",
+    "@genrs/utils": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^24.12.0",

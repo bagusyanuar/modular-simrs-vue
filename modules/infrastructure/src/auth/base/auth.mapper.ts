@@ -1,18 +1,15 @@
 import type {
   AuthorizeForm,
   AuthorizeModel,
+  AuthModel,
 } from '@genossys-hospital/core/auth/base';
-import type { AuthorizeRequest, AuthorizeResponse } from './auth.schema';
+import type { LoginCredentials } from '@genossys-hospital/sso-sdk';
+import type { AuthorizeResponse, TokenSchema } from './auth.schema';
 
-export const mapAuthorizeFormToRequest = (
-  form: AuthorizeForm
-): AuthorizeRequest => {
+export const mapFormToCredentials = (form: AuthorizeForm): LoginCredentials => {
   return {
     email: form.email,
     password: form.password,
-    client_id: form.clientId,
-    code_challenge: form.codeChallenge,
-    redirect_uri: form.redirectUri,
   };
 };
 
@@ -21,5 +18,12 @@ export const mapAuthorizeResponseToModel = (
 ): AuthorizeModel => {
   return {
     code: response.code,
+  };
+};
+
+export const mapTokenToDomain = (schema: TokenSchema): AuthModel => {
+  return {
+    accessToken: schema.access_token,
+    expiresIn: schema.expires_in,
   };
 };

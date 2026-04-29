@@ -1,11 +1,8 @@
-export interface AuthorizeRequest {
-  email: string;
-  password: string;
-  client_id: string;
-  code_challenge: string;
-  redirect_uri: string;
-}
-
 export interface AuthorizeResponse {
   code: string;
+}
+
+export interface TokenSchema {
+  access_token: string;
+  expires_in: number;
 }
