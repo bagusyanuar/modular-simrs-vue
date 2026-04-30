@@ -4,10 +4,11 @@ SDK ini adalah wrapper Axios yang dirancang untuk arsitektur modular Genossys Ho
 
 ## Fitur Utama
 
-1.  **Zero Any Policy**: 100% Type-safe menggunakan TypeScript Generics.
+1.  **Zero Any Policy**: 100% Type-safe menggunakan TypeScript.
 2.  **Smart Auth Interceptor**: Injeksi token otomatis dan antrean refresh token (mencegah *race condition*).
-3.  **Agnostic Design**: Tidak terikat pada struktur backend tertentu (User bebas melakukan transformasi data).
-4.  **Flexible Hooks**: Mudah diintegrasikan dengan Pinia, Cookie, atau State Management lainnya.
+3.  **HttpError Normalization**: Otomatis mengubah `AxiosError` menjadi `HttpError` yang seragam, menyembunyikan detail library pihak ketiga dari logic bisnis.
+4.  **Zero Axios Leakage**: Layer di atas SDK tidak perlu meng-import Axios untuk menangani error atau hooks.
+5.  **Flexible Hooks**: Mendukung custom logic untuk request, refresh token, dan error handling.
 
 ## Inisialisasi Dasar
 
@@ -21,61 +22,64 @@ export const http = new HttpClient({
   timeout: 15000,
   hooks: {
     getToken: () => localStorage.getItem('access_token'),
+    // Hook baru untuk modifikasi request secara global
+    onRequest: (config) => {
+      config.headers['X-Hospital-Code'] = 'RS001';
+      return config;
+    }
   }
 });
 ```
 
-## Integrasi dengan SSO SDK (Recomended)
+## Integrasi dengan SSO SDK (Recommended)
 
 Gunakan `SSOClient` untuk menangani refresh token secara otomatis:
 
 ```typescript
-import { HttpClient } from '@genossys-hospital/http-sdk';
+import { HttpClient, HttpError } from '@genossys-hospital/http-sdk';
 import { auth } from './auth'; // Instance SSOClient
 
 export const api = new HttpClient({
   baseURL: import.meta.env.VITE_API_URL,
   hooks: {
     getToken: () => auth.getAccessToken(),
-    onRefreshToken: () => auth.checkSilentLogin(), // Atau logic refresh token lainnya
-    onUnauthorized: () => {
+    onRefreshToken: () => auth.checkSilentLogin(), 
+    // Menggunakan HttpError (Bukan AxiosError)
+    onUnauthorized: (error: HttpError) => {
        auth.logout();
        window.location.href = '/login';
-    }
+    },
+    // Menentukan kapan refresh token harus di-trigger
+    shouldRefreshToken: (error) => error.status === 401 || error.code === 'TOKEN_EXPIRED'
   }
 });
 ```
 
-## Menangani Transformasi Data (Unwrapping)
+## Standardized Methods
 
-Karena SDK ini bersifat agnostic, jika Anda ingin otomatis membongkar response `{ success, data, message }`, Anda bisa menambahkan interceptor sendiri:
+SDK menyediakan method standar dan versi `Raw` jika Anda membutuhkan full response (headers/status):
 
-```typescript
-api.instance.interceptors.response.use((response) => {
-  const { data } = response;
-  
-  // Logic bongkar data Genossys
-  if (data && data.success) {
-    return { ...response, data: data.data };
-  }
-  
-  return response;
-});
-
-// Sekarang get<T> akan langsung mengembalikan T (isinya data.data)
-const user = await api.get<UserEntity>('/me');
-```
+| Standard (Return Data) | Raw (Return AxiosResponse) |
+| :--- | :--- |
+| `api.get<T>(url, config)` | `api.getRaw<T>(url, config)` |
+| `api.post<T>(url, data, config)` | `api.postRaw<T>(url, data, config)` |
+| `api.put<T>(url, data, config)` | `api.putRaw<T>(url, data, config)` |
+| `api.patch<T>(url, data, config)` | `api.patchRaw<T>(url, data, config)` |
+| `api.delete<T>(url, config)` | `api.deleteRaw<T>(url, config)` |
 
 ## Error Handling
 
-SDK menyediakan class `HttpError` yang seragam:
+SDK menyediakan class `HttpError` yang seragam. **Penting:** Semua error yang keluar dari SDK ini sudah berupa `HttpError`.
 
 ```typescript
+import { HttpError } from '@genossys-hospital/http-sdk';
+
 try {
   const data = await api.get('/path');
 } catch (error) {
   if (error instanceof HttpError) {
-    console.error(`API Error ${error.code}: ${error.message}`);
+    // Properti HttpError: message, status, code, originalError
+    console.error(`API Error ${error.code} (${error.status}): ${error.message}`);
   }
 }
 ```
@@ -83,4 +87,4 @@ try {
 ---
 
 **Package**: `@genossys-hospital/http-sdk`
-**Dependencies**: `axios`
+**Dependencies**: `axios` (Internal only)

@@ -4,12 +4,12 @@ import type { HttpHooks } from '../types';
 /**
  * Setup request interceptor to inject Authorization header
  */
-export function setupAuthRequestInterceptor<BaseResponse = unknown>(
+export function setupAuthRequestInterceptor(
   instance: AxiosInstance, 
-  hooks?: HttpHooks<BaseResponse>
+  hooks?: HttpHooks
 ) {
   instance.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
+    async (config: InternalAxiosRequestConfig) => {
       const getToken = hooks?.getToken;
       if (getToken) {
         const token = getToken();
@@ -17,8 +17,15 @@ export function setupAuthRequestInterceptor<BaseResponse = unknown>(
           config.headers.Authorization = `Bearer ${token}`;
         }
       }
+
+      // Execute custom onRequest hook if provided
+      if (hooks?.onRequest) {
+        return await hooks.onRequest(config);
+      }
+
       return config;
     },
     (error) => Promise.reject(error)
   );
 }
+

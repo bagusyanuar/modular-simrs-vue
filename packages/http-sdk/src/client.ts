@@ -1,6 +1,7 @@
-import axios, { 
-  type AxiosInstance, 
-  type AxiosRequestConfig, 
+import axios, {
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type AxiosError,
 } from 'axios';
 import type { HttpClientConfig } from './types';
 import { HttpError } from './types';
@@ -26,17 +27,20 @@ export class HttpClient {
   private setupErrorInterceptor(): void {
     this.instance.interceptors.response.use(
       (response) => response,
-      (error) => {
+      (error: AxiosError) => {
         // If it's already an HttpError, just re-throw
         if (error.name === 'HttpError') return Promise.reject(error);
 
-        // Normalize AxiosError to HttpError
-        const message = error.response?.data?.message || error.message || 'Unknown Error';
+        // Normalize AxiosError to HttpError safely
+        const data = error.response?.data as
+          | { message?: string; code?: string }
+          | undefined;
+        const message = data?.message || error.message || 'Unknown Error';
         const status = error.response?.status;
-        const code = error.response?.data?.code || 'UNKNOWN_ERROR';
+        const code = data?.code || 'UNKNOWN_ERROR';
 
         const httpError = new HttpError(message, status, code, error);
-        
+
         // Trigger hook if provided
         if (this.config.hooks?.onError) {
           this.config.hooks.onError(httpError);
@@ -63,20 +67,68 @@ export class HttpClient {
     return response.data;
   }
 
+  public async getRaw<T>(url: string, config?: AxiosRequestConfig) {
+    return await this.instance.get<T>(url, config);
+  }
+
   /**
    * Standardized POST request
    */
-  public async post<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+  public async post<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ): Promise<T> {
     const response = await this.instance.post<T>(url, data, config);
     return response.data;
+  }
+
+  public async postRaw<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ) {
+    return await this.instance.post<T>(url, data, config);
   }
 
   /**
    * Standardized PUT request
    */
-  public async put<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+  public async put<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ): Promise<T> {
     const response = await this.instance.put<T>(url, data, config);
     return response.data;
+  }
+
+  public async putRaw<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ) {
+    return await this.instance.put<T>(url, data, config);
+  }
+
+  /**
+   * Standardized PATCH request
+   */
+  public async patch<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ): Promise<T> {
+    const response = await this.instance.patch<T>(url, data, config);
+    return response.data;
+  }
+
+  public async patchRaw<T>(
+    url: string,
+    data?: unknown,
+    config?: AxiosRequestConfig
+  ) {
+    return await this.instance.patch<T>(url, data, config);
   }
 
   /**
@@ -85,5 +137,9 @@ export class HttpClient {
   public async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.instance.delete<T>(url, config);
     return response.data;
+  }
+
+  public async deleteRaw<T>(url: string, config?: AxiosRequestConfig) {
+    return await this.instance.delete<T>(url, config);
   }
 }

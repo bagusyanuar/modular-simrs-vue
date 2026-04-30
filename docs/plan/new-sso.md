@@ -218,17 +218,25 @@ const handleLogin = async (email, password) => {
 
 ### 4. Menggunakan API Client
 
-Gunakan axios instance dari SDK agar token otomatis terlampir dan auto-refresh:
+Gunakan axios instance dari SDK agar token otomatis terlampir dan auto-refresh. **Note:** SDK ini sekarang menggunakan `@genossys-hospital/http-sdk` secara internal, sehingga semua error yang dilempar adalah `HttpError`.
 
 ```typescript
+import { HttpError } from '@genossys-hospital/http-sdk';
+
 const api = auth.getHttpClient();
 
-// Token otomatis masuk di header Authorization: Bearer ...
-// Jika 401, SDK otomatis refresh token dan retry request ini.
-const response = await api.get('/api/v1/data-pasien');
+try {
+  // Token otomatis masuk di header Authorization: Bearer ...
+  // Jika 401, SDK otomatis refresh token dan retry request ini.
+  const response = await api.get('/api/v1/data-pasien');
+} catch (err) {
+  if (err instanceof HttpError) {
+     console.error('API Error:', err.message);
+  }
+}
 ```
 
 ---
 
 **Status SDK**: Stable (v1.0.0)
-**Fitur**: PKCE Automations, Refresh Queueing, Pluggable Storage.
+**Fitur**: PKCE Automations, Refresh Queueing, Pluggable Storage, Integrated HTTP Client.

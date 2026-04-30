@@ -1,12 +1,29 @@
+import axios from 'axios';
 import type { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import type { HttpHooks, PendingRequest } from '../types';
+import { HttpError } from '../types';
+
+interface ErrorData {
+  message?: string;
+  code?: string;
+  [key: string]: unknown;
+}
+
+// Helper to normalize AxiosError inside the interceptor
+const toHttpError = (error: AxiosError) => {
+  const data = error.response?.data as ErrorData | undefined;
+  const message = data?.message || error.message || 'Unknown Error';
+  const status = error.response?.status;
+  const code = data?.code || 'UNKNOWN_ERROR';
+  return new HttpError(message, status, code, error);
+};
 
 /**
- * Setup response interceptor to handle 401 Unauthorized and Token Refresh
+ * Setup response interceptor to handle Unauthorized and Token Refresh
  */
-export function setupAuthResponseInterceptor<BaseResponse = unknown>(
+export function setupAuthResponseInterceptor(
   instance: AxiosInstance, 
-  hooks?: HttpHooks<BaseResponse>
+  hooks?: HttpHooks
 ) {
   let isRefreshing = false;
   let failedQueue: PendingRequest[] = [];
@@ -26,8 +43,13 @@ export function setupAuthResponseInterceptor<BaseResponse = unknown>(
     (response) => response,
     async (error: AxiosError) => {
       const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+      
+      const httpError = toHttpError(error);
+      const isTokenExpired = hooks?.shouldRefreshToken 
+        ? hooks.shouldRefreshToken(httpError)
+        : error.response?.status === 401;
 
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isTokenExpired && !originalRequest._retry) {
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
             failedQueue.push({ resolve, reject });
@@ -43,8 +65,8 @@ export function setupAuthResponseInterceptor<BaseResponse = unknown>(
 
         const onRefreshToken = hooks?.onRefreshToken;
         if (!onRefreshToken) {
-          if (hooks?.onUnauthorized) hooks.onUnauthorized(error);
-          return Promise.reject(error);
+          if (hooks?.onUnauthorized) hooks.onUnauthorized(httpError);
+          return Promise.reject(error); // Keep returning raw error so setupErrorInterceptor catches it later
         }
 
         originalRequest._retry = true;
@@ -61,7 +83,8 @@ export function setupAuthResponseInterceptor<BaseResponse = unknown>(
           return instance(originalRequest);
         } catch (refreshError) {
           processQueue(refreshError as AxiosError, null);
-          if (hooks?.onUnauthorized) hooks.onUnauthorized(refreshError as AxiosError);
+          const refreshHttpError = axios.isAxiosError(refreshError) ? toHttpError(refreshError) : (refreshError as HttpError);
+          if (hooks?.onUnauthorized) hooks.onUnauthorized(refreshHttpError);
           return Promise.reject(refreshError);
         } finally {
           isRefreshing = false;

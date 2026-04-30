@@ -1,4 +1,4 @@
-import type { AxiosRequestConfig, AxiosError, AxiosResponse } from 'axios';
+import type { AxiosRequestConfig, AxiosError, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 /**
  * Configuration for HttpClient hooks
@@ -10,11 +10,17 @@ export interface HttpHooks {
   /** Logic to refresh token, should return new token */
   onRefreshToken?: () => Promise<string>;
   
-  /** Called when 401 occurs and refresh fails */
-  onUnauthorized?: (error: AxiosError) => void;
+  /** Called when token refresh fails or is not configured */
+  onUnauthorized?: (error: HttpError) => void;
 
   /** Custom handler for non-2xx responses or business errors */
   onError?: (error: HttpError) => void;
+
+  /** Hook to modify request config globally before sending */
+  onRequest?: (config: InternalAxiosRequestConfig) => InternalAxiosRequestConfig | Promise<InternalAxiosRequestConfig>;
+
+  /** Custom logic to determine if token should be refreshed (defaults to status === 401) */
+  shouldRefreshToken?: (error: HttpError) => boolean;
 }
 
 /**
