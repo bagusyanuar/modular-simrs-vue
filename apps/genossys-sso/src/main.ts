@@ -5,4 +5,8 @@ import appRouter from './routes/app-router';
 
 const app = createApp(App);
 app.use(appRouter);
-app.mount('#app');
+
+// Wait for router to be ready to prevent flash of blank page
+appRouter.isReady().then(() => {
+  app.mount('#app');
+});

@@ -20,6 +20,11 @@ createSSOGuard(appRouter, {
   clientId: getEnv('VITE_SSO_CLIENT_ID'),
   redirectUri: `${window.location.protocol}//${getEnv('VITE_DOMAIN')}:${getEnv('VITE_PORT_MASTER_DATA_APP')}/callback`,
   portalUrl: `${window.location.protocol}//${getEnv('VITE_SSO_DOMAIN')}:${getEnv('VITE_SSO_PORT')}`,
+  onRedirect: async (url) => {
+    document.body.classList.add('page-exit');
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    window.location.href = url;
+  },
   endpoints: {
     authorize: '/authorize',
     login: '/authorize',
@@ -54,13 +59,8 @@ createSSOGuard(appRouter, {
 const app = createApp(App);
 app.use(pinia);
 app.use(appRouter);
-app.mount('#app');
 
-// 🏁 [UI] Smoothly hide global loader
-const loader = document.getElementById('global-loader');
-if (loader) {
-  loader.style.opacity = '0';
-  setTimeout(() => {
-    loader.style.visibility = 'hidden';
-  }, 500);
-}
+// Wait for router to be ready to prevent flash of blank page
+appRouter.isReady().then(() => {
+  app.mount('#app');
+});

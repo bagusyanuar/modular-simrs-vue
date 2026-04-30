@@ -34,17 +34,16 @@ SSOSessionManager.configure({
   secure: window.location.protocol === 'https:',
   expires: 7,
   refreshKey: 'refresh_token',
+  onRedirect: async (url: string) => {
+    document.body.classList.add('page-exit');
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    window.location.href = url;
+  },
 });
 
 const app = createApp(App);
 app.use(appRouter);
-app.mount('#app');
-
-// 🏁 [UI] Smoothly hide global loader
-const loader = document.getElementById('global-loader');
-if (loader) {
-  loader.style.opacity = '0';
-  setTimeout(() => {
-    loader.style.visibility = 'hidden';
-  }, 500);
-}
+// Wait for router to be ready to prevent flash of blank page
+appRouter.isReady().then(() => {
+  app.mount('#app');
+});

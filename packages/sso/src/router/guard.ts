@@ -38,9 +38,10 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
   const callbackPath = options.callbackPath || '/callback';
 
   // Configure internal session manager
-  if (options.sessionConfig) {
-    SSOSessionManager.configure(options.sessionConfig);
-  }
+  SSOSessionManager.configure({
+    ...options.sessionConfig,
+    onRedirect: options.onRedirect,
+  });
 
   router.beforeEach(async (to, _from, next) => {
     // 🔍 0. Discovery Flow (Direct Portal Access)
@@ -50,7 +51,7 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
 
     if (isPortalPath && !hasOAuthParams && options.discoveryUrl) {
       console.log('[SSOGuard] Direct access detected. Redirecting to discovery:', options.discoveryUrl);
-      window.location.href = options.discoveryUrl;
+      SSOSessionManager.redirect(options.discoveryUrl);
       return next(false);
     }
 
@@ -228,7 +229,7 @@ export function createSSOGuard(router: Router, options: SSOGuardOptions) {
 
       // Gunakan setTimeout biar event loop Vue Router selesai dulu baru kita paksa pindah halaman
       setTimeout(() => {
-        window.location.replace(loginUrl);
+        SSOSessionManager.redirect(loginUrl);
       }, 0);
 
       return next(false);

@@ -19,6 +19,8 @@ export interface SessionConfig {
   onClearToken?: () => void;
   /** Custom key untuk menyimpan refresh token (Default: sso_refresh_token) */
   refreshKey?: string;
+  /** Hook untuk menangani navigasi antar domain (misal: untuk animasi) */
+  onRedirect?: (url: string) => void | Promise<void>;
 }
 
 let _refreshKey = 'refresh_token';
@@ -126,5 +128,15 @@ export const SSOSessionManager = {
         ? localStorage.getItem(_refreshKey)
         : CookieStorage.get(_refreshKey);
     return !!token;
+  },
+  /**
+   * Helper untuk redirect antar domain dengan hook animasi jika tersedia
+   */
+  async redirect(url: string): Promise<void> {
+    if (this.config.onRedirect) {
+      await this.config.onRedirect(url);
+    } else {
+      window.location.href = url;
+    }
   },
 };

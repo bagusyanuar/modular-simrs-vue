@@ -18,6 +18,7 @@ export interface SSOConfig {
   clientId: string;
   redirectUri: string;
   endpoints?: Partial<SSOEndpoints>;
+  onRedirect?: (url: string) => void | Promise<void>;
 }
 
 /**

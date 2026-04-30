@@ -191,6 +191,22 @@ body {
   }
 }
 
+/* 🎨 Cross-domain Transition Utilities */
+.page-exit {
+  opacity: 0 !important;
+  transition: opacity 300ms ease-in-out !important;
+  pointer-events: none;
+}
+
+@keyframes page-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-page-enter {
+  animation: page-enter 0.5s ease-out forwards;
+}
+
 /* Custom NCheckbox & NSwitch Fixes */
 [data-reka-checkbox],
 [data-reka-switch] {
