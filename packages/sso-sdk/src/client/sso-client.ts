@@ -56,13 +56,20 @@ export class SSOClient {
       response_type: 'code',
     });
 
+    if (!this.config.portalUrl) {
+      throw new Error('portalUrl is required for login redirection');
+    }
+
     window.location.href = `${this.config.portalUrl}?${params.toString()}`;
   }
 
   /**
    * Manual Login via AJAX (Email & Password)
    */
-  public async authorizeManual(credentials: { email: string; password: string }): Promise<{ code: string; state: string }> {
+  public async authorizeManual(credentials: {
+    email: string;
+    password: string;
+  }): Promise<{ code: string; state: string }> {
     const { verifier, challenge, state } = await createPKCEPair();
 
     this.storage.setItem(this.keys.pkceVerifier, verifier);
@@ -82,13 +89,41 @@ export class SSOClient {
     const returnedState = responseData.state;
 
     if (!code) throw new Error('Failed to get authorization code');
-    
+
     // Validate state from BE
     if (returnedState && returnedState !== state) {
       throw new Error('Invalid OAuth2 state returned from server');
     }
 
     return { code, state: returnedState || state };
+  }
+
+  /**
+   * Authorize with explicit OAuth2 parameters (Used by SSO Portal)
+   */
+  public async authorize(params: {
+    email: string;
+    password: string;
+    clientId: string;
+    redirectUri: string;
+    state: string;
+    codeChallenge: string;
+  }): Promise<{ code: string; state: string }> {
+    const authorizeUrl = this.config.endpoints?.authorize || '/authorize';
+    const { data } = await this.api.instance.post(authorizeUrl, {
+      email: params.email,
+      password: params.password,
+      client_id: params.clientId,
+      redirect_uri: params.redirectUri,
+      state: params.state,
+      code_challenge: params.codeChallenge,
+    });
+
+    const responseData = data.data || data;
+    return {
+      code: responseData.code,
+      state: responseData.state || params.state,
+    };
   }
 
   public async handleCallback(
@@ -214,7 +249,9 @@ export class SSOClient {
     if (this.config.onGetToken) return;
 
     let token: string | null = null;
-    const expiresAtStr: string | null = this.storage.getItem(this.keys.expiresAt);
+    const expiresAtStr: string | null = this.storage.getItem(
+      this.keys.expiresAt
+    );
 
     if (this.config.persistence === 'localstorage') {
       token = this.storage.getItem(this.keys.accessToken);

@@ -1,5 +1,5 @@
 import type { AuthRepository } from './auth.repository';
-import type { AuthorizeForm } from './auth.input';
+import type { AuthorizeForm, SSOAuthorizeInput } from './auth.input';
 import type { AuthorizeModel, AuthModel } from './auth.model';
 
 export class Authorize {
@@ -7,6 +7,14 @@ export class Authorize {
 
   async execute(input: AuthorizeForm): Promise<AuthorizeModel> {
     return await this.repository.authorize(input);
+  }
+}
+
+export class AuthorizePortal {
+  constructor(private repository: AuthRepository) {}
+
+  async execute(input: SSOAuthorizeInput): Promise<AuthorizeModel> {
+    return await this.repository.authorizePortal(input);
   }
 }
 

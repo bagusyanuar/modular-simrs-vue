@@ -13,8 +13,12 @@
     "baseUrl": ".",
     "paths": {
       "@genossys-hospital/core/*": ["../../modules/core/src/*"],
-      "@genossys-hospital/infrastructure/*": ["../../modules/infrastructure/src/*"],
-      "@genossys-hospital/presentation/*": ["./src/*"]
+      "@genossys-hospital/infrastructure/*": [
+        "../../modules/infrastructure/src/*"
+      ],
+      "@genossys-hospital/presentation/*": ["./src/*"],
+      "@genossys-hospital/sso-sdk/*": ["../../packages/sso-sdk/src/*"],
+      "@genossys-hospital/http-sdk/*": ["../../packages/http-sdk/src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "vite.config.ts"]

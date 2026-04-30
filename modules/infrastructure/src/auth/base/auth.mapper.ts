@@ -3,8 +3,8 @@ import type {
   AuthorizeModel,
   AuthModel,
 } from '@genossys-hospital/core/auth/base';
-import type { LoginCredentials } from '@genossys-hospital/sso-sdk';
-import type { AuthorizeResponse, TokenSchema } from './auth.schema';
+import type { LoginCredentials, AuthSession } from '@genossys-hospital/sso-sdk';
+import type { AuthorizeResponse } from './auth.schema';
 
 export const mapFormToCredentials = (form: AuthorizeForm): LoginCredentials => {
   return {
@@ -21,9 +21,9 @@ export const mapAuthorizeResponseToModel = (
   };
 };
 
-export const mapTokenToDomain = (schema: TokenSchema): AuthModel => {
+export const mapTokenToDomain = (session: AuthSession): AuthModel => {
   return {
-    accessToken: schema.access_token,
-    expiresIn: schema.expires_in,
+    accessToken: session.accessToken,
+    expiresIn: Math.floor((session.expiresAt - Date.now()) / 1000),
   };
 };

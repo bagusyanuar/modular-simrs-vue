@@ -11,7 +11,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@genossys-hospital/core/*": ["../../modules/core/src/*"]
+      "@genossys-hospital/core/*": ["../../modules/core/src/*"],
+      "@genossys-hospital/sso-sdk/*": ["../../packages/sso-sdk/src/*"]
     },
     "outDir": "dist",
     "noEmit": true

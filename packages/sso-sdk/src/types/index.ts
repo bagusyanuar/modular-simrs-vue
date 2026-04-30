@@ -1,6 +1,6 @@
 export interface SSOConfig {
   baseUrl: string;
-  portalUrl: string;
+  portalUrl?: string;
   clientId: string;
   redirectUri: string;
   endpoints?: {

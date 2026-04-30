@@ -16,7 +16,9 @@
     "zod": "^3.25.23",
     "@genrs/utils": "workspace:*",
     "@genossys-hospital/core": "workspace:*",
-    "@genossys-hospital/infrastructure": "workspace:*"
+    "@genossys-hospital/infrastructure": "workspace:*",
+    "@genossys-hospital/sso-sdk": "workspace:*",
+    "@genossys-hospital/http-sdk": "workspace:*"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",
