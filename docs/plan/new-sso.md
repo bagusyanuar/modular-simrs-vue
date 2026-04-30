@@ -29,10 +29,23 @@ Digunakan saat user mengisi form login di aplikasi.
   "success": true,
   "message": "authorize success",
   "data": {
-    "code": "8c66c304-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+    "code": "8c66c304-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "state": "RANDOM_STATE_STRING" // [NEW] State yang dikirim FE dikembalikan lagi
   }
 }
 ```
+
+#### Detail Parameter:
+
+| Parameter | Tipe | Deskripsi |
+| :--- | :--- | :--- |
+| `email` | String | Email user untuk autentikasi. |
+| `password` | String | Password user. |
+| `client_id` | String | Identifier unik aplikasi (misal: `master-data-app`). |
+| `redirect_uri` | String | URL tujuan setelah login sukses (harus terdaftar di whitelist BE). |
+| `code_challenge` | String | Hasil `SHA256` dari `code_verifier` yang di-Base64URL encode. |
+| `state` | String | String random dari FE untuk mencegah CSRF. BE harus mengembalikan nilai yang sama. |
+| `response_type` | String | Selalu `code` untuk Authorization Code flow. |
 
 > **Note:** Request ini akan menanamkan HTTPOnly cookie `sso_session` yang digunakan untuk fitur Silent Login.
 
@@ -79,13 +92,27 @@ Digunakan untuk login otomatis tanpa form jika user sudah login di aplikasi lain
 
 **Query Parameters:**
 
-- `client_id`: `simrs-vue-app`
-- `code_challenge`: `BASE64URL_ENCODED_SHA256_HASH`
-- `redirect_uri`: `http://localhost:3000/callback`
+- `client_id`: Identifier unik aplikasi.
+- `code_challenge`: Hasil hash verifier (PKCE).
+- `state`: String random untuk validasi keamanan di FE.
+- `redirect_uri`: URL redirect callback.
+- `response_type`: Selalu `code`.
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "code": "8c66c304-xxxx",
+    "state": "RANDOM_STATE_STRING"
+  }
+}
+```
 
 **Behavior:**
 
-- **Success (200 OK):** Jika cookie `sso_session` masih valid, akan mengembalikan `code`. Lanjutkan ke **Step 2** (Exchange Token).
+- **Success (200 OK):** Jika cookie `sso_session` masih valid, akan mengembalikan `code` dan `state`. Lanjutkan ke **Step 2** (Exchange Token).
 - **Failure (401 Unauthorized):** Jika sesi tidak ada atau expired. Arahkan user ke halaman login.
 
 ---

@@ -77,10 +77,18 @@ export class SSOClient {
       state: state,
     });
 
-    const code = data.data?.code || data.code;
-    if (!code) throw new Error('Failed to get authorization code');
+    const responseData = data.data || data;
+    const code = responseData.code;
+    const returnedState = responseData.state;
 
-    return { code, state };
+    if (!code) throw new Error('Failed to get authorization code');
+    
+    // Validate state from BE
+    if (returnedState && returnedState !== state) {
+      throw new Error('Invalid OAuth2 state returned from server');
+    }
+
+    return { code, state: returnedState || state };
   }
 
   public async handleCallback(
@@ -132,7 +140,16 @@ export class SSOClient {
         },
       });
 
-      return data.data?.code || data.code || null;
+      const responseData = data.data || data;
+      const code = responseData.code;
+      const returnedState = responseData.state;
+
+      // Validate state if returned by BE
+      if (code && returnedState && returnedState !== state) {
+        return null;
+      }
+
+      return code || null;
     } catch {
       return null;
     }
