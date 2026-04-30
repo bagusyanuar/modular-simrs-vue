@@ -3,6 +3,7 @@ import axios, {
   type AxiosRequestConfig, 
 } from 'axios';
 import type { HttpClientConfig } from './types';
+import { HttpError } from './types';
 import { setupAuthRequestInterceptor } from './interceptors/auth.request';
 import { setupAuthResponseInterceptor } from './interceptors/auth.response';
 
@@ -19,6 +20,31 @@ export class HttpClient {
   private setupInterceptors(): void {
     setupAuthRequestInterceptor(this.instance, this.config.hooks);
     setupAuthResponseInterceptor(this.instance, this.config.hooks);
+    this.setupErrorInterceptor();
+  }
+
+  private setupErrorInterceptor(): void {
+    this.instance.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        // If it's already an HttpError, just re-throw
+        if (error.name === 'HttpError') return Promise.reject(error);
+
+        // Normalize AxiosError to HttpError
+        const message = error.response?.data?.message || error.message || 'Unknown Error';
+        const status = error.response?.status;
+        const code = error.response?.data?.code || 'UNKNOWN_ERROR';
+
+        const httpError = new HttpError(message, status, code, error);
+        
+        // Trigger hook if provided
+        if (this.config.hooks?.onError) {
+          this.config.hooks.onError(httpError);
+        }
+
+        return Promise.reject(httpError);
+      }
+    );
   }
 
   /**
