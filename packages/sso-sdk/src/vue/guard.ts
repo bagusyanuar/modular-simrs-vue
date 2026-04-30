@@ -69,16 +69,26 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
       return next();
     }
 
-    // 4. Try Silent Login (Check SSO Global Session)
+    // 4. Try Silent Refresh (Using Refresh Token Cookie)
+    // This handles page reloads when persistence is 'memory'
+    const session = await auth.refreshAccessToken();
+    if (session) {
+      if (options.onAuthenticated) {
+        await options.onAuthenticated(session);
+      }
+      return next();
+    }
+
+    // 5. Try Silent Login (Check SSO Global Session via SSO Portal)
     const silentCode = await auth.checkSilentLogin();
     if (silentCode) {
       try {
         const state = (window.sessionStorage.getItem('pkce_state') || '') as string;
-        const session = await auth.handleCallback(silentCode, state);
+        const silentSession = await auth.handleCallback(silentCode, state);
         
         // Trigger hook if provided
         if (options.onAuthenticated) {
-          await options.onAuthenticated(session);
+          await options.onAuthenticated(silentSession);
         }
         
         return next();
@@ -87,9 +97,9 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
       }
     }
 
-    // 5. Final Step: Redirect to Portal
+    // 6. Final Step: Redirect to Portal
     if (options.autoRedirect !== false) {
-      auth.login();
+      await auth.login();
     }
     return next(false);
   });

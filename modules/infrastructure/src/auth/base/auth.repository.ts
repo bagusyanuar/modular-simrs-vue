@@ -12,6 +12,8 @@ import {
   mapTokenToDomain,
 } from './auth.mapper';
 
+import { handleAppError } from '../../libs/error';
+
 export class AuthRepositoryImpl implements AuthRepository {
   constructor(private readonly sso: SSOClient) {}
 
@@ -19,29 +21,35 @@ export class AuthRepositoryImpl implements AuthRepository {
    * Standard Login (Internal App)
    */
   async authorize(input: AuthorizeForm): Promise<AuthorizeModel> {
-    const credentials = mapFormToCredentials(input);
-    const { code } = await this.sso.authorizeManual(credentials);
-    return mapAuthorizeResponseToModel({ code });
+    return handleAppError(async () => {
+      const credentials = mapFormToCredentials(input);
+      const { code } = await this.sso.authorizeManual(credentials);
+      return mapAuthorizeResponseToModel({ code });
+    });
   }
 
   /**
    * SSO Portal Authorization (Third Party App)
    */
   async authorizePortal(input: SSOAuthorizeInput): Promise<AuthorizeModel> {
-    const credentials = mapFormToCredentials(input);
-    const { code } = await this.sso.authorize({
-      ...credentials,
-      clientId: input.clientId,
-      redirectUri: input.redirectUri,
-      state: input.state,
-      codeChallenge: input.codeChallenge,
-    });
+    return handleAppError(async () => {
+      const credentials = mapFormToCredentials(input);
+      const { code } = await this.sso.authorize({
+        ...credentials,
+        clientId: input.clientId,
+        redirectUri: input.redirectUri,
+        state: input.state,
+        codeChallenge: input.codeChallenge,
+      });
 
-    return mapAuthorizeResponseToModel({ code });
+      return mapAuthorizeResponseToModel({ code });
+    });
   }
 
   async exchangeToken(code: string, state: string): Promise<AuthModel> {
-    const response = await this.sso.handleCallback(code, state);
-    return mapTokenToDomain(response);
+    return handleAppError(async () => {
+      const response = await this.sso.handleCallback(code, state);
+      return mapTokenToDomain(response);
+    });
   }
 }

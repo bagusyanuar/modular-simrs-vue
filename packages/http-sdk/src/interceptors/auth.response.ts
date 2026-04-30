@@ -44,6 +44,9 @@ export function setupAuthResponseInterceptor(
     async (error: AxiosError) => {
       const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
       
+      // Skip auto-refresh if skipAuth is true
+      if (originalRequest?.skipAuth) return Promise.reject(error);
+
       const httpError = toHttpError(error);
       const isTokenExpired = hooks?.shouldRefreshToken 
         ? hooks.shouldRefreshToken(httpError)

@@ -1,8 +1,15 @@
-import axios, {
-  type AxiosInstance,
+import axios, { 
+  type AxiosInstance, 
   type AxiosRequestConfig,
-  type AxiosError,
+  type AxiosError 
 } from 'axios';
+
+declare module 'axios' {
+  export interface AxiosRequestConfig {
+    skipAuth?: boolean;
+  }
+}
+
 import type { HttpClientConfig } from './types';
 import { HttpError } from './types';
 import { setupAuthRequestInterceptor } from './interceptors/auth.request';

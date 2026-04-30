@@ -22,7 +22,8 @@ export class SSOApi {
             {
               grant_type: 'refresh_token',
               client_id: config.clientId,
-            }
+            },
+            { skipAuth: true }
           );
 
           const newTokenResponse: TokenResponse = data.data || data;

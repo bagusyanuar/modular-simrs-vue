@@ -10,6 +10,9 @@ export function setupAuthRequestInterceptor(
 ) {
   instance.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
+      // Skip token injection if skipAuth is true
+      if (config.skipAuth) return config;
+
       const getToken = hooks?.getToken;
       if (getToken) {
         const token = getToken();

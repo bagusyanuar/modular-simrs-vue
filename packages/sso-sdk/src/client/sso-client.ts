@@ -173,6 +173,7 @@ export class SSOClient {
           state: state,
           response_type: 'code',
         },
+        skipAuth: true,
       });
 
       const responseData = data.data || data;
@@ -189,6 +190,30 @@ export class SSOClient {
       return null;
     }
   }
+
+  /**
+   * Manually trigger a token refresh using the HTTPOnly refresh_token cookie
+   */
+  public async refreshAccessToken(): Promise<AuthSession | null> {
+    try {
+      const tokenUrl = this.config.endpoints?.token || '/token';
+      const { data } = await this.api.instance.post(
+        tokenUrl,
+        {
+          grant_type: 'refresh_token',
+          client_id: this.config.clientId,
+        },
+        { skipAuth: true }
+      );
+
+      const response: TokenResponse = data.data || data;
+      const session = this.saveSession(response);
+      return session;
+    } catch {
+      return null;
+    }
+  }
+
 
   public logout(): void {
     this._accessToken = null;
