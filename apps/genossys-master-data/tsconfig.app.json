@@ -6,7 +6,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@genossys-hospital/presentation/*": ["../../modules/presentation/src/*"]
+      "@genossys-hospital/presentation/*": ["../../modules/presentation/src/*"],
+      "@genrs/utils/*": ["../../packages/utils/src/*"]
     },
     /* Linting */
     "strict": true,

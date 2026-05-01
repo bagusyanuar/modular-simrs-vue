@@ -46,6 +46,7 @@ export default defineConfig(({ mode }): UserConfig => {
           '../../modules/presentation/src'
         ),
         '@genrs/ui': path.resolve(__dirname, '../../packages/ui/src'),
+        '@genrs/utils': path.resolve(__dirname, '../../packages/utils/src'),
       },
     },
     server: {

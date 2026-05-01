@@ -15,6 +15,7 @@
     "@genossys-hospital/presentation": "workspace:*",
     "@genrs/ui": "workspace:*",
     "@genossys-hospital/sso-sdk": "workspace:*",
+    "@genrs/utils": "workspace:*",
     "pinia": "^3.0.0"
   },
   "devDependencies": {
