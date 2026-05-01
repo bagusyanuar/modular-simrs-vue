@@ -19,7 +19,8 @@
       "@genossys-hospital/presentation/*": ["./src/*"],
       "@genossys-hospital/sso-sdk/*": ["../../packages/sso-sdk/src/*"],
       "@genossys-hospital/http-sdk/*": ["../../packages/http-sdk/src/*"]
-    }
+    },
+    "types": ["vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "vite.config.ts"]
 }
