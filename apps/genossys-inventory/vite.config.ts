@@ -34,6 +34,7 @@ export default defineConfig(({ mode }) => {
   const tenant = process.env.VITE_TENANT || 'base';
 
   return {
+    base: '/inventory',
     envDir: path.resolve(__dirname, '../../'),
     plugins: [
       vue(),
@@ -67,7 +68,7 @@ export default defineConfig(({ mode }) => {
     server: {
       host: process.env.VITE_DOMAIN,
       allowedHosts: [`.${process.env.VITE_DOMAIN}`],
-      port: Number(process.env.VITE_PORT) || 5173,
+      port: Number(process.env.VITE_PORT) || 5175,
       strictPort: true,
       open: false,
     },
