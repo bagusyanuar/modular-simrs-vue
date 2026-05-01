@@ -1,18 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router';
-import { V2Layout } from '@genrs/ui/layouts';
 
 export const unitRoutes: RouteRecordRaw[] = [
   {
-    path: '/unit',
+    path: 'unit',
     name: 'unit',
-    component: V2Layout,
-    children: [
-      {
-        path: '',
-        component: () =>
-          import('@genossys-hospital/presentation/unit/base/pages/Unit.vue'),
-      },
-    ],
-    meta: { public: false },
+    component: () =>
+      import('@genossys-hospital/presentation/unit/base/pages/Unit.vue'),
   },
 ];
