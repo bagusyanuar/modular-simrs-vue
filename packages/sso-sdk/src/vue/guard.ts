@@ -40,15 +40,18 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
       if (code && state) {
         try {
           const session = await auth.handleCallback(code, state);
-          
+
           // Trigger hook if provided
           if (options.onAuthenticated) {
             await options.onAuthenticated(session);
           }
-          
+
           return next('/');
         } catch (error) {
-          const err = error instanceof Error ? error : new Error('Authentication callback failed');
+          const err =
+            error instanceof Error
+              ? error
+              : new Error('Authentication callback failed');
           if (options.onAuthError) {
             options.onAuthError(err);
           } else {
@@ -83,16 +86,18 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
     const silentCode = await auth.checkSilentLogin();
     if (silentCode) {
       try {
-        const state = (window.sessionStorage.getItem('pkce_state') || '') as string;
+        const stateKey = auth.getStorageKeys().pkceState;
+        const state = (window.sessionStorage.getItem(stateKey) || '') as string;
         const silentSession = await auth.handleCallback(silentCode, state);
-        
+
         // Trigger hook if provided
         if (options.onAuthenticated) {
           await options.onAuthenticated(silentSession);
         }
-        
+
         return next();
-      } catch {
+      } catch (error) {
+        console.warn('[SSOSDK] Silent login failed:', error);
         // Fall through to redirect if silent login fails
       }
     }

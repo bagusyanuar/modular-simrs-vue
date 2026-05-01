@@ -33,6 +33,10 @@ export class SSOClient {
     }
   }
 
+  public getStorageKeys() {
+    return this.keys;
+  }
+
   private get keys() {
     return {
       accessToken: this.config.storageKeys?.accessToken || 'sso_access_token',
@@ -166,12 +170,16 @@ export class SSOClient {
 
       const authorizeUrl = this.config.endpoints?.authorize || '/authorize';
       const { data } = await this.api.instance.get(authorizeUrl, {
+        headers: {
+          Accept: 'application/json',
+        },
         params: {
           client_id: this.config.clientId,
           redirect_uri: this.config.redirectUri,
           code_challenge: challenge,
           state: state,
           response_type: 'code',
+          prompt: 'none',
         },
         skipAuth: true,
       });
@@ -182,11 +190,13 @@ export class SSOClient {
 
       // Validate state if returned by BE
       if (code && returnedState && returnedState !== state) {
+        this.clearPKCE();
         return null;
       }
 
       return code || null;
     } catch {
+      this.clearPKCE();
       return null;
     }
   }

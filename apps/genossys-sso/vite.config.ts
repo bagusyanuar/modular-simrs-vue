@@ -43,7 +43,7 @@ export default defineConfig(({ mode }) => {
         name: 'virtual-config',
         configureServer(server) {
           server.middlewares.use((req, res, next) => {
-            if (req.url === '/config.js') {
+            if (req.url?.split('?')[0].endsWith('/config.js')) {
               res.setHeader('Content-Type', 'application/javascript');
               const env = { ...globalEnv, ...appEnv };
               res.end(`window.config = ${JSON.stringify(env)};`);
