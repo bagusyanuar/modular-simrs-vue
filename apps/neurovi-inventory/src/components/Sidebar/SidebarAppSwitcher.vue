@@ -8,6 +8,7 @@ interface AppInfo {
   description: string;
   icon: Component;
   color: string;
+  url?: string;
 }
 
 interface Props {
@@ -21,6 +22,13 @@ const isOpen = ref(false);
 
 const toggle = () => {
   isOpen.value = !isOpen.value;
+};
+
+const selectApp = (app: AppInfo) => {
+  if (app.url) {
+    window.location.href = app.url;
+  }
+  isOpen.value = false;
 };
 </script>
 
@@ -72,6 +80,7 @@ const toggle = () => {
         v-for="app in apps"
         :key="app.name"
         class="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-all hover:bg-slate-50 dark:hover:bg-slate-800/50 group"
+        @click="selectApp(app)"
       >
         <div
           :class="[

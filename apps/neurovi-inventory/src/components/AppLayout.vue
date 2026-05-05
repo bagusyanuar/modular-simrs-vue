@@ -6,6 +6,7 @@ import {
   SidebarItem,
   SidebarCollapsible,
   SidebarAppSwitcher,
+  SidebarUserNav
 } from './Sidebar';
 import {
   LayoutDashboard,
@@ -44,6 +45,7 @@ const apps = [
     description: 'Pelayanan Pasien',
     icon: HeartPulse,
     color: 'bg-teal-600',
+    url: import.meta.env.VITE_V1_APP_URL,
   },
   {
     name: 'Finance',
@@ -115,31 +117,9 @@ const apps = [
       </SidebarGroup>
 
       <template #footer>
-        <div class="flex flex-col gap-1">
+        <div class="flex flex-col gap-4">
           <SidebarItem :icon="Settings" title="Settings" />
-
-          <div
-            class="mt-4 flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-100/50 dark:bg-slate-800/30 border border-slate-200/50 dark:border-slate-700/50"
-          >
-            <div
-              class="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30"
-            >
-              <User class="h-5 w-5 text-primary" />
-            </div>
-            <div class="flex flex-1 flex-col overflow-hidden">
-              <span
-                class="truncate text-sm font-bold text-slate-900 dark:text-white"
-                >Bagus Yanuar</span
-              >
-              <span
-                class="truncate text-[10px] text-slate-500 font-medium uppercase tracking-wider"
-                >Administrator</span
-              >
-            </div>
-            <button class="text-slate-400 hover:text-red-500 transition-colors">
-              <LogOut class="h-4 w-4" />
-            </button>
-          </div>
+          <SidebarUserNav :user="{ name: 'Bagus Yanuar', role: 'Administrator' }" />
         </div>
       </template>
     </Sidebar>
