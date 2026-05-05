@@ -6,7 +6,7 @@ import {
   SidebarItem,
   SidebarCollapsible,
   SidebarAppSwitcher,
-  SidebarUserNav
+  SidebarUserNav,
 } from './Sidebar';
 import {
   LayoutDashboard,
@@ -24,8 +24,7 @@ import {
   AlertCircle,
   FileText,
   Settings,
-  LogOut,
-  User,
+  Box,
   Stethoscope,
   HeartPulse,
   CircleDollarSign,
@@ -78,6 +77,7 @@ const apps = [
           title="Dashboard Overview"
           active
         />
+        <SidebarItem :icon="Box" title="Stok" to="/stock" />
       </SidebarGroup>
 
       <!-- Master Data -->
@@ -119,37 +119,16 @@ const apps = [
       <template #footer>
         <div class="flex flex-col gap-4">
           <SidebarItem :icon="Settings" title="Settings" />
-          <SidebarUserNav :user="{ name: 'Bagus Yanuar', role: 'Administrator' }" />
+          <SidebarUserNav
+            :user="{ name: 'Bagus Yanuar', role: 'Administrator' }"
+          />
         </div>
       </template>
     </Sidebar>
 
     <!-- Main Content -->
     <main class="pl-72 transition-all duration-300">
-      <div class="p-8">
-        <header class="mb-8">
-          <h1
-            class="text-3xl font-black tracking-tight text-slate-900 dark:text-white"
-          >
-            Dashboard Overview
-          </h1>
-          <p class="text-slate-500 dark:text-slate-400">
-            Welcome back, here's what's happening with your inventory today.
-          </p>
-        </header>
-
-        <!-- Placeholder for content -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div
-            v-for="i in 3"
-            :key="i"
-            class="h-32 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800/60 shadow-sm p-6"
-          >
-            <div class="h-2 w-24 bg-slate-100 dark:bg-slate-800 rounded mb-4" />
-            <div class="h-8 w-16 bg-slate-50 dark:bg-slate-800/50 rounded" />
-          </div>
-        </div>
-      </div>
+      <RouterView />
     </main>
   </div>
 </template>

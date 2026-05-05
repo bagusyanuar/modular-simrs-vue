@@ -272,6 +272,9 @@ importers:
 
   apps/neurovi-inventory:
     dependencies:
+      '@genossys-hospital/presentation':
+        specifier: workspace:*
+        version: link:../../modules/presentation
       tailwindcss:
         specifier: ^4.2.2
         version: 4.2.2

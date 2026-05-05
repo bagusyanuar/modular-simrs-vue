@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 @import "tailwindcss";
 
+@source "../../../modules/presentation/src/**/*.vue";
+@source "../../../modules/presentation/src/**/*.ts";
+
 @theme {
   --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
   --color-primary: var(--color-indigo-600);

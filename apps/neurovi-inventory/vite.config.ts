@@ -12,6 +12,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@genossys-hospital/presentation': path.resolve(__dirname, '../../modules/presentation/src'),
     },
   },
   base: '/v2/',
