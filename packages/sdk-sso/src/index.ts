@@ -4,3 +4,4 @@ export * from './utils/pkce';
 export * from './infrastructure/storage';
 export * from './infrastructure/http';
 export * from './services/auth-service';
+export * from './vue/guard';

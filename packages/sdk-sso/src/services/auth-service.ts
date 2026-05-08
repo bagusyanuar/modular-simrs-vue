@@ -156,6 +156,33 @@ export class AuthService {
     }
   }
 
+  public async refreshToken(token?: string): Promise<AuthSession | null> {
+    const currentSession = this.storage.getSession();
+    const refreshToken = token || currentSession?.refreshToken;
+
+    try {
+      const params = new URLSearchParams({
+        grant_type: 'refresh_token',
+        client_id: this.config.clientId,
+      });
+
+      if (refreshToken) {
+        params.append('refresh_token', refreshToken);
+      }
+
+      const data = await this.http.client.post<
+        TokenResponse | { data: TokenResponse }
+      >(this.config.endpoints?.token || '/token', params);
+
+      const tokenResponse = 'data' in data ? data.data : data;
+      const session = this.mapTokenResponse(tokenResponse);
+      this.storage.saveSession(session);
+      return session;
+    } catch {
+      return null;
+    }
+  }
+
   private mapTokenResponse(response: TokenResponse): AuthSession {
     return {
       accessToken: response.access_token,

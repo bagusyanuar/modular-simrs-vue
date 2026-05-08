@@ -35,6 +35,10 @@ export class SSOClient {
     return this.auth.checkSilentLogin();
   }
 
+  public refreshToken(token?: string): Promise<AuthSession | null> {
+    return this.auth.refreshToken(token);
+  }
+
   public getSession(): AuthSession | null {
     return this.storage.getSession();
   }
