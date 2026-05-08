@@ -39,6 +39,7 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
 
       if (code && state) {
         try {
+          // Try to Exchange Token to SSO
           const session = await auth.handleCallback(code, state);
 
           // Trigger hook if provided

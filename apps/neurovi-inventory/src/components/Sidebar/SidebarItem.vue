@@ -7,6 +7,7 @@ interface Props {
   title: string;
   active?: boolean;
   to?: string;
+  href?: string;
   badge?: string | number;
 }
 
@@ -14,13 +15,19 @@ const props = withDefaults(defineProps<Props>(), {
   icon: undefined,
   active: false,
   to: undefined,
+  href: undefined,
   badge: undefined
 });
 
+const componentTag = computed(() => {
+  if (props.to) return 'router-link';
+  if (props.href) return 'a';
+  return 'button';
+});
 
 const itemClasses = computed(() => {
   return [
-    'group flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ease-in-out',
+    'group flex items-center justify-between gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ease-in-out cursor-pointer',
     props.active
       ? 'bg-primary/10 text-primary font-semibold ring-1 ring-primary/20 shadow-sm'
       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200'
@@ -30,8 +37,9 @@ const itemClasses = computed(() => {
 
 <template>
   <component
-    :is="to ? 'router-link' : 'button'"
+    :is="componentTag"
     :to="to"
+    :href="href"
     :class="itemClasses"
   >
     <div class="flex items-center gap-3">

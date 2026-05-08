@@ -32,6 +32,8 @@ import {
   Package,
 } from 'lucide-vue-next';
 
+const v1AppUrl = import.meta.env.VITE_V1_APP_URL;
+
 const apps = [
   {
     name: 'Inventory',
@@ -44,7 +46,7 @@ const apps = [
     description: 'Pelayanan Pasien',
     icon: HeartPulse,
     color: 'bg-teal-600',
-    url: import.meta.env.VITE_V1_APP_URL,
+    url: v1AppUrl,
   },
   {
     name: 'Finance',
@@ -59,6 +61,8 @@ const apps = [
     color: 'bg-rose-600',
   },
 ];
+
+const purchaseOrderUrl = `${v1AppUrl}/inventaris/permintaan`;
 </script>
 
 <template>
@@ -93,7 +97,11 @@ const apps = [
       <!-- Transaksi -->
       <SidebarGroup label="Transaksi">
         <SidebarCollapsible :icon="ShoppingCart" title="Pengadaan">
-          <SidebarItem :icon="FileText" title="Purchase Order" />
+          <SidebarItem
+            :icon="FileText"
+            title="Purchase Order"
+            :href="purchaseOrderUrl"
+          />
           <SidebarItem :icon="FileInput" title="Penerimaan Barang" />
         </SidebarCollapsible>
 

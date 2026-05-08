@@ -18,7 +18,7 @@ const auth = new SSOClient({
   ),
   clientId: getEnv('VITE_SSO_CLIENT_ID'),
   redirectUri: `${window.location.origin}${import.meta.env.BASE_URL}callback`,
-  persistence: 'memory', // Access token in Pinia, Refresh token in HTTPOnly Cookie
+  persistence: 'memory', // Access token in Pinia, Refresh token in HTTPOnly Cookie,
 });
 
 // 🛡️ Setup SSO Guard

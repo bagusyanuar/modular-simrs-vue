@@ -141,6 +141,7 @@ export class SSOClient {
       throw new Error('Invalid OAuth2 state or verifier missing');
     }
 
+    // token claim / token exchange
     try {
       const tokenUrl = this.config.endpoints?.token || '/token';
       const { data } = await this.api.instance.post(tokenUrl, {
@@ -223,7 +224,6 @@ export class SSOClient {
       return null;
     }
   }
-
 
   public logout(): void {
     this._accessToken = null;

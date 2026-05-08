@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const logo = '/v2/logo.png';
+const logo = `${import.meta.env.BASE_URL}logo.png`;
 
 interface Props {
   title?: string;
