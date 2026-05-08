@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/api/client.ts","./src/core/pkce.ts","./src/router/guard.ts","./src/session/manager.ts","./src/session/storage.ts"],"version":"5.9.3"}

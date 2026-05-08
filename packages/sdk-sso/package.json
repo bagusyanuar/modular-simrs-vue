@@ -1,0 +1,33 @@
+{
+  "name": "@genossys-hospital/sdk-sso",
+  "version": "1.0.0",
+  "description": "Headless SSO Client for Neurovi SIMRS",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "dev": "tsup src/index.ts --format cjs,esm --watch --dts",
+    "lint": "eslint src/**/*.ts"
+  },
+  "keywords": [
+    "sso",
+    "oauth2",
+    "pkce",
+    "headless"
+  ],
+  "author": "Neurovi",
+  "license": "MIT",
+  "dependencies": {
+    "@genossys-hospital/http-sdk": "workspace:*",
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/crypto-js": "^4.2.2",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,7 +1,8 @@
 import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
-import path from 'path';
+import path from 'node:path';
+import fs from 'node:fs';
 
 // function tenantRoutesPlugin(tenant: string) {
 //   const virtualModuleId = 'virtual:tenant-routes';
@@ -66,11 +67,23 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: process.env.VITE_DOMAIN,
-      allowedHosts: [`.${process.env.VITE_DOMAIN}`],
-      port: Number(process.env.VITE_PORT) || 5175,
+      // host: process.env.VITE_DOMAIN,
+      // allowedHosts: [`.${process.env.VITE_DOMAIN}`],
+      // port: Number(process.env.VITE_PORT) || 5175,
+      // strictPort: true,
+      // open: false,
+      port: 5173,
       strictPort: true,
-      open: false,
+      host: 'genossys.local',
+      https: {
+        key: fs.readFileSync(
+          path.resolve(__dirname, '../../ssl/genossys.local-key.pem')
+        ),
+        cert: fs.readFileSync(
+          path.resolve(__dirname, '../../ssl/genossys.local.pem')
+        ),
+      },
+      origin: 'https://genossys.local:5173',
     },
   };
 });

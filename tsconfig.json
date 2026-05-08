@@ -1,0 +1,14 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./packages/sdk-sso" },
+    { "path": "./packages/http-sdk" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/auth" },
+    { "path": "./packages/sso" },
+    { "path": "./modules/presentation" },
+    { "path": "./modules/core" },
+    { "path": "./modules/infrastructure" },
+    { "path": "./apps/neurovi-sso" }
+  ]
+}

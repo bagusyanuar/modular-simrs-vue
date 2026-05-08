@@ -10,29 +10,29 @@ import { getEnv } from '@genrs/utils';
 const pinia = createPinia();
 
 // 🔐 Initialize SSO Client
-const auth = new SSOClient({
-  baseUrl: getEnv('VITE_SSO_BASE_URL'),
-  portalUrl: getEnv(
-    'VITE_SSO_PORTAL_URL',
-    `http://${getEnv('VITE_SSO_DOMAIN')}:${getEnv('VITE_SSO_PORT')}`
-  ),
-  clientId: getEnv('VITE_SSO_CLIENT_ID'),
-  redirectUri: `${window.location.origin}${import.meta.env.BASE_URL}callback`,
-  persistence: 'memory', // Access token in Pinia, Refresh token in HTTPOnly Cookie
-});
+// const auth = new SSOClient({
+//   baseUrl: getEnv('VITE_SSO_BASE_URL'),
+//   portalUrl: getEnv(
+//     'VITE_SSO_PORTAL_URL',
+//     `http://${getEnv('VITE_SSO_DOMAIN')}:${getEnv('VITE_SSO_PORT')}`
+//   ),
+//   clientId: getEnv('VITE_SSO_CLIENT_ID'),
+//   redirectUri: `${window.location.origin}${import.meta.env.BASE_URL}callback`,
+//   persistence: 'memory', // Access token in Pinia, Refresh token in HTTPOnly Cookie
+// });
 
-// 🛡️ Setup SSO Guard
-createSSOGuard(appRouter, {
-  auth,
-  onAuthenticated: async (session) => {
-    const authStore = useAuthStore(pinia);
-    authStore.setToken(session.accessToken);
-    // await authStore.fetchProfile();
-  },
-  onAuthError: (err) => {
-    console.error('❌ [Inventory] Auth Error:', err);
-  },
-});
+// // 🛡️ Setup SSO Guard
+// createSSOGuard(appRouter, {
+//   auth,
+//   onAuthenticated: async (session) => {
+//     const authStore = useAuthStore(pinia);
+//     authStore.setToken(session.accessToken);
+//     // await authStore.fetchProfile();
+//   },
+//   onAuthError: (err) => {
+//     console.error('❌ [Inventory] Auth Error:', err);
+//   },
+// });
 
 const app = createApp(App);
 app.use(pinia);
