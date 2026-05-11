@@ -16,12 +16,11 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-        '@genossys-hospital/presentation': path.resolve(
-          __dirname,
-          '../../modules/presentation/src'
-        ),
-        '@genossys-hospital/sdk-sso': path.resolve(__dirname, '../../packages/sdk-sso/src'),
+        '@genossys-hospital/presentation': path.resolve(__dirname, '../../modules/presentation/src'),
+        '@genossys-hospital/infrastructure': path.resolve(__dirname, '../../modules/infrastructure/src'),
+        '@neurovi-hospital/sdk-sso': path.resolve(__dirname, '../../packages/sdk-sso/src'),
         '@genossys-hospital/http-sdk': path.resolve(__dirname, '../../packages/http-sdk/src'),
+        '@genrs/utils': path.resolve(__dirname, '../../packages/utils/src'),
         '@genrs/ui': path.resolve(__dirname, '../../packages/ui/src'),
       },
     },

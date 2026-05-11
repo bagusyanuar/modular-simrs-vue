@@ -9,10 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@genossys-hospital/presentation": "workspace:*",
+    "@tanstack/vue-query": "^5.100.9",
     "tailwindcss": "^4.2.2",
     "vue": "^3.5.30",
-    "vue-router": "^5.0.6",
-    "@genossys-hospital/presentation": "workspace:*"
+    "vue-router": "^5.0.6"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.2.2",

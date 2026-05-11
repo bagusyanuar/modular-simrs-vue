@@ -9,9 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@neurovi-hospital/sdk-sso": "workspace:*",
     "@genossys-hospital/presentation": "workspace:*",
     "@genrs/ui": "workspace:*",
+    "@neurovi-hospital/sdk-sso": "workspace:*",
+    "@tanstack/vue-query": "^5.100.9",
     "lucide-vue-next": "^1.0.0",
     "tailwindcss": "^4.2.2",
     "vue": "^3.5.30",
