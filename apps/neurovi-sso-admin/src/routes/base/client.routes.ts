@@ -11,7 +11,6 @@ export const clientRoutes: RouteRecordRaw[] = [
         name: 'dashboard',
         component: () =>
           import('@genossys-hospital/presentation/sso-client/base/pages/SSOClientPage.vue'),
-        meta: { public: true },
       },
     ],
   },

@@ -20,6 +20,8 @@ export default defineConfig(({ mode }) => {
           __dirname,
           '../../modules/presentation/src'
         ),
+        '@genossys-hospital/sdk-sso': path.resolve(__dirname, '../../packages/sdk-sso/src'),
+        '@genossys-hospital/http-sdk': path.resolve(__dirname, '../../packages/http-sdk/src'),
         '@genrs/ui': path.resolve(__dirname, '../../packages/ui/src'),
       },
     },
