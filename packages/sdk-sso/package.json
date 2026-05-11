@@ -1,5 +1,5 @@
 {
-  "name": "@genossys-hospital/sdk-sso",
+  "name": "@neurovi-hospital/sdk-sso",
   "version": "1.0.0",
   "description": "Headless SSO Client for Neurovi SIMRS",
   "main": "./dist/index.js",

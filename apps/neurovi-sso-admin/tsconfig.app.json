@@ -6,8 +6,8 @@
     "paths": {
       "@/*": ["./src/*"],
       "@genossys-hospital/presentation/*": ["../../modules/presentation/src/*"],
-      "@genossys-hospital/sdk-sso": ["../../packages/sdk-sso/src/index.ts"],
-      "@genossys-hospital/sdk-sso/*": ["../../packages/sdk-sso/src/*"],
+      "@neurovi-hospital/sdk-sso": ["../../packages/sdk-sso/src/index.ts"],
+      "@neurovi-hospital/sdk-sso/*": ["../../packages/sdk-sso/src/*"],
       "@genossys-hospital/http-sdk": ["../../packages/http-sdk/src/index.ts"],
       "@genossys-hospital/http-sdk/*": ["../../packages/http-sdk/src/*"],
       "@genrs/ui": ["../../packages/ui/src/index.ts"],

@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@genossys-hospital/core": "workspace:*",
-    "@genossys-hospital/sso-sdk": "workspace:*",
+    "@neurovi-hospital/sdk-sso": "workspace:*",
     "@genossys-hospital/http-sdk": "workspace:*",
     "@genrs/utils": "workspace:*",
     "zod": "^3.25.23"

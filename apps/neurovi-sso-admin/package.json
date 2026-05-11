@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@genossys-hospital/sdk-sso": "workspace:*",
+    "@neurovi-hospital/sdk-sso": "workspace:*",
     "@genossys-hospital/presentation": "workspace:*",
     "@genrs/ui": "workspace:*",
     "lucide-vue-next": "^1.0.0",
