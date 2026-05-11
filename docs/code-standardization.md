@@ -24,9 +24,11 @@ Pemberian nama harus deskriptif dan konsisten mengikuti pola berikut:
 
 ### **Variable & Code Styling**
 
-- **Types/Interfaces**: `PascalCase` dengan deskripsi jelas (contoh: `UnitParams`, `AuthResponse`).
-- **Global Constants**: `SCREAMING_SNAKE_CASE` (khusus untuk yang di-inject Vite: `__APP_VERSION__`, `__TENANT_CODE__`).
-- **Boolean Variables**: Diawali dengan is/has/should (contoh: `isLoading`, `hasPermission`).
+- **Types/Interfaces**: `PascalCase` (contoh: `interface UnitForm {}`).
+- **Constants**: `SCREAMING_SNAKE_CASE` (contoh: `const UNIT_OPTIONS`).
+- **Variables**: `camelCase` (contoh: `let unitData`).
+- **Boolean Variables**: `camelCase` dengan prefix **is** / **has** (contoh: `isLoading`, `hasDiagnose`).
+- **Functions**: `camelCase` (contoh: `function fetchData() {}` atau `const handleLogin = () => {}`).
 
 ---
 
