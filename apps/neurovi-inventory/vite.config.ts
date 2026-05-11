@@ -6,25 +6,39 @@ import fs from 'node:fs';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-    tailwindcss(),
-  ],
+  plugins: [vue(), tailwindcss()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
-      '@genossys-hospital/presentation': path.resolve(__dirname, '../../modules/presentation/src'),
+      '@genossys-hospital/presentation': path.resolve(
+        __dirname,
+        '../../modules/presentation/src'
+      ),
     },
   },
-  base: '/v2/inventory/',
+  // base: '/v2/inventory/',
   server: {
-    port: 5173,
+    // port: 5173,
+    // strictPort: true,
+    // host: 'neurovi-local.test',
+    // https: {
+    //   key: fs.readFileSync(path.resolve(__dirname, '../../ssl/neurovi-local.test-key.pem')),
+    //   cert: fs.readFileSync(path.resolve(__dirname, '../../ssl/neurovi-local.test.pem')),
+    // },
+    // origin: 'https://neurovi-local.test:5173',
+    host: 'inventory.neurovi-local.test',
+    port: 5176,
     strictPort: true,
-    host: 'neurovi-local.test',
     https: {
-      key: fs.readFileSync(path.resolve(__dirname, '../../ssl/neurovi-local.test-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, '../../ssl/neurovi-local.test.pem')),
+      key: fs.readFileSync(
+        path.resolve(
+          __dirname,
+          '../../ssl/_wildcard.neurovi-local.test+1-key.pem'
+        )
+      ),
+      cert: fs.readFileSync(
+        path.resolve(__dirname, '../../ssl/_wildcard.neurovi-local.test+1.pem')
+      ),
     },
-    origin: 'https://neurovi-local.test:5173',
   },
 });
