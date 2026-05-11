@@ -6,6 +6,11 @@ export class SSOHttp {
   constructor(baseUrl: string) {
     this.client = new HttpClient({
       baseURL: baseUrl,
+      withCredentials: true,
+      timeout: 15_000,
+      headers: {
+        Accept: 'application/json',
+      },
     });
   }
 }

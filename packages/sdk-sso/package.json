@@ -22,11 +22,9 @@
   "author": "Neurovi",
   "license": "MIT",
   "dependencies": {
-    "@genossys-hospital/http-sdk": "workspace:*",
-    "crypto-js": "^4.2.0"
+    "@genossys-hospital/http-sdk": "workspace:*"
   },
   "devDependencies": {
-    "@types/crypto-js": "^4.2.2",
     "tsup": "^8.0.0",
     "typescript": "^5.4.0",
     "vue-router": "^5.0.6"

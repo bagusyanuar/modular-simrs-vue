@@ -1,4 +1,4 @@
-import type { Router } from 'vue-router';
+import type { Router, RouteLocationNormalized } from 'vue-router';
 import type { SSOClient } from '../client';
 import type { AuthSession } from '../types';
 
@@ -8,14 +8,20 @@ export interface GuardOptions {
   publicRoutes?: string[];
   onAuthenticated?: (session: AuthSession) => Promise<void> | void;
   onAuthError?: (error: Error) => void;
+  onBeforeRedirect?: (to: RouteLocationNormalized) => void;
+  onSessionExpired?: () => void;
   autoRedirect?: boolean;
 }
 
+/**
+ * Creates a Vue Router navigation guard for SSO authentication.
+ * Uses vue-router v5 return-based API (no deprecated `next()` callback).
+ */
 export function createSSOGuard(router: Router, options: GuardOptions) {
   const { auth } = options;
   const callbackPath = options.callbackPath || '/callback';
 
-  router.beforeEach(async (to, _from, next) => {
+  router.beforeEach(async (to) => {
     // 1. Handle Callback Route
     if (to.path === callbackPath || to.path === `${callbackPath}/`) {
       const code = to.query.code as string;
@@ -29,7 +35,7 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
             await options.onAuthenticated(session);
           }
 
-          return next('/');
+          return '/';
         } catch (error) {
           const err =
             error instanceof Error
@@ -40,19 +46,19 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
           } else {
             console.error('[SSOSDK] Callback error:', err);
           }
-          return next('/');
+          return '/';
         }
       }
     }
 
     // 2. Skip Public Routes
     if (to.meta?.public || options.publicRoutes?.includes(to.path)) {
-      return next();
+      return true;
     }
 
     // 3. Check Local Session
     if (auth.isAuthenticated()) {
-      return next();
+      return true;
     }
 
     // 4. Try Silent Refresh (Token)
@@ -61,7 +67,7 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
       if (options.onAuthenticated) {
         await options.onAuthenticated(refreshedSession);
       }
-      return next();
+      return true;
     }
 
     // 5. Try Silent Login (PKCE Auth Flow)
@@ -74,15 +80,24 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
           await options.onAuthenticated(silentSession);
         }
 
-        return next();
+        return true;
       }
     } catch (error) {
       console.warn('[SSOSDK] Silent login failed:', error);
     }
 
-    // 5. Redirect to SSO Portal
+    // 6. Session is truly expired — notify consumer
+    if (options.onSessionExpired) {
+      options.onSessionExpired();
+    }
+
+    // 7. Redirect to SSO Portal
     if (options.autoRedirect !== false) {
       try {
+        if (options.onBeforeRedirect) {
+          options.onBeforeRedirect(to);
+        }
+
         const url = await auth.authorize();
         setTimeout(() => {
           window.location.href = url;
@@ -90,9 +105,9 @@ export function createSSOGuard(router: Router, options: GuardOptions) {
       } catch (error) {
         console.error('[SSOSDK] Failed to generate authorize URL', error);
       }
-      return next(false);
+      return false;
     }
 
-    return next(false);
+    return false;
   });
 }

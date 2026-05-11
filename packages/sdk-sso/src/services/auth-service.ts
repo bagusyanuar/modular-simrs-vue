@@ -7,8 +7,34 @@ import type {
   DirectLoginParams,
 } from '../types';
 import { PKCEHelper } from '../utils/pkce';
+import {
+  PKCEError,
+  StateMismatchError,
+  TokenExchangeError,
+  AuthorizeError,
+} from '../errors';
 import type { SSOHttp } from '../infrastructure/http';
 import type { SSOStorage } from '../infrastructure/storage';
+
+/**
+ * Unwraps backend responses that may or may not be wrapped in { data: T }
+ * Determines the actual payload regardless of backend envelope pattern
+ */
+function unwrapResponse<T>(raw: T | { data: T }): T {
+  const obj = raw as Record<string, unknown>;
+  if (
+    obj &&
+    typeof obj === 'object' &&
+    'data' in obj &&
+    typeof obj.data === 'object' &&
+    obj.data !== null &&
+    !('access_token' in obj) &&
+    !('code' in obj)
+  ) {
+    return obj.data as T;
+  }
+  return raw as T;
+}
 
 export class AuthService {
   constructor(
@@ -20,31 +46,35 @@ export class AuthService {
   public async createAuthorizeUrl(
     params: AuthorizeParams = {}
   ): Promise<string> {
-    const { codeVerifier, codeChallenge } = await PKCEHelper.createPair();
-    const state = params.state || PKCEHelper.generateVerifier(16);
+    try {
+      const { codeVerifier, codeChallenge } = await PKCEHelper.createPair();
+      const state = params.state || PKCEHelper.generateVerifier(16);
 
-    this.storage.savePKCE(codeVerifier, state);
+      this.storage.savePKCE(codeVerifier, state);
 
-    const url = new URL(
-      this.config.endpoints?.authorize || '/authorize',
-      this.config.baseUrl
-    );
-    const queryParams: Record<string, string> = {
-      response_type: 'code',
-      client_id: this.config.clientId,
-      redirect_uri: this.config.redirectUri,
-      code_challenge: codeChallenge,
-      code_challenge_method: 'S256',
-      state,
-      ...(this.config.scope ? { scope: this.config.scope } : {}),
-      ...params,
-    };
+      const url = new URL(
+        this.config.endpoints?.authorize || '/authorize',
+        this.config.baseUrl
+      );
+      const queryParams: Record<string, string> = {
+        response_type: 'code',
+        client_id: this.config.clientId,
+        redirect_uri: this.config.redirectUri,
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256',
+        state,
+        ...(this.config.scope ? { scope: this.config.scope } : {}),
+        ...params,
+      };
 
-    Object.entries(queryParams).forEach(([key, value]) => {
-      if (value) url.searchParams.set(key, value);
-    });
+      Object.entries(queryParams).forEach(([key, value]) => {
+        if (value) url.searchParams.set(key, value);
+      });
 
-    return url.toString();
+      return url.toString();
+    } catch (error) {
+      throw new AuthorizeError('Failed to create authorize URL', error);
+    }
   }
 
   public async handleCallback(
@@ -53,10 +83,13 @@ export class AuthService {
   ): Promise<AuthSession> {
     const { verifier, state: storedState } = this.storage.getPKCE();
 
-    if (!verifier) throw new Error('PKCE verifier not found.');
+    if (!verifier) {
+      throw new PKCEError('PKCE verifier not found. Cannot exchange token.');
+    }
+
     if (storedState && state && storedState !== state) {
       this.storage.clearPKCE();
-      throw new Error('State mismatch.');
+      throw new StateMismatchError();
     }
 
     try {
@@ -73,14 +106,15 @@ export class AuthService {
         })
       );
 
-      const tokenResponse = 'data' in data ? data.data : data;
+      const tokenResponse = unwrapResponse(data);
       const session = this.mapTokenResponse(tokenResponse);
       this.storage.saveSession(session);
       this.storage.clearPKCE();
       return session;
     } catch (error) {
       this.storage.clearPKCE();
-      throw error;
+      if (error instanceof TokenExchangeError) throw error;
+      throw new TokenExchangeError('Token exchange failed', error);
     }
   }
 
@@ -102,26 +136,29 @@ export class AuthService {
       state,
     });
 
-    const authData =
-      'data' in authRes ? (authRes.data as AuthorizeResponse) : authRes;
+    const authData = unwrapResponse(authRes);
 
-    const tokenRes = await this.http.client.post<
-      TokenResponse | { data: TokenResponse }
-    >(
-      this.config.endpoints?.token || '/token',
-      new URLSearchParams({
-        grant_type: 'authorization_code',
-        client_id: this.config.clientId,
-        code: authData.code,
-        code_verifier: codeVerifier,
-        redirect_uri: this.config.redirectUri,
-      })
-    );
+    try {
+      const tokenRes = await this.http.client.post<
+        TokenResponse | { data: TokenResponse }
+      >(
+        this.config.endpoints?.token || '/token',
+        new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: this.config.clientId,
+          code: authData.code,
+          code_verifier: codeVerifier,
+          redirect_uri: this.config.redirectUri,
+        })
+      );
 
-    const tokenData = 'data' in tokenRes ? tokenRes.data : tokenRes;
-    const session = this.mapTokenResponse(tokenData);
-    this.storage.saveSession(session);
-    return session;
+      const tokenData = unwrapResponse(tokenRes);
+      const session = this.mapTokenResponse(tokenData);
+      this.storage.saveSession(session);
+      return session;
+    } catch (error) {
+      throw new TokenExchangeError('Direct login token exchange failed', error);
+    }
   }
 
   public async checkSilentLogin(): Promise<string | null> {
@@ -145,7 +182,7 @@ export class AuthService {
         skipAuth: true,
       });
 
-      const resData = 'data' in data ? (data.data as AuthorizeResponse) : data;
+      const resData = unwrapResponse(data);
       if (resData.code) {
         this.storage.savePKCE(codeVerifier, state);
         return resData.code;
@@ -160,21 +197,22 @@ export class AuthService {
     const currentSession = this.storage.getSession();
     const refreshToken = token || currentSession?.refreshToken;
 
+    // Early return: no point hitting the endpoint without a refresh token
+    if (!refreshToken) return null;
+
     try {
-      const params = new URLSearchParams({
-        grant_type: 'refresh_token',
-        client_id: this.config.clientId,
-      });
-
-      if (refreshToken) {
-        params.append('refresh_token', refreshToken);
-      }
-
       const data = await this.http.client.post<
         TokenResponse | { data: TokenResponse }
-      >(this.config.endpoints?.token || '/token', params);
+      >(
+        this.config.endpoints?.token || '/token',
+        new URLSearchParams({
+          grant_type: 'refresh_token',
+          client_id: this.config.clientId,
+          refresh_token: refreshToken,
+        })
+      );
 
-      const tokenResponse = 'data' in data ? data.data : data;
+      const tokenResponse = unwrapResponse(data);
       const session = this.mapTokenResponse(tokenResponse);
       this.storage.saveSession(session);
       return session;

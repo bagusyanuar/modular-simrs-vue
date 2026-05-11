@@ -16,8 +16,21 @@ export class SSOStorage {
   }
 
   public getSession(): AuthSession | null {
-    const session = this.storage.getItem(this.prefix + 'session');
-    return session ? JSON.parse(session) : null;
+    try {
+      const raw = this.storage.getItem(this.prefix + 'session');
+      if (!raw) return null;
+
+      const parsed: unknown = JSON.parse(raw);
+      if (!this.isValidSession(parsed)) {
+        this.removeSession();
+        return null;
+      }
+
+      return parsed;
+    } catch {
+      this.removeSession();
+      return null;
+    }
   }
 
   public removeSession(): void {
@@ -41,5 +54,19 @@ export class SSOStorage {
   public clearPKCE(): void {
     this.storage.removeItem(this.prefix + 'pkce_verifier');
     this.storage.removeItem(this.prefix + 'pkce_state');
+  }
+
+  /**
+   * Type guard to validate parsed session data shape
+   */
+  private isValidSession(data: unknown): data is AuthSession {
+    if (!data || typeof data !== 'object') return false;
+    const record = data as Record<string, unknown>;
+    return (
+      typeof record['accessToken'] === 'string' &&
+      typeof record['tokenType'] === 'string' &&
+      typeof record['expiresIn'] === 'number' &&
+      typeof record['expiresAt'] === 'number'
+    );
   }
 }
