@@ -52,12 +52,12 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      host: 'neurovi-local.test',
+      host: 'sso.neurovi-local.test',
       port: 5174,
       strictPort: true,
       https: {
-        key: fs.readFileSync(path.resolve(__dirname, '../../ssl/neurovi-local.test-key.pem')),
-        cert: fs.readFileSync(path.resolve(__dirname, '../../ssl/neurovi-local.test.pem')),
+        key: fs.readFileSync(path.resolve(__dirname, '../../ssl/_wildcard.neurovi-local.test+1-key.pem')),
+        cert: fs.readFileSync(path.resolve(__dirname, '../../ssl/_wildcard.neurovi-local.test+1.pem')),
       },
     },
   };
