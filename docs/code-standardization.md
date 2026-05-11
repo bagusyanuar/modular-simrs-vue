@@ -1,6 +1,6 @@
-# Code Standardization: Modular SIMRS
+# Code Standardization: Neurovi V2
 
-Dokumen ini mendefinisikan standar koding dan arsitektur untuk pengembangan SIMRS Modular dalam lingkungan monorepo. Semua developer wajib mengikuti standar ini untuk menjaga konsistensi, keamanan tipe, dan performa aplikasi.
+Dokumen ini mendefinisikan standar koding dan arsitektur untuk pengembangan Neurovi V2 dalam lingkungan monorepo. Semua developer wajib mengikuti standar ini untuk menjaga konsistensi, keamanan tipe, dan performa aplikasi.
 
 ---
 
@@ -18,8 +18,9 @@ Pemberian nama harus deskriptif dan konsisten mengikuti pola berikut:
   - `*.repository.ts`: Interface (Core) atau Implementasi (Infrastructure).
   - `*.mapper.ts` & `*.provider.ts`: Transformasi data dan external providers (Infrastructure).
   - `*.schema.ts` & `*.validator.ts`: Validasi data dan schema zod (Infrastructure).
-  - `*.routes.ts`: Definisi rute utama modul (Presentation).
-  - `*.extra.ts`: Definisi rute tambahan (non-generic/tenant-specific).
+  - `*.routes.ts`: Definisi rute per module (Shell Apps -> `src/router/`).
+  - `*.extra.ts`: Definisi rute tambahan/tenant-specific (Shell Apps -> `src/router/`).
+  - `*.middleware.ts`: Logika navigation guard (Shell Apps -> `src/middleware/`).
 - **Tenant Folders**: Selalu diawali dengan underscore: `_tenants/{tenant-code}/`.
 
 ### **Variable & Code Styling**
@@ -39,6 +40,9 @@ Struktur folder mengikuti pola **Shared Base + Tenant Overrides** untuk skalabil
 ```bash
 ├── apps/                  # Shell Applications (Vue 3 + Vite)
 │   └── simrs/             # Client Shell Utama
+│       └── src/
+│           ├── router/    # Routing Orchestration (index.ts + *.routes.ts)
+│           └── middleware/ # Navigation Guards (Auth, RBAC, etc)
 ├── modules/               # Domain Modules (Clean Architecture)
 │   ├── core/              # Layer 1: Business Logic, Models & Interfaces
 │   ├── infrastructure/    # Layer 2: Repositories Implementation & Mappers
@@ -55,11 +59,11 @@ Struktur folder mengikuti pola **Shared Base + Tenant Overrides** untuk skalabil
 
 Kita membagi tanggung jawab kode ke dalam 3 layer utama untuk memastikan kode mudah di-test dan tidak saling ketergantungan secara acak.
 
-| Layer              | Lokasi                    | Tanggung Jawab                                                     | Aturan Ketat                                                               |
-| :----------------- | :------------------------ | :----------------------------------------------------------------- | :------------------------------------------------------------------------- |
-| **Core**           | `modules/core`            | Domain model, Interfaces, & Business Use-cases.                    | **Zero Dependency**: Tidak boleh meng-import dari Infra atau Presentation. |
-| **Infrastructure** | `modules/infrastructure`  | Implementasi Repository, Axios calls, Web Storage, & Data Mappers. | Mengimplementasikan Interface yang didefinisikan di Core.                  |
-| **Presentation**   | `modules/presentation`    | Vue Components, Composables, UI Logic, & Tenant Routes.            | **Consumer**: Menggunakan Usecase dari Core untuk memproses data.          |
+| Layer              | Lokasi                   | Tanggung Jawab                                                     | Aturan Ketat                                                               |
+| :----------------- | :----------------------- | :----------------------------------------------------------------- | :------------------------------------------------------------------------- |
+| **Core**           | `modules/core`           | Domain model, Interfaces, & Business Use-cases.                    | **Zero Dependency**: Tidak boleh meng-import dari Infra atau Presentation. |
+| **Infrastructure** | `modules/infrastructure` | Implementasi Repository, Axios calls, Web Storage, & Data Mappers. | Mengimplementasikan Interface yang didefinisikan di Core.                  |
+| **Presentation**   | `modules/presentation`   | Vue Components, Composables, UI Logic                              | **Consumer**: Menggunakan Usecase dari Core untuk memproses data.          |
 
 ---
 
@@ -68,16 +72,19 @@ Kita membagi tanggung jawab kode ke dalam 3 layer utama untuk memastikan kode mu
 ## 4. Development Flow
 
 ### Form & Validation
+
 - **vee-validate**: Digunakan untuk form state management dan binding UI.
 - **zod**: Sebagai single source of truth untuk schema validation.
 
 **Pattern:**
+
 - **Schema-driven form**: Definisi validasi dipusatkan dalam satu schema zod.
 - **Centralized validation**: Menghindari penulisan rules yang tersebar di template, sehingga logic validasi mudah di-reuse dan di-test.
 
 ---
 
 ### Data Fetching
+
 - **@tanstack/query**
   - Menangani caching, request deduplication, dan server-state management.
   - Memastikan data sinkron di seluruh komponen tanpa perlu prop-drilling yang dalam.
@@ -87,6 +94,7 @@ Kita membagi tanggung jawab kode ke dalam 3 layer utama untuk memastikan kode mu
   - Centralized config: Interceptor untuk token auth, logging, dan global error handling berada di sini.
 
 **Separation of Concerns:**
+
 - **Axios**: Bertanggung jawab atas "bagaimana data dikirim" (transport layer).
 - **Tanstack Query**: Bertanggung jawab atas "bagaimana data dikelola di UI" (orchestration & state layer).
 
