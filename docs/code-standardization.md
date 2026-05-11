@@ -13,9 +13,12 @@ Pemberian nama harus deskriptif dan konsisten mengikuti pola berikut:
 - **Vue Components**: `UpperCamelCase.vue` (contoh: `FormInput.vue`, `UnitList.vue`).
 - **Logic & Services**: `kebab-case.ts` (contoh: `auth-service.ts`, `api-client.ts`).
 - **Suffix-based Naming**: Menggunakan suffix untuk memperjelas identitas layer:
-  - `*.repository.ts`: Logika integrasi data (Infrastructure).
-  - `*.usecases.ts`: Logika bisnis/domain (Core).
-  - `*.routes.ts`: Definisi rute utama modul.
+  - `*.usecase.ts`: Logika bisnis/domain (Core).
+  - `*.model.ts` & `*.input.ts`: Domain models dan input types (Core).
+  - `*.repository.ts`: Interface (Core) atau Implementasi (Infrastructure).
+  - `*.mapper.ts` & `*.provider.ts`: Transformasi data dan external providers (Infrastructure).
+  - `*.schema.ts` & `*.validator.ts`: Validasi data dan schema zod (Infrastructure).
+  - `*.routes.ts`: Definisi rute utama modul (Presentation).
   - `*.extra.ts`: Definisi rute tambahan (non-generic/tenant-specific).
 - **Tenant Folders**: Selalu diawali dengan underscore: `_tenants/{tenant-code}/`.
 
@@ -34,11 +37,11 @@ Struktur folder mengikuti pola **Shared Base + Tenant Overrides** untuk skalabil
 ```bash
 ├── apps/                  # Shell Applications (Vue 3 + Vite)
 │   └── simrs/             # Client Shell Utama
-├── features/              # Modular Features (Pola DDD)
-│   ├── core/              # Layer 1: Business Logic & Domain Models
-│   ├── infrastructure/    # Layer 2: Data Repositories & API Mappers
-│   └── presentation/      # Layer 3: Vue Components & Multi-Tenant UI
-│       └── src/simrs/
+├── modules/               # Domain Modules (Clean Architecture)
+│   ├── core/              # Layer 1: Business Logic, Models & Interfaces
+│   ├── infrastructure/    # Layer 2: Repositories Implementation & Mappers
+│   └── presentation/      # Layer 3: UI Components, Composables & Pages
+│       └── src/
 │           ├── base/      # Generic Product (Read-Only untuk Custom)
 │           └── _tenants/  # Overrides & Extension per Client
 └── packages/              # Shared Utilities & UI Library (Design System)
@@ -52,9 +55,9 @@ Kita membagi tanggung jawab kode ke dalam 3 layer utama untuk memastikan kode mu
 
 | Layer              | Lokasi                    | Tanggung Jawab                                                     | Aturan Ketat                                                               |
 | :----------------- | :------------------------ | :----------------------------------------------------------------- | :------------------------------------------------------------------------- |
-| **Core**           | `features/core`           | Domain model, Interfaces, & Business Use-cases.                    | **Zero Dependency**: Tidak boleh meng-import dari Infra atau Presentation. |
-| **Infrastructure** | `features/infrastructure` | Implementasi Repository, Axios calls, Web Storage, & Data Mappers. | Mengimplementasikan Interface yang didefinisikan di Core.                  |
-| **Presentation**   | `features/presentation`   | Vue Components, Composables, UI Logic, & Tenant Routes.            | **Consumer**: Menggunakan Usecase dari Core untuk memproses data.          |
+| **Core**           | `modules/core`            | Domain model, Interfaces, & Business Use-cases.                    | **Zero Dependency**: Tidak boleh meng-import dari Infra atau Presentation. |
+| **Infrastructure** | `modules/infrastructure`  | Implementasi Repository, Axios calls, Web Storage, & Data Mappers. | Mengimplementasikan Interface yang didefinisikan di Core.                  |
+| **Presentation**   | `modules/presentation`    | Vue Components, Composables, UI Logic, & Tenant Routes.            | **Consumer**: Menggunakan Usecase dari Core untuk memproses data.          |
 
 ---
 
