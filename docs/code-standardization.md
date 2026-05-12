@@ -19,7 +19,6 @@ Pemberian nama harus deskriptif dan konsisten mengikuti pola berikut:
   - `*.mapper.ts` & `*.provider.ts`: Transformasi data dan external providers (Infrastructure).
   - `*.schema.ts` & `*.validator.ts`: Validasi data dan schema zod (Infrastructure).
   - `*.routes.ts`: Definisi rute per module (Shell Apps -> `src/router/`).
-  - `*.extra.ts`: Definisi rute tambahan/tenant-specific (Shell Apps -> `src/router/`).
   - `*.middleware.ts`: Logika navigation guard (Shell Apps -> `src/middleware/`).
 - **Tenant Folders**: Selalu diawali dengan underscore: `_tenants/{tenant-code}/`.
 
@@ -107,46 +106,18 @@ Prinsip utama kita adalah **DRY (Don't Repeat Yourself)** di level Base, namun *
 ### **Base vs Extension**
 
 - **Sacret Base**: Folder `base/` berisi logika yang 80-90% sama di semua RS. Jika ada perubahan yang bersifat umum, perbaiki di sini.
-- **Extension Points (`.extra.ts`)**: Jangan memodifikasi routing produk hanya untuk menambah tombol khusus di satu RS. Gunakan `.extra.ts` di folder tenant untuk "menyuntikkan" fitur tambahan.
-
-### **Tree-Shaking by Manifest**
-
-Efisiensi build ditentukan oleh `manifest.ts`. Gunakan manifest untuk memilih modul mana yang benar-benar aktif. Modul yang tidak terdaftar tidak akan di-bundle ke dalam aplikasi tenant tersebut.
-
-### **Component Reusability**
-
-- Gunakan `@genrs/ui` (Shadcn-vue) untuk komponen UI dasar.
-- Buat folder `components/` di level feature hanya jika komponen tersebut bersifat domain-specific (contoh: `UnitSelector.vue`).
 
 ---
 
-## 6. Component Strategy
-
-### Approach
-
-- **Custom-Built Components**: Mengutamakan pembuatan komponen secara manual/custom untuk mendapatkan kontrol penuh atas markup dan styling.
-- **AI-Powered Development**: Mengoptimalkan penggunaan AI (seperti Antigravity) untuk mempercepat scaffolding dan logika komponen tanpa harus bergantung pada library eksternal yang berat.
-
-### Decision: Tidak menggunakan Shadcn/UI
-
-- **Alasan Overhead**: Library seperti Shadcn memerlukan proses _restyling_ ulang yang masif agar sesuai dengan brand identity SIMRS, yang justru menambah beban kerja (overhead).
-- **Efisiensi Design System**: Lebih efisien membangun dari nol menggunakan Tailwind v4 yang disesuaikan langsung dengan token design system kita.
-- **Bundle Size**: Menjaga bundle size tetap minimal dengan hanya menyertakan kode yang benar-benar digunakan.
-
----
-
-## 7. Deployment & Versioning Standards
+## 6. Deployment & Versioning Standards
 
 - **Hybrid Versioning**: Versi aplikasi adalah gabungan dari `Base Semver` + `Tenant Revision`.
   - Format: `v[Major.Minor.Patch]+[TenantCode].rev-[GitCount]`
-- **Safeguard**: Setiap tenant wajib mencantumkan `schemaVersion` di manifest. Jika engine di-upgrade ke struktur baru, build tenant lama akan otomatis error untuk mencegah crash di produksi.
 
 ---
 
-## 8. Key Principles
+## 7. Key Principles
 
 - **Consistency over Preference**: Kita lebih mengutamakan konsistensi pola di seluruh project daripada preferensi gaya koding pribadi.
 - **Centralized Logic**: Logika krusial seperti Schema Validation, Fetching mechanism, dan Global Config harus dipusatkan di satu tempat (`core` atau `packages`) untuk kemudahan maintenance.
 - **Separation of Concerns**: Pemisahan yang tegas antara **UI (Presentation)**, **Logic (Core)**, dan **Data (Infrastructure)**. Tidak boleh ada logika API di dalam file `.vue`.
-- **Scalable by Default**: Arsitektur didesain untuk menangani skalabilitas ekstrim tanpa terjebak dalam _over-engineering_ yang melelahkan.
-- **Developer Experience (DX) Matters**: Struktur monorepo ini harus ramah untuk developer baru (fast onboarding) dan tetap menyenangkan untuk dimaintain dalam jangka panjang.
