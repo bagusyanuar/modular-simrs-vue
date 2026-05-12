@@ -35,11 +35,11 @@ export default defineConfig({
       key: fs.readFileSync(
         path.resolve(
           __dirname,
-          '../../ssl/_wildcard.neurovi-local.test+1-key.pem'
+          '../../ssl/mac/_wildcard.neurovi-local.test+1-key.pem'
         )
       ),
       cert: fs.readFileSync(
-        path.resolve(__dirname, '../../ssl/_wildcard.neurovi-local.test+1.pem')
+        path.resolve(__dirname, '../../ssl/mac/_wildcard.neurovi-local.test+1.pem')
       ),
     },
   },

@@ -30,10 +30,10 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       https: {
         key: fs.readFileSync(
-          path.resolve(__dirname, '../../ssl/_wildcard.neurovi-local.test+1-key.pem')
+          path.resolve(__dirname, '../../ssl/mac/_wildcard.neurovi-local.test+1-key.pem')
         ),
         cert: fs.readFileSync(
-          path.resolve(__dirname, '../../ssl/_wildcard.neurovi-local.test+1.pem')
+          path.resolve(__dirname, '../../ssl/mac/_wildcard.neurovi-local.test+1.pem')
         ),
       },
     },
