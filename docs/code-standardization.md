@@ -116,7 +116,14 @@ Prinsip utama kita adalah **DRY (Don't Repeat Yourself)** di level Base, namun *
 
 ---
 
-## 7. Key Principles
+## 8. Error Handling
+
+Kita menggunakan **AppError** sebagai standar komunikasi error antar layer. Penjelasan lengkap mengenai hierarchy error, mapping, dan handling dapat dilihat di:
+👉 **[Error Handling Standard](file:///Users/dystopia/tamtech/modular-simrs-vue/docs/error-handling.md)**
+
+---
+
+## 9. Key Principles
 
 - **Consistency over Preference**: Kita lebih mengutamakan konsistensi pola di seluruh project daripada preferensi gaya koding pribadi.
 - **Centralized Logic**: Logika krusial seperti Schema Validation, Fetching mechanism, dan Global Config harus dipusatkan di satu tempat (`core` atau `packages`) untuk kemudahan maintenance.
