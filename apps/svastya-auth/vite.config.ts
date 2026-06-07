@@ -25,17 +25,17 @@ export default defineConfig(({ mode }) => {
         key: fs.readFileSync(
           path.resolve(
             __dirname,
-            '../../.ssl/_wildcard.neurovi-svastya.local+1-key.pem'
+            '../../.ssl/_wildcard.neurovi-svastya.test+1-key.pem'
           )
         ),
         cert: fs.readFileSync(
           path.resolve(
             __dirname,
-            '../../.ssl/_wildcard.neurovi-svastya.local+1.pem'
+            '../../.ssl/_wildcard.neurovi-svastya.test+1.pem'
           )
         ),
       },
-      host: 'neurovi-svastya.local',
+      host: 'neurovi-svastya.test',
       port,
     },
   };

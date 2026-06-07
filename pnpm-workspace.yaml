@@ -3,3 +3,4 @@ packages:
   - 'packages/*'
   - 'features/*'
   - 'modules/*'
+  - 'modules-svastya/*'

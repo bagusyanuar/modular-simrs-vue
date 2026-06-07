@@ -25,24 +25,30 @@ export default defineConfig(({ mode }) => {
         key: fs.readFileSync(
           path.resolve(
             __dirname,
-            '../../.ssl/_wildcard.neurovi-svastya.local+1-key.pem'
+            '../../.ssl/_wildcard.neurovi-svastya.test+1-key.pem'
           )
         ),
         cert: fs.readFileSync(
           path.resolve(
             __dirname,
-            '../../.ssl/_wildcard.neurovi-svastya.local+1.pem'
+            '../../.ssl/_wildcard.neurovi-svastya.test+1.pem'
           )
         ),
       },
-      host: 'neurovi-svastya.local',
+      host: 'neurovi-svastya.test',
       port,
       proxy: {
         '/auth': {
-          target: 'https://127.0.0.1:5173',
-          changeOrigin: false,
+          target: 'https://neurovi-svastya.test:5173',
+          changeOrigin: true,
           secure: false,
-          cookieDomainRewrite: 'neurovi-svastya.local',
+          bypass: (req, res) => {
+            if (req.url === '/auth') {
+              res.writeHead(301, { Location: '/auth/' });
+              res.end();
+              return false;
+            }
+          },
         },
       },
     },
