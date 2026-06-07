@@ -6,7 +6,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@genossys-hospital/presentation/*": ["../../modules/presentation/src/*"]
+      "@svastya-hospital/presentation/*": [
+        "../../modules-svastya/presentation/src/*"
+      ]
     },
     /* Linting */
     "noUnusedLocals": true,

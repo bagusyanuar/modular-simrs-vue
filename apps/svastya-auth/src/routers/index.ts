@@ -7,7 +7,7 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () =>
-        import('@genossys-hospital/presentation/svastya/auth/base/pages/LoginPage.vue'),
+        import('@svastya-hospital/presentation/auth/base/pages/LoginPage.vue'),
     },
     {
       path: '/:pathMatch(.*)*',

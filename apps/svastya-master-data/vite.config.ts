@@ -14,9 +14,9 @@ export default defineConfig(({ mode }) => {
     plugins: [vue(), tailwindcss()],
     resolve: {
       alias: {
-        '@genossys-hospital/presentation': path.resolve(
+        '@svastya-hospital/presentation': path.resolve(
           __dirname,
-          '../../modules/presentation/src'
+          '../../modules-svastya/presentation/src'
         ),
       },
     },

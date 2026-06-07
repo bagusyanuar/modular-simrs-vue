@@ -7,9 +7,7 @@ const router = createRouter({
       path: '/',
       name: 'dashboard',
       component: () =>
-        import(
-          '@genossys-hospital/presentation/svastya/master-data/dashboard/base/pages/DashboardPage.vue'
-        ),
+        import('@svastya-hospital/presentation/master-data/dashboard/base/pages/DashboardPage.vue'),
     },
     {
       path: '/:pathMatch(.*)*',
