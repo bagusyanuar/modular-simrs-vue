@@ -69,8 +69,8 @@ defineOptions({
     <input
       v-bind="$attrs"
       :id="props.id"
-      :type="props.type"
       v-model="model"
+      :type="props.type"
       :placeholder="props.placeholder"
       :disabled="props.disabled"
       :class="inputClass"

@@ -5,7 +5,6 @@ import { Icon } from '@iconify/vue';
 import { checkboxVariants } from './ncheckbox.variants';
 
 interface Props {
-  modelValue?: boolean | 'indeterminate';
   label?: string;
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
@@ -14,7 +13,11 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  label: undefined,
   size: 'md',
+  disabled: false,
+  error: false,
+  id: undefined,
 });
 
 const model = defineModel<boolean | 'indeterminate'>({ default: false });

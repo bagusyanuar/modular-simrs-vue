@@ -15,6 +15,7 @@
     "dev:genossys-simulation": "turbo run dev --filter=@genossys-hospital/sso-app --filter=@genossys-hospital/master-data-app --filter=@genossys-hospital/inventory-app",
     "dev:no-sso": "turbo run dev --filter=@neurovi-hospital/inventory-app",
     "dev:sso-only": "turbo run dev --filter=@neurovi-hospital-simulation/sso-app --filter=@neurovi-hospital-simulation/sso-admin-app --filter=@neurovi-hospital/inventory-app",
+    "dev:svastya": "turbo run dev --filter=@svastya-hospital/auth-app --filter=@svastya-hospital/master-data-app",
     "build:simrs": "turbo run build --filter=@genrs/simrs-app --filter=@genrs/auth-app --",
     "create:tenant": "node scripts/create-tenant.mjs",
     "create:feature": "node scripts/scaffold-feature.mjs",

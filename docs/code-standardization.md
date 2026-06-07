@@ -70,7 +70,61 @@ Kita membagi tanggung jawab kode ke dalam 3 layer utama untuk memastikan kode mu
 
 ## 4. Development Flow
 
-### Form & Validation
+Pengembangan fitur baru atau modifikasi fitur yang sudah ada wajib mengikuti alur terstandarisasi berbasis Clean Architecture berikut ini:
+
+### **Alur Kerja Pengembang (Step-by-Step)**
+
+```mermaid
+graph TD
+    A[1. UI & Styling - Presentation / Packages] --> B[2. Business Logic & Contracts - Core]
+    B --> C[3. Data Integration & API - Infrastructure]
+    C --> D[4. Composable Orchestration - Presentation]
+    D --> E[5. Routing & Registrasi - Shell Router]
+```
+
+#### **Step 1: UI & Styling (Presentation / Packages Layer)**
+
+- **Shared/Generic UI Components**: Komponen atom/desain sistem yang bisa dipakai lintas modul ditaruh di `packages/ui/src/components/ui/[nama-komponen]/` menggunakan struktur wajib 4-file (`.vue`, `.variants.ts` pakai CVA, `index.ts` barrel, dan `.stories.ts`).
+- **Page-Specific Components**: Komponen pembangun halaman yang hanya dipakai spesifik di satu modul ditaruh di `modules/presentation/src/[modul]/base/components/`.
+- **Halaman (Pages)**: Layout utuh halaman ditaruh di `modules/presentation/src/[modul]/base/pages/`.
+- _Aturan Ketat_: Tidak boleh ada logika API, pemanggilan Axios, atau manipulasi state backend langsung di dalam file `.vue`.
+
+#### **Step 2: Business Logic & Contracts (Core Layer)**
+
+- **Folder**: `modules/core/src/[modul]/base/`
+- **Komponen & File**:
+  - `*.model.ts`: Entity/data domain (interface data bersih).
+  - `*.input.ts`: DTO / Input type untuk form/payload API.
+  - `*.repository.ts`: Kontrak/Interface (abstraksi data fetching).
+  - `*.usecase.ts`: Logika bisnis/alur kerja utama (class independen).
+- _Aturan Ketat_: **Zero Dependency!** Layer ini murni TypeScript, dilarang meng-import Axios, Vue, UI Library, atau layer luar lainnya.
+
+#### **Step 3: Data Integration & API (Infrastructure Layer)**
+
+- **Folder**: `modules/infrastructure/src/[modul]/base/`
+- **Komponen & File**:
+  - `*.provider.ts`: Inisialisasi HTTP client (Axios/SDK) dan tempat melakukan instansiasi UseCase dari Core agar siap dikonsumsi UI.
+  - `*.repository.ts`: Implementasi konkret dari repository di Core (melakukan network call API sebenarnya).
+  - `*.mapper.ts`: Pemetaan (mapping) data response kotor dari API menjadi data bersih ter-type sesuai `*.model.ts` milik Core.
+  - `*.schema.ts` / `*.validator.ts`: Schema validasi input form menggunakan **Zod**.
+
+#### **Step 4: Composable Orchestration (Presentation Layer)**
+
+- **Folder**: `modules/presentation/src/[modul]/base/composables/`
+- **Komponen & File**: `use[Feature].ts` (Custom Composable).
+- **Tanggung Jawab**:
+  - **Vee-Validate**: Mengelola state form, binding field, dan validasi menggunakan **Zod Schema** yang didefinisikan di Infrastructure.
+  - **TanStack Query / Direct UseCase**: Memanggil UseCase instance dari Infrastructure untuk memicu data mutation atau query data.
+  - Mengekspos variabel reaktif (state form, error, loading, submit handler) ke component `.vue`.
+
+#### **Step 5: Routing & Registrasi (Shell Applications)**
+
+- **Folder**: `apps/simrs/src/router/` atau router orchestration modul terkait.
+- **Tugas**: Mendaftarkan file halaman `Page` yang ada di Presentation agar browser punya alamat URL-nya.
+
+---
+
+### **Form & Validation Standards**
 
 - **vee-validate**: Digunakan untuk form state management dan binding UI.
 - **zod**: Sebagai single source of truth untuk schema validation.
@@ -82,7 +136,7 @@ Kita membagi tanggung jawab kode ke dalam 3 layer utama untuk memastikan kode mu
 
 ---
 
-### Data Fetching
+### **Data Fetching Standards**
 
 - **@tanstack/query**
   - Menangani caching, request deduplication, dan server-state management.

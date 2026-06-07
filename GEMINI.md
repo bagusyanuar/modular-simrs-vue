@@ -17,4 +17,7 @@
 - Reference Architecture: @[.agents/rules/architecture.rules.md]
 - Reference Vocabulary: @[.agents/rules/vocabulary.rules.md]
 - Reference Components: @[.agents/rules/components.rules.md]
+- Slicing Rules: @[.agents/rules/slicing.rules.md]
+- Slicing Workflow: @[.agents/workflows/slicing.md]
 - Reference Skills: @[SKILL.md]
+

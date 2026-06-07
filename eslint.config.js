@@ -15,6 +15,7 @@ export default defineConfig([
         '**/node_modules/**',
         '**/.turbo/**',
         '**/coverage/**',
+        '**/public/**',
         'pnpm-lock.yaml',
     ]),
 
@@ -52,4 +53,4 @@ export default defineConfig([
     },
 
     prettierConfig,
-])
+])

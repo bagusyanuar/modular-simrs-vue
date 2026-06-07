@@ -76,6 +76,23 @@ try {
 }
 ```
 
+### **Integration with TanStack Query**
+TanStack Query (`useQuery` / `useMutation`) mendeteksi error jika function yang diberikan (`queryFn` atau `mutationFn`) melakukan **throw**.
+
+Karena layer Infrastructure sudah melakukan throw `AppError`, TanStack Query secara otomatis akan menangkap error tersebut dalam state `.error`.
+
+```typescript
+const { mutate, error, isError } = useMutation({
+  mutationFn: (data) => authUsecase.login(data),
+  onError: (err) => {
+    // err di sini sudah pasti bertipe AppError
+    if (AppError.isAppError(err)) {
+       toast.error(err.message);
+    }
+  }
+});
+```
+
 ---
 
 ## 3. Infrastructure Error Mapper
